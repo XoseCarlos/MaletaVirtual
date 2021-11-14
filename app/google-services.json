@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "153889599152",
+    "firebase_url": "https://maletavirtual-52478-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "maletavirtual-52478",
+    "storage_bucket": "maletavirtual-52478.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153889599152:android:855311d03b491289895575",
+        "android_client_info": {
+          "package_name": "com.josecarlos.maletavirtual"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "153889599152-sjgl45pnmqa6psb2gsopdv6tovrl4s35.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.josecarlos.maletavirtual",
+            "certificate_hash": "4b759297cac4dfb33a223f840e29013768271af1"
+          }
+        },
+        {
+          "client_id": "153889599152-kg453398vfm9ufn4jph45ddi3u1kuali.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9ISu9YOPXgJ0ZUAYNaDDUkC8zF3ptjDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "153889599152-kg453398vfm9ufn4jph45ddi3u1kuali.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

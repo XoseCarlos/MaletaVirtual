@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="16dp">
+
+    <ImageButton
+        android:id="@+id/iconoImagen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/maletas3_little_2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        >
+    </ImageButton>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/maleta_virtual"
+        android:textAlignment="center"
+        android:textAppearance="?attr/textAppearanceHeadline4"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iconoImagen">
+
+    </com.google.android.material.textview.MaterialTextView>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guiaMitad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.65"
+        >
+    </androidx.constraintlayout.widget.Guideline>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/botonEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/email"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewLogin"
+        >
+    </com.google.android.material.button.MaterialButton>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/botonGoogle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/google"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/botonEmail"
+        >
+    </com.google.android.material.button.MaterialButton>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/botonTelefono"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/telefono"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/botonGoogle"
+        >
+    </com.google.android.material.button.MaterialButton>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/FacebookBoton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/facebook"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/botonTelefono"
+        >
+    </com.google.android.material.button.MaterialButton>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/condiciones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="?attr/textAppearanceSubtitle2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="@string/terminos">
+
+    </com.google.android.material.textview.MaterialTextView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

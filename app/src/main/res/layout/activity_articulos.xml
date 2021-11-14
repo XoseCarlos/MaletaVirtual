@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ArticulosActivity">
+
+
+    <include android:id="@+id/toolbar"
+        layout="@layout/toolbar"/>
+
+    <!--
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintVertical_bias="0.0"
+        tools:listitem="@android:layout/simple_list_item_1">
+
+    </ListView>
+    -->
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imagenMaleta"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="4dp"
+        app:civ_border_color="#FF000000"
+        app:civ_border_width="2dp"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toTopOf="@id/recyclerView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+
+    <TextView
+        android:id="@+id/txtNombreMaleta"
+        android:textSize="16dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:text="Nombre Maleta"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imagenMaleta"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <TextView
+        android:id="@+id/txtFechaViaje"
+        android:layout_width="136dp"
+        android:layout_height="21dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/fecha_viaje"
+        android:gravity="start"
+        app:layout_constraintStart_toEndOf="@+id/imagenMaleta"
+        app:layout_constraintTop_toBottomOf="@id/txtNombreMaleta" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/btnAñadirArticulo"
+        android:layout_marginBottom="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imagenMaleta"
+        tools:listitem="@layout/item_articulos_recyclerview"
+        >
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/btnAñadirArticulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10dp"
+        android:text="@string/anadir_articulo"
+        android:layout_marginEnd="@dimen/common_padding_default"
+        android:layout_marginBottom="@dimen/common_padding_default"
+        app:icon="@drawable/ic_add_circle_outline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/btnCerrarMaleta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10dp"
+        android:text="@string/cerrar_maleta"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="@dimen/common_padding_default"
+        android:layout_marginBottom="@dimen/common_padding_default"
+        app:icon="@drawable/ic_maletas_cerradas"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/btnDuplicarMaleta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10dp"
+        android:text="@string/duplicar_maleta"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="@dimen/common_padding_default"
+        android:layout_marginBottom="@dimen/common_padding_default"
+        app:icon="@drawable/ic_maletas_activas"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
