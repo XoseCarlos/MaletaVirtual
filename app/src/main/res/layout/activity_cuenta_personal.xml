@@ -98,4 +98,12 @@
         android:visibility="invisible"
         android:text="@string/camara" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCambioContrasena"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="visible"
+        android:text="@string/cambio_contrasena" />
+
 </LinearLayout>

@@ -238,7 +238,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
             .addOnFailureListener{
-
+                //Hacer nada
             }
 
         if (!encontrado) {

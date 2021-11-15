@@ -77,4 +77,12 @@
     <string name="maleta_actualizar">Update Suitcase</string>
     <string name="maleta_articulos">Suitcase Items</string>
     <string name="configuracion_personal">Personal Settings</string>
+    <string name="fecha_viaje_2">When are you going to travel?</string>
+    <string name="cambio_contrasena">Change Password</string>
+    <string name="introduce_nueva_contrasena">Enter new password</string>
+    <string name="confirma_nueva_contrasena">Confirm the new password</string>
+    <string name="cambiar">Change</string>
+    <string name="contrasena_actualizada">Password Updated</string>
+    <string name="contrasena_actualizada_error">Error updating password</string>
+    <string name="largo_contrasena">The password must be at least six characters ...</string>
 </resources>

@@ -77,10 +77,21 @@ class CuentaPersonalActivity : AppCompatActivity() {
             configFirestoreRealTime()
         }
 
+        binding.btnCambioContrasena.setOnClickListener{
+            cambioContrasena()
+        }
+
+
         getUser()
         configurarBotones()
         configFirestoreRealTime()
     }
+
+
+    private fun cambioContrasena(){
+        CambioContrasenaFragment().show(supportFragmentManager,CambioContrasenaFragment::class.java.simpleName)
+    }
+
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
@@ -289,10 +300,10 @@ class CuentaPersonalActivity : AppCompatActivity() {
         //val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         //if (intent.resolveActivity(packageManager) != null) {
         //    startActivityForResult(intent, 1)
-       // }
+        // }
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             takePictureIntent.resolveActivity(packageManager)?.also {
-                    startActivityForResult(takePictureIntent, 1)
+                startActivityForResult(takePictureIntent, 1)
             }
         }
     }
@@ -362,11 +373,11 @@ class CuentaPersonalActivity : AppCompatActivity() {
         val nombreImagen = "foto_" + Utils.getAuth().currentUser!!.uid.toString()
         val directorio = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         //try {
-            val imagen = File.createTempFile(nombreImagen, ".jpg", directorio)
-            rutaImagen = imagen.absolutePath
-            //return imagen
+        val imagen = File.createTempFile(nombreImagen, ".jpg", directorio)
+        rutaImagen = imagen.absolutePath
+        //return imagen
         //}catch (ex : Exception){
-            //Toast.makeText(this, rutaImagen.toString(), Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, rutaImagen.toString(), Toast.LENGTH_SHORT).show()
         //}
         return imagen
     }

@@ -76,5 +76,12 @@
     <string name="maleta_actualizar">Actualizar Maleta</string>
     <string name="maleta_articulos">"Artículos Maleta "</string>
     <string name="configuracion_personal">Configuración Personal</string>
-    <string name="fecha_viaje_2">¿Cuándo vas a ir?</string>
+    <string name="fecha_viaje_2">¿Cuándo vas a viajar?</string>
+    <string name="cambio_contrasena">Cambiar Contraseña</string>
+    <string name="introduce_nueva_contrasena">Introduce nueva contraseña</string>
+    <string name="confirma_nueva_contrasena">Confirma la nueva contraseña</string>
+    <string name="cambiar">Cambiar</string>
+    <string name="contrasena_actualizada">Contraseña Actualizada</string>
+    <string name="contrasena_actualizada_error">Error al actualizar contraseña</string>
+    <string name="largo_contrasena">La contraseña debe tener al menos seis caracteres...</string>
 </resources>
