@@ -151,68 +151,79 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
             val firebase = FirebaseAuth.getInstance()
             val usuario = firebase.currentUser
             positiveButton?.setOnClickListener{
-                binding?.let {
-                    enableUI(false)
 
-                    if (fotoArticuloActualizada) {
+                if (binding!!.etNombre.text.isNullOrEmpty() || binding!!.etCantidad.text.isNullOrEmpty()){
+                    Toast.makeText(this.requireContext(), "Debe instroducir todos los datos para poder continuar...", Toast.LENGTH_SHORT).show()
+                }else {
 
-                        uploadRecucedImage(articulo?.id) { eventPost ->
-                            if (eventPost.isSuccess) {
+                    binding?.let {
+                        enableUI(false)
 
-                                if (articulo == null) {
+                        if (fotoArticuloActualizada) {
 
-                                    val cant = it.etCantidad.text.toString()
-                                    val articulo = Articulos(
-                                        id = articulo?.id,
-                                        nombre = it.etNombre.text.toString().trim(),
-                                        cantidad = Integer.parseInt(cant),
-                                        emailUsuario = usuario?.email.toString(),
-                                        emailCreador = usuario?.email.toString(),
-                                        imgURL = eventPost.photoURL
-                                    )
-                                    //save(articulo, Utils.getAuth().currentUser!!.uid)
-                                    save(articulo, eventPost.documentId!!)
+                            uploadRecucedImage(articulo?.id) { eventPost ->
+                                if (eventPost.isSuccess) {
 
-                                } else {
-                                    dialog.setTitle(getString(R.string.articulo_actualizar))
-                                    articulo?.apply {
-                                        nombre = it.etNombre.text.toString().trim()
-                                        cantidad = Integer.parseInt(it.etCantidad.text.toString().trim())
-                                        imgURL = eventPost.photoURL
-                                        update(this)
+                                    if (articulo == null) {
+
+                                        val cant = it.etCantidad.text.toString()
+                                        val articulo = Articulos(
+                                            id = articulo?.id,
+                                            nombre = it.etNombre.text.toString().trim(),
+                                            cantidad = Integer.parseInt(cant),
+                                            emailUsuario = usuario?.email.toString(),
+                                            emailCreador = usuario?.email.toString(),
+                                            imgURL = eventPost.photoURL
+                                        )
+                                        //save(articulo, Utils.getAuth().currentUser!!.uid)
+                                        save(articulo, eventPost.documentId!!)
+
+                                    } else {
+                                        dialog.setTitle(getString(R.string.articulo_actualizar))
+                                        articulo?.apply {
+                                            nombre = it.etNombre.text.toString().trim()
+                                            cantidad = Integer.parseInt(
+                                                it.etCantidad.text.toString().trim()
+                                            )
+                                            imgURL = eventPost.photoURL
+                                            update(this)
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }else{
-                        if (articulo == null) {
-
-                            val cant = it.etCantidad.text.toString()
-                            val articulo = Articulos(
-                                id = articulo?.id,
-                                nombre = it.etNombre.text.toString().trim(),
-                                cantidad = Integer.parseInt(cant),
-                                emailUsuario = usuario?.email.toString(),
-                                emailCreador = usuario?.email.toString(),
-                                imgURL = photoSelectedUri.toString()
-                            )
-                            //save(articulo, Utils.getAuth().currentUser!!.uid)
-                            save(articulo, crearImagenJpg())
-
                         } else {
-                            dialog.setTitle(getString(R.string.articulo_actualizar))
-                            articulo?.apply {
-                                if (!articulo!!.imgURL!!.contains("maletas3", true)){
-                                    nombre = it.etNombre.text.toString().trim()
-                                    cantidad = Integer.parseInt(it.etCantidad.text.toString().trim())
-                                    update(this)
-                                }
-                                else{
-                                    FirebaseStorage.getInstance().getReference().child("maletas3_little_light.png").downloadUrl.addOnSuccessListener {uriFotoDefecto->
+                            if (articulo == null) {
+
+                                val cant = it.etCantidad.text.toString()
+                                val articulo = Articulos(
+                                    id = articulo?.id,
+                                    nombre = it.etNombre.text.toString().trim(),
+                                    cantidad = Integer.parseInt(cant),
+                                    emailUsuario = usuario?.email.toString(),
+                                    emailCreador = usuario?.email.toString(),
+                                    imgURL = photoSelectedUri.toString()
+                                )
+                                //save(articulo, Utils.getAuth().currentUser!!.uid)
+                                save(articulo, crearImagenJpg())
+
+                            } else {
+                                dialog.setTitle(getString(R.string.articulo_actualizar))
+                                articulo?.apply {
+                                    if (!articulo!!.imgURL!!.contains("maletas3", true)) {
                                         nombre = it.etNombre.text.toString().trim()
-                                        cantidad = Integer.parseInt(it.etCantidad.text.toString().trim())
-                                        imgURL = uriFotoDefecto.toString()
+                                        cantidad =
+                                            Integer.parseInt(it.etCantidad.text.toString().trim())
                                         update(this)
+                                    } else {
+                                        FirebaseStorage.getInstance().getReference()
+                                            .child("maletas3_little_light.png").downloadUrl.addOnSuccessListener { uriFotoDefecto ->
+                                            nombre = it.etNombre.text.toString().trim()
+                                            cantidad = Integer.parseInt(
+                                                it.etCantidad.text.toString().trim()
+                                            )
+                                            imgURL = uriFotoDefecto.toString()
+                                            update(this)
+                                        }
                                     }
                                 }
                             }

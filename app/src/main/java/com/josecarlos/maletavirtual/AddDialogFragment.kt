@@ -110,32 +110,38 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
             val firebase = FirebaseAuth.getInstance()
             val usuario = firebase.currentUser
             positiveButton?.setOnClickListener{
-                binding?.let{
-                    enableUI(false)
 
-                    //Carga imagen
-                    //uploadImage (maleta?.id){eventPost->
-                    uploadRecucedImage (maleta?.id) {eventPost->
-                        if (eventPost.isSuccess){
-                            if (maleta==null) {
-                                dialogo.setTitle(getString(R.string.maleta_agregar))
-                                val maleta = Maletas(
-                                    nombre = it.etNombre.text.toString().trim(),
-                                    fechaViaje = it.etFechaViaje.text.toString().trim(),
-                                    emailUsuario = usuario?.email.toString(),
-                                    emailCreador = usuario?.email.toString(),
-                                    imgURL = eventPost.photoURL
-                                )
-                                //save(maleta, Utils.getAuth().currentUser!!.uid)
-                                save(maleta,eventPost.documentId!!)
+                if (binding!!.etFechaViaje.text.isNullOrEmpty() || binding!!.etNombre.text.isNullOrEmpty() || photoSelectedUri.toString().equals("null", true)) {
+                    Toast.makeText(this.requireContext(), getString(R.string.advertencia_faltan_datos_maleta), Toast.LENGTH_SHORT).show()
+                }else {
 
-                            }else {
-                                dialogo.setTitle(getString(R.string.maleta_actualizar))
-                                maleta?.apply {
-                                    nombre = it.etNombre.text.toString().trim()
-                                    fechaViaje = it.etFechaViaje.text.toString().trim()
-                                    imgURL = eventPost.photoURL
-                                    update(this)
+                    binding?.let {
+                        enableUI(false)
+
+                        //Carga imagen
+                        //uploadImage (maleta?.id){eventPost->
+                        uploadRecucedImage(maleta?.id) { eventPost ->
+                            if (eventPost.isSuccess) {
+                                if (maleta == null) {
+                                    dialogo.setTitle(getString(R.string.maleta_agregar))
+                                    val maleta = Maletas(
+                                        nombre = it.etNombre.text.toString().trim(),
+                                        fechaViaje = it.etFechaViaje.text.toString().trim(),
+                                        emailUsuario = usuario?.email.toString(),
+                                        emailCreador = usuario?.email.toString(),
+                                        imgURL = eventPost.photoURL
+                                    )
+                                    //save(maleta, Utils.getAuth().currentUser!!.uid)
+                                    save(maleta, eventPost.documentId!!)
+
+                                } else {
+                                    dialogo.setTitle(getString(R.string.maleta_actualizar))
+                                    maleta?.apply {
+                                        nombre = it.etNombre.text.toString().trim()
+                                        fechaViaje = it.etFechaViaje.text.toString().trim()
+                                        imgURL = eventPost.photoURL
+                                        update(this)
+                                    }
                                 }
                             }
                         }
@@ -197,6 +203,8 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
 
         photoSelectedUri?.let { uri->
             binding?.let {binding->
+
+
                 getBitmapFromUri(uri)?.let{bitmap ->
 
                     binding.progressBar.visibility= View.VISIBLE

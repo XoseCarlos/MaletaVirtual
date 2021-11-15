@@ -84,4 +84,5 @@
     <string name="contrasena_actualizada">Contraseña Actualizada</string>
     <string name="contrasena_actualizada_error">Error al actualizar contraseña</string>
     <string name="largo_contrasena">La contraseña debe tener al menos seis caracteres...</string>
+    <string name="advertencia_faltan_datos_maleta">Debe introducir todos los datos y una imagen de la maleta para poder continuar...</string>
 </resources>

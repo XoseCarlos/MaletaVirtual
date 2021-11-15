@@ -122,24 +122,30 @@ class AddDialogDuplicarMaletaFragment (maletaID: String) : DialogFragment(), Dia
             val firebase = FirebaseAuth.getInstance()
             val usuario = firebase.currentUser
             positiveButton?.setOnClickListener{
-                binding?.let{
-                    enableUI(false)
-                    //Carga imagen
-                    //uploadImage (maleta?.id){eventPost->
-                    uploadRecucedImage (maleta?.id) {eventPost->
-                        if (eventPost.isSuccess){
-                            dialogo.setTitle(getString(R.string.duplicar_maleta))
-                            val maleta = Maletas(
-                                id = maleta?.id,
-                                nombre = it.etNombre.text.toString().trim(),
-                                fechaViaje = it.etFechaViaje.text.toString().trim(),
-                                emailUsuario = usuario?.email.toString(),
-                                emailCreador = usuario?.email.toString(),
-                                imgURL = eventPost.photoURL
-                            )
-                            //save(maleta, Utils.getAuth().currentUser!!.uid)
-                            save(maletaOriginalID, maleta, eventPost.documentId!!)
-                            this.requireActivity().finish()
+
+                if (binding!!.etFechaViaje.text.isNullOrEmpty() || binding!!.etNombre.text.isNullOrEmpty() || photoSelectedUri.toString().equals("null", true)) {
+                    Toast.makeText(this.requireContext(), getString(R.string.advertencia_faltan_datos_maleta), Toast.LENGTH_SHORT).show()
+                }else {
+
+                    binding?.let {
+                        enableUI(false)
+                        //Carga imagen
+                        //uploadImage (maleta?.id){eventPost->
+                        uploadRecucedImage(maleta?.id) { eventPost ->
+                            if (eventPost.isSuccess) {
+                                dialogo.setTitle(getString(R.string.duplicar_maleta))
+                                val maleta = Maletas(
+                                    id = maleta?.id,
+                                    nombre = it.etNombre.text.toString().trim(),
+                                    fechaViaje = it.etFechaViaje.text.toString().trim(),
+                                    emailUsuario = usuario?.email.toString(),
+                                    emailCreador = usuario?.email.toString(),
+                                    imgURL = eventPost.photoURL
+                                )
+                                //save(maleta, Utils.getAuth().currentUser!!.uid)
+                                save(maletaOriginalID, maleta, eventPost.documentId!!)
+                                this.requireActivity().finish()
+                            }
                         }
                     }
                 }
