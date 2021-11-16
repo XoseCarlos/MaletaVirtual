@@ -86,4 +86,6 @@
     <string name="contrasena_actualizada_error">Error updating password</string>
     <string name="largo_contrasena">The password must be at least six characters ...</string>
     <string name="advertencia_faltan_datos_maleta">You must enter all the data and an image of the suitcase to continue ...</string>
+    <string name="actualizar">Update</string>
+    <string name="mi_nombre">José Carlos Vázquez Míguez</string>
 </resources>

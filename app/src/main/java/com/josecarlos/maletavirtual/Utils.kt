@@ -43,7 +43,7 @@ class Utils : Application() {
             return FirebaseFirestore.getInstance().collection("usuarios").document(getUsuarioLogeado())
         }
 
-        fun getCareptaFSUsuarioLogueado(maleta : String, articulo : String){
+        fun getCarpetaFBUsuarioLogueado(maleta : String, articulo : String){
             if (articulo.equals("")){
                 getRaizFBUsuarioLogeado().collection("maletas").document(maleta)
             }else{

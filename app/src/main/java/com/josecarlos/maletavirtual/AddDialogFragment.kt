@@ -49,11 +49,14 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
     private var negativeButton : Button ? = null
 
     private var maleta : Maletas?= null
+    private var fotoMaletaActualizada : Boolean = false
+    private var maletaCargada : Boolean = false
 
     private var photoSelectedUri : Uri? = null
 
     private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if (it.resultCode==Activity.RESULT_OK){
+            fotoMaletaActualizada=true
             photoSelectedUri = it.data?.data
             //binding?.imageProductPreview?.setImageURI(photoSelectedUri)
             binding?.let {
@@ -66,10 +69,8 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
         }
     }
 
-
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-
+        //var String = if (maletaCargada) getString(R.string.agregar) else getString(R.string.actualizar)
         activity.let {activity->
             binding = FragmentDialogAddBinding.inflate(LayoutInflater.from(context))
             binding?.let {
@@ -103,45 +104,71 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
         configButtons()
 
         val dialog = dialog as? AlertDialog
+
         dialog?.let {dialogo->
             positiveButton=dialogo.getButton(Dialog.BUTTON_POSITIVE)
             negativeButton=dialogo.getButton(Dialog.BUTTON_NEGATIVE)
             binding!!.etFechaViaje.setOnClickListener{showDatePickerDialog()}
             val firebase = FirebaseAuth.getInstance()
             val usuario = firebase.currentUser
+
+            if (maletaCargada)  {
+                dialogo.setTitle(getString(R.string.maleta_actualizar))
+                //positiveButton.text = getString(R.string.actualizar)
+            }
+            else {
+                dialogo.setTitle(getString(R.string.maleta_agregar))
+            }
+
             positiveButton?.setOnClickListener{
 
-                if (binding!!.etFechaViaje.text.isNullOrEmpty() || binding!!.etNombre.text.isNullOrEmpty() || photoSelectedUri.toString().equals("null", true)) {
+                if (binding!!.etFechaViaje.text.isNullOrEmpty() || binding!!.etNombre.text.isNullOrEmpty()){ // || photoSelectedUri.toString().equals("null", true)) {
                     Toast.makeText(this.requireContext(), getString(R.string.advertencia_faltan_datos_maleta), Toast.LENGTH_SHORT).show()
                 }else {
 
                     binding?.let {
                         enableUI(false)
 
-                        //Carga imagen
-                        //uploadImage (maleta?.id){eventPost->
-                        uploadRecucedImage(maleta?.id) { eventPost ->
-                            if (eventPost.isSuccess) {
-                                if (maleta == null) {
-                                    dialogo.setTitle(getString(R.string.maleta_agregar))
-                                    val maleta = Maletas(
-                                        nombre = it.etNombre.text.toString().trim(),
-                                        fechaViaje = it.etFechaViaje.text.toString().trim(),
-                                        emailUsuario = usuario?.email.toString(),
-                                        emailCreador = usuario?.email.toString(),
-                                        imgURL = eventPost.photoURL
-                                    )
-                                    //save(maleta, Utils.getAuth().currentUser!!.uid)
-                                    save(maleta, eventPost.documentId!!)
+                        if (fotoMaletaActualizada){
+                            //Carga imagen
+                            //uploadImage (maleta?.id){eventPost->
 
-                                } else {
-                                    dialogo.setTitle(getString(R.string.maleta_actualizar))
-                                    maleta?.apply {
-                                        nombre = it.etNombre.text.toString().trim()
-                                        fechaViaje = it.etFechaViaje.text.toString().trim()
-                                        imgURL = eventPost.photoURL
-                                        update(this)
+                            uploadRecucedImage(maleta?.id) { eventPost ->
+                                if (eventPost.isSuccess) {
+                                    if (maleta == null) {
+
+                                        val maleta = Maletas(
+                                            nombre = it.etNombre.text.toString().trim(),
+                                            fechaViaje = it.etFechaViaje.text.toString().trim(),
+                                            emailUsuario = usuario?.email.toString(),
+                                            emailCreador = usuario?.email.toString(),
+                                            imgURL = eventPost.photoURL
+                                        )
+                                        //save(maleta, Utils.getAuth().currentUser!!.uid)
+                                        save(maleta, eventPost.documentId!!)
+
+                                    } else {
+                                        Toast.makeText(this.requireContext(), "Entra aquí", Toast.LENGTH_SHORT).show()
+                                        maleta?.apply {
+                                            nombre = it.etNombre.text.toString().trim()
+                                            fechaViaje = it.etFechaViaje.text.toString().trim()
+                                            imgURL = eventPost.photoURL
+                                            update(this)
+                                        }
                                     }
+                                }
+                            }
+                        }else{
+
+                            if (photoSelectedUri.toString().equals("null", true) && !maletaCargada){
+                                Toast.makeText(this.requireContext(), getString(R.string.advertencia_faltan_datos_maleta), Toast.LENGTH_SHORT).show()
+                                enableUI(true)
+                            }else{
+                                maleta?.apply {
+                                    nombre = it.etNombre.text.toString().trim()
+                                    fechaViaje = it.etFechaViaje.text.toString().trim()
+                                    //imgURL = eventPost.photoURL
+                                    update(this)
                                 }
                             }
                         }
@@ -285,6 +312,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
         maleta = (activity as MaletasAux)?.getMaletaSelect()
         maleta?.let { maleta->
             binding?.let {
+                maletaCargada = true
                 it.etNombre.setText(maleta.nombre.toString())
                 it.etFechaViaje.setText(maleta.fechaViaje.toString())
                 Glide.with(this)

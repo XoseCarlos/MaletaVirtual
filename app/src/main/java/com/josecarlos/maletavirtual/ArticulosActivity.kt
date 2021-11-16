@@ -169,7 +169,15 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
 
                     articulo.imgURL?.let { url ->
 
-                        if (!url.equals("null")) {
+                        if (url.contains("maletas3")){
+                            articuloRef.document(id)
+                                .delete()
+                                .addOnFailureListener {
+                                    Toast.makeText(
+                                        this, getString(R.string.error_eliminar),Toast.LENGTH_SHORT).show()
+                                }
+
+                        }else if (!url.equals("null")) {
 
                             val fotoRef = FirebaseStorage.getInstance().getReferenceFromUrl(url)
 

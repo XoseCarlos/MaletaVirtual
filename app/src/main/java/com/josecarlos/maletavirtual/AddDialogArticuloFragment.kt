@@ -62,6 +62,8 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
 
     private var photoSelectedUri : Uri? = null
 
+    private var articuloCargado : Boolean = false
+
     private val RC_GALLERY = 101
     private val RC_CAMARA = 100
 
@@ -148,6 +150,10 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
         dialog?.let {dialogo->
             positiveButton=dialogo.getButton(Dialog.BUTTON_POSITIVE)
             negativeButton=dialogo.getButton(Dialog.BUTTON_NEGATIVE)
+
+            if (articuloCargado) dialog.setTitle(getString(R.string.articulo_actualizar))
+            else dialog.setTitle(R.string.agregar_articulo)
+
             val firebase = FirebaseAuth.getInstance()
             val usuario = firebase.currentUser
             positiveButton?.setOnClickListener{
@@ -179,7 +185,7 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
                                         save(articulo, eventPost.documentId!!)
 
                                     } else {
-                                        dialog.setTitle(getString(R.string.articulo_actualizar))
+
                                         articulo?.apply {
                                             nombre = it.etNombre.text.toString().trim()
                                             cantidad = Integer.parseInt(
@@ -207,7 +213,7 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
                                 save(articulo, crearImagenJpg())
 
                             } else {
-                                dialog.setTitle(getString(R.string.articulo_actualizar))
+
                                 articulo?.apply {
                                     if (!articulo!!.imgURL!!.contains("maletas3", true)) {
                                         nombre = it.etNombre.text.toString().trim()
@@ -341,6 +347,7 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
         articulo = (activity as ArticulosAux)?.getArticuloSelect()
         articulo?.let { articulo->
             binding?.let {
+                articuloCargado = true
                 if (!articulo.imgURL.equals("null", true)) {
                     FirebaseStorage.getInstance().getReference(Utils.getAuth().currentUser!!.uid)
                         .child(maletaIdentificador)
