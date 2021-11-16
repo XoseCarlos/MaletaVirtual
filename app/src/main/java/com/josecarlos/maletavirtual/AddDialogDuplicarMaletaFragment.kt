@@ -19,9 +19,7 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -48,8 +46,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 import java.io.IOException
-import androidx.annotation.NonNull
-import androidx.core.net.toUri
 
 import com.google.android.gms.tasks.OnFailureListener
 
@@ -347,7 +343,7 @@ class AddDialogDuplicarMaletaFragment (maletaID: String) : DialogFragment(), Dia
 
                                     val uri = Uri.fromFile(file)
 
-                                    val imagenStorage = storage.reference.child(Utils.getUsuarioLogeado()).child(documentId).child("${uri.lastPathSegment}")
+                                    val imagenStorage = storage.reference.child(Utils.getIdUsuarioLogeado()).child(documentId).child("${uri.lastPathSegment}")
                                     imagenStorage.putFile(uri)
                                         .addOnSuccessListener {
                                             it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->

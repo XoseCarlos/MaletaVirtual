@@ -32,14 +32,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.josecarlos.maletavirtual.databinding.FragmentDialogAddBinding
 import com.josecarlos.maletavirtual.interfaces.MaletasAux
 import com.josecarlos.maletavirtual.models.Maletas
 import java.io.ByteArrayOutputStream
-import kotlin.concurrent.fixedRateTimer
 
 class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
 
@@ -100,31 +98,36 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
 
     override fun onShow(dialogInterface: DialogInterface?) {
 
-        initMaleta()
+        ponerMaletaSeleccionada()
         configButtons()
 
         val dialog = dialog as? AlertDialog
 
         dialog?.let {dialogo->
+
             positiveButton=dialogo.getButton(Dialog.BUTTON_POSITIVE)
             negativeButton=dialogo.getButton(Dialog.BUTTON_NEGATIVE)
             binding!!.etFechaViaje.setOnClickListener{showDatePickerDialog()}
-            val firebase = FirebaseAuth.getInstance()
-            val usuario = firebase.currentUser
 
-            if (maletaCargada)  {
-                dialogo.setTitle(getString(R.string.maleta_actualizar))
-                //positiveButton.text = getString(R.string.actualizar)
-            }
-            else {
-                dialogo.setTitle(getString(R.string.maleta_agregar))
-            }
+            val usuario = Utils.getUsuarioLogueado()
+
+            if (maletaCargada) dialogo.setTitle(getString(R.string.maleta_actualizar))
+            else dialogo.setTitle(getString(R.string.maleta_agregar))
 
             positiveButton?.setOnClickListener{
 
+                //Compruebo que se hayan metido datos en el campo nombre y una fecha de viaje
                 if (binding!!.etFechaViaje.text.isNullOrEmpty() || binding!!.etNombre.text.isNullOrEmpty()){ // || photoSelectedUri.toString().equals("null", true)) {
                     Toast.makeText(this.requireContext(), getString(R.string.advertencia_faltan_datos_maleta), Toast.LENGTH_SHORT).show()
                 }else {
+
+                    if (maletaCargada){
+                        Toast.makeText(this.requireContext(), "Maleta Cargada", Toast.LENGTH_SHORT).show()
+                    }else if (photoSelectedUri.toString().equals("null", true)){
+                        Toast.makeText(this.requireContext(), "Maleta Null", Toast.LENGTH_SHORT).show()
+                    }else{
+                        Toast.makeText(this.requireContext(), "Maleta Con cambio de foto", Toast.LENGTH_SHORT).show()
+                    }
 
                     binding?.let {
                         enableUI(false)
@@ -138,11 +141,11 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                                     if (maleta == null) {
 
                                         val maleta = Maletas(
-                                            nombre = it.etNombre.text.toString().trim(),
-                                            fechaViaje = it.etFechaViaje.text.toString().trim(),
-                                            emailUsuario = usuario?.email.toString(),
-                                            emailCreador = usuario?.email.toString(),
-                                            imgURL = eventPost.photoURL
+                                                nombre = it.etNombre.text.toString().trim(),
+                                                fechaViaje = it.etFechaViaje.text.toString().trim(),
+                                                emailUsuario = usuario?.email.toString(),
+                                                emailCreador = usuario?.email.toString(),
+                                                imgURL = eventPost.photoURL
                                         )
                                         //save(maleta, Utils.getAuth().currentUser!!.uid)
                                         save(maleta, eventPost.documentId!!)
@@ -298,17 +301,17 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
     private fun configButtons() {
         binding?.let {
             it.ibMaleta.setOnClickListener{
-                openGallery()
+                abrirGaleria()
             }
         }
     }
 
-    private fun openGallery() {
+    private fun abrirGaleria() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         resultLauncher.launch(intent)
     }
 
-    private fun initMaleta() {
+    private fun ponerMaletaSeleccionada() {
         maleta = (activity as MaletasAux)?.getMaletaSelect()
         maleta?.let { maleta->
             binding?.let {

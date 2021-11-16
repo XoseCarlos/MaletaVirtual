@@ -14,8 +14,8 @@ Revisión: 1.0
 package com.josecarlos.maletavirtual
 
 import android.app.Application
-import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -32,15 +32,19 @@ class Utils : Application() {
         }
 
         fun getStorageUsuario() : StorageReference {
-            return FirebaseStorage.getInstance().getReference().child(getUsuarioLogeado())
+            return FirebaseStorage.getInstance().getReference().child(getIdUsuarioLogeado())
         }
 
-        fun getUsuarioLogeado() : String {
+        fun getUsuarioLogueado() : FirebaseUser {
+            return getAuth().currentUser!!
+        }
+
+        fun getIdUsuarioLogeado() : String {
             return getAuth().currentUser!!.uid.toString()
         }
 
         fun getRaizFBUsuarioLogeado() : DocumentReference{
-            return FirebaseFirestore.getInstance().collection("usuarios").document(getUsuarioLogeado())
+            return FirebaseFirestore.getInstance().collection("usuarios").document(getIdUsuarioLogeado())
         }
 
         fun getCarpetaFBUsuarioLogueado(maleta : String, articulo : String){

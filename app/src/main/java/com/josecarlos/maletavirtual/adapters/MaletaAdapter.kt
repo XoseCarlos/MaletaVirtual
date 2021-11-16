@@ -62,9 +62,9 @@ open class MaletaAdapter(private val maletaList: MutableList<Maletas>,
     fun add(maleta: Maletas){
         if (!maletaList.contains(maleta)){
             maletaList.add(maleta)
-            maletaList.sortBy {
-                it.nombre
-            }
+            /*maletaList.sortBy {
+                it.fechaViaje
+            }*/
             notifyItemInserted(maletaList.size - 1)
         }else{
             update(maleta)
@@ -75,9 +75,9 @@ open class MaletaAdapter(private val maletaList: MutableList<Maletas>,
         val index = maletaList.indexOf(maleta)
         if (index!=-1){
             maletaList.set(index, maleta)
-            maletaList.sortBy {
-                it.nombre
-            }
+            /*maletaList.sortBy {
+                it.fechaViaje
+            }*/
             notifyItemChanged(index)
         }
     }
@@ -86,9 +86,9 @@ open class MaletaAdapter(private val maletaList: MutableList<Maletas>,
         val index = maletaList.indexOf(maleta)
         if (index!=-1){
             maletaList.removeAt(index)
-            maletaList.sortBy {
-                it.nombre
-            }
+            /*maletaList.sortBy {
+                it.fechaViaje
+            }*/
             notifyItemRemoved(index)
         }
     }
