@@ -30,6 +30,24 @@
 
         </provider>
 
+
+        <activity
+            android:name=".login.SignUpActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+
+        <activity
+            android:name=".login.OlvidoContrasenaActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+
+        <activity
+            android:name=".login.AutenticacionActivity"
+            android:screenOrientation="portrait"
+            android:exported="true">
+
+            </activity>
+
         <activity
             android:name=".CuentaPersonalActivity"
             android:screenOrientation="portrait"

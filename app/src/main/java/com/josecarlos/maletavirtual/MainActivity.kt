@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         toolbar.setTitle("Maleta Virutal")
-        toolbar.setSubtitle(Utils.getAuth().currentUser!!.displayName)
+        toolbar.setSubtitle(Utils.getAuth().currentUser?.displayName)
 
 
         binding.mainBotonActivas.setOnClickListener{
@@ -82,6 +82,8 @@ class MainActivity : AppCompatActivity() {
             AuthUI.getInstance().signOut(this)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Sesión terminada.", Toast.LENGTH_SHORT).show()
+                    //finish()
+                    //System.exit(0)
                 }
         }
         binding.mainBotonCuenta.setOnClickListener{
@@ -139,15 +141,6 @@ class MainActivity : AppCompatActivity() {
         authStateListener = FirebaseAuth.AuthStateListener { auth ->
             if (auth.currentUser != null){
                 supportActionBar?.subtitle = auth.currentUser?.displayName
-                //binding.llProgress.visibility = View.GONE
-                /* binding.imageViewInfoAvatar.visibility=View.VISIBLE
-                 binding.textViewInfoEmail.visibility=View.VISIBLE
-                 binding.textViewInfoName.visibility=View.VISIBLE
-                 binding.mainBotonActivas.visibility = View.VISIBLE
-                 binding.mainBotonCerradas.visibility = View.VISIBLE
-                 binding.mainBotonCuenta.visibility = View.VISIBLE
-                 binding.actionSignOut.visibility = View.VISIBLE */
-                //binding.anadirMaletaButton.show()
             } else {
                 val providers = arrayListOf(
                     AuthUI.IdpConfig.EmailBuilder().build(),
@@ -176,6 +169,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onResume() {
         super.onResume()
         firebaseAuth.addAuthStateListener(authStateListener)
@@ -203,17 +197,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     .addOnCompleteListener {
                         if (it.isSuccessful){
-                            /*binding.nsvProducts.visibility = View.GONE
-                            binding.imageViewInfoAvatar.visibility=View.GONE
-                            binding.textViewInfoEmail.visibility=View.GONE
-                            binding.textViewInfoName.visibility=View.GONE
-                            //binding.llProgress.visibility = View.GONE
-                            binding.mainBotonActivas.visibility = View.GONE
-                            binding.mainBotonCerradas.visibility = View.GONE
-                            binding.mainBotonCuenta.visibility = View.GONE
-                            binding.actionSignOut.visibility = View.GONE
-                             */
-                            //binding.anadirMaletaButton.hide()
+                            //Nada
                         } else {
                             Toast.makeText(this, getString(R.string.sesion_terminar_fallo), Toast.LENGTH_SHORT).show()
                         }
@@ -269,7 +253,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             if (response == null){
                 Toast.makeText(this, getString(R.string.despedida), Toast.LENGTH_SHORT).show()
-                finish()
+                //finish()
             } else {
                 response.error?.let {
                     if (it.errorCode == ErrorCodes.NO_NETWORK){

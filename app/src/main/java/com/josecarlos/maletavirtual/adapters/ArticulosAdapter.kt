@@ -66,9 +66,9 @@ class ArticulosAdapter(private val articulosList: MutableList<Articulos>,
     fun add(articulo: Articulos){
         if (!articulosList.contains(articulo)){
             articulosList.add(articulo)
-            articulosList.sortBy {
+            /*articulosList.sortBy {
                 it.fechaCreacion
-            }
+            }*/
             notifyItemInserted(articulosList.size - 1)
         }else{
             update(articulo)
