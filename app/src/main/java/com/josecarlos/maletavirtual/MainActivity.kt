@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        toolbar.setTitle("Maleta Virutal")
+        toolbar.setTitle(getString(R.string.app_name))
         toolbar.setSubtitle(Utils.getAuth().currentUser?.displayName)
 
 
@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             //finish()
         }
+
     }
 
     private fun usuarioRegistrado(uid: String): Boolean {

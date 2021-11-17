@@ -87,6 +87,7 @@
     <string name="advertencia_faltan_datos_maleta">Debe introducir todos los datos y una imagen de la maleta para poder continuar...</string>
     <string name="actualizar">Actualizar</string>
     <string name="mi_nombre">José Carlos Vázquez Míguez</string>
+    <string name="ventana_principal">Ventana Principal</string>
 
 
     <string name="login_email">Email</string>
@@ -116,7 +117,6 @@
     <string name="dialog_ok">Rate</string>
     <string name="dialog_cancel">Cancelar</string>
     <string name="introducir_todos_datos">Debe introducir todos los datos para poder continuar...</string>
-    <string name="sesion_terminada">Sesión terminada.</string>
     <string name="borrado_storage">Borrado en el Storage</string>
     <string name="borrado_storage_error">Error al borrar en Storage</string>
 

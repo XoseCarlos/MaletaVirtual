@@ -16,6 +16,7 @@ package com.josecarlos.maletavirtual
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -23,16 +24,21 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.auth.AuthUI
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.FirebaseStorage
+import com.josecarlos.maletavirtual.Utils.Companion.getAuth
+import com.josecarlos.maletavirtual.Utils.Companion.goToActivity
+import com.josecarlos.maletavirtual.Utils.Companion.toast
 import com.josecarlos.maletavirtual.adapters.MaletaAdapter
 import com.josecarlos.maletavirtual.adapters.RecyclerViewAdapter
 import com.josecarlos.maletavirtual.databinding.ActivityMaletasBinding
 import com.josecarlos.maletavirtual.interfaces.MaletasAux
 import com.josecarlos.maletavirtual.interfaces.OnMaletaListener
+import com.josecarlos.maletavirtual.login.SignUpActivity
 import com.josecarlos.maletavirtual.models.Maletas
 
 class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
@@ -52,7 +58,7 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        toolbar.setTitle(getString(R.string.maleta_virtual))
+        toolbar.setTitle(getString(R.string.app_name))
 
 
         val extras = intent.extras
@@ -63,12 +69,28 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
             binding.anadirMaletaButton.visibility= View.INVISIBLE
         }
 
+
         botonAnadirMaleta()
         //configRecyclerView()
         //Esta funciona correctamente
         //configFireStore()
         //Detecta los cambios en tiempo real y los añade al listado. Se comenta porque se inicia en el onResume
         //configFireStoreRealTime()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_maletas, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    //Funcionalidad del boton del toolbar
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.title){
+            getString(R.string.ventana_principal) -> goToActivity<MainActivity>()
+            getString(R.string.configuracion_personal) -> goToActivity<CuentaPersonalActivity>()
+            //getString(R.string.cerrar_sesion) -> { AuthUI.getInstance().signOut(this) ; finish() }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -216,12 +238,6 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
         //    val maleta = Maletas(it.toString(), "Maleta $it", "xosecarlos", "xosecarlos","01/01/2020",null,true,false)
         //    adapter.add(maleta)
         //}
-    }
-
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return super.onCreateOptionsMenu(menu)
     }
 
 

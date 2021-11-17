@@ -112,4 +112,5 @@
     <string name="introducir_todos_datos">You must enter all the data to continue ...</string>
     <string name="borrado_storage">Deleted in Storage</string>
     <string name="borrado_storage_error">Error deleting in Storage</string>
+    <string name="ventana_principal">Main</string>
 </resources>
