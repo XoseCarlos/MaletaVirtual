@@ -20,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.WindowManager
 import com.josecarlos.maletavirtual.login.AutenticacionActivity
 
-
 @Suppress("DEPRECATION")
 class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +31,7 @@ class SplashScreenActivity : AppCompatActivity() {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
         Handler().postDelayed({
-            val intent = Intent(this, AutenticacionActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
         }, 3000)

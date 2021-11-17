@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
@@ -52,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        ocultarPantallaPrincipal()
         configAuth()
 
         toolbar = findViewById(R.id.toolbar)
@@ -82,8 +84,6 @@ class MainActivity : AppCompatActivity() {
             AuthUI.getInstance().signOut(this)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Sesión terminada.", Toast.LENGTH_SHORT).show()
-                    //finish()
-                    //System.exit(0)
                 }
         }
         binding.mainBotonCuenta.setOnClickListener{
@@ -104,35 +104,53 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-            .addOnFailureListener{
-                val usuario = Usuario(
-                    id = firebaseAuth.currentUser!!.uid,
-                    nombre = firebaseAuth.currentUser?.displayName,
-                    emailUsuario = firebaseAuth.currentUser?.email
-                )
-                save(usuario)
-                Toast.makeText(this, getString(R.string.usuario_guardado), Toast.LENGTH_SHORT).show()
+            .addOnCompleteListener(){
+                if (!registrado){
+                    val usuario = Usuario(
+                        id = firebaseAuth.currentUser!!.uid,
+                        nombre = firebaseAuth.currentUser?.displayName,
+                        emailUsuario = firebaseAuth.currentUser?.email
+                    )
+                    save(usuario)
+                    registrado = true
+                    //Toast.makeText(this, getString(R.string.usuario_guardado), Toast.LENGTH_SHORT).show()
+                }
             }
+
         return registrado
     }
-
 
     override fun onStart() {
         super.onStart()
         binding.textViewInfoName.text=firebaseAuth.currentUser?.displayName.toString()
         binding.textViewInfoEmail.text=firebaseAuth.currentUser?.email.toString()
         //firebaseAuth.signOut()
-        val usuarioAct = Utils.getFirestore().collection("usuarios").document(FirebaseAuth.getInstance().currentUser!!.uid)
-        usuarioAct.get().addOnSuccessListener {
-            val us = it.toObject(Usuario::class.java)
-            //Picasso.get().load(us?.imgURL).error(R.drawable.maletas3_little).into(binding.imageViewInfoAvatar)
-            Glide.with(this)
-                .load(us?.imgURL)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .centerCrop()
-                .error(R.drawable.maletas3_little)
-                .into(binding.imageViewInfoAvatar)
+
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            val usuarioAct = Utils.getFirestore().collection("usuarios")
+                .document(FirebaseAuth.getInstance().currentUser!!.uid)
+            usuarioAct.get().addOnSuccessListener {
+                val us = it.toObject(Usuario::class.java)
+                //Picasso.get().load(us?.imgURL).error(R.drawable.maletas3_little).into(binding.imageViewInfoAvatar)
+                Glide.with(this)
+                    .load(us?.imgURL)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .centerCrop()
+                    .error(R.drawable.maletas3_little)
+                    .into(binding.imageViewInfoAvatar)
+            }
         }
+    }
+
+    private fun ocultarPantallaPrincipal(){
+        binding.llProgress.visibility = View.VISIBLE
+        binding.imageViewInfoAvatar.visibility=View.GONE
+        binding.textViewInfoEmail.visibility=View.GONE
+        binding.textViewInfoName.visibility=View.GONE
+        binding.mainBotonActivas.visibility = View.GONE
+        binding.mainBotonCerradas.visibility = View.GONE
+        binding.mainBotonCuenta.visibility = View.GONE
+        binding.actionSignOut.visibility = View.GONE
     }
 
     private fun configAuth(){
@@ -141,12 +159,22 @@ class MainActivity : AppCompatActivity() {
         authStateListener = FirebaseAuth.AuthStateListener { auth ->
             if (auth.currentUser != null){
                 supportActionBar?.subtitle = auth.currentUser?.displayName
+                binding.llProgress.visibility = View.GONE
+                binding.imageViewInfoAvatar.visibility=View.VISIBLE
+                binding.textViewInfoEmail.visibility=View.VISIBLE
+                binding.textViewInfoName.visibility=View.VISIBLE
+                binding.mainBotonActivas.visibility = View.VISIBLE
+                binding.mainBotonCerradas.visibility = View.VISIBLE
+                binding.mainBotonCuenta.visibility = View.VISIBLE
+                binding.actionSignOut.visibility = View.VISIBLE
+                //binding.anadirMaletaButton.show()
+                usuarioRegistrado(auth.currentUser!!.uid)
             } else {
                 val providers = arrayListOf(
                     AuthUI.IdpConfig.EmailBuilder().build(),
                     AuthUI.IdpConfig.GoogleBuilder().build(),
                     AuthUI.IdpConfig.PhoneBuilder().build())
-                    //AuthUI.IdpConfig.FacebookBuilder().build())
+                //AuthUI.IdpConfig.FacebookBuilder().build())
 
                 val loginView = AuthMethodPickerLayout
                     .Builder(R.layout.vista_pantalla_login)
@@ -169,7 +197,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onResume() {
         super.onResume()
         firebaseAuth.addAuthStateListener(authStateListener)
@@ -182,7 +209,6 @@ class MainActivity : AppCompatActivity() {
         //fireStoreListener.remove()
     }
 
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return super.onCreateOptionsMenu(menu)
@@ -193,11 +219,21 @@ class MainActivity : AppCompatActivity() {
             R.id.action_sign_out -> {
                 AuthUI.getInstance().signOut(this)
                     .addOnSuccessListener {
-                        Toast.makeText(this, getString(R.string.sesion_terminada), Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this, getString(R.string.sesion_terminada), Toast.LENGTH_SHORT).show()
                     }
                     .addOnCompleteListener {
                         if (it.isSuccessful){
-                            //Nada
+                            binding.llProgress.visibility = View.GONE
+                            binding.imageViewInfoAvatar.visibility=View.GONE
+                            binding.textViewInfoEmail.visibility=View.GONE
+                            binding.textViewInfoName.visibility=View.GONE
+                            //binding.llProgress.visibility = View.GONE
+                            binding.mainBotonActivas.visibility = View.GONE
+                            binding.mainBotonCerradas.visibility = View.GONE
+                            binding.mainBotonCuenta.visibility = View.GONE
+                            binding.actionSignOut.visibility = View.GONE
+
+                            //binding.anadirMaletaButton.hide()
                         } else {
                             Toast.makeText(this, getString(R.string.sesion_terminar_fallo), Toast.LENGTH_SHORT).show()
                         }
@@ -253,7 +289,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             if (response == null){
                 Toast.makeText(this, getString(R.string.despedida), Toast.LENGTH_SHORT).show()
-                //finish()
+                finish()
             } else {
                 response.error?.let {
                     if (it.errorCode == ErrorCodes.NO_NETWORK){

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Maleta Virtual</string>
     <string name="product_create">Nueva Maleta</string>
-    <string name="product_msg_loading">Preparando todo...</string>
+    <string name="product_msg_loading">Unos segundos ...</string>
     <string name="open_drawer">Open</string>
     <string name="hint_full_name">nombre completo</string>
     <string name="profile_update">Actualizar</string>
@@ -90,7 +90,7 @@
 
 
     <string name="login_email">Email</string>
-    <string name="login_password">Password</string>
+    <string name="login_password">Contraseña</string>
     <string name="login_confirm_password">Confirm Password</string>
     <string name="login_sign_in">Sign In</string>
     <string name="login_sign_up">Sign Up</string>
@@ -114,7 +114,7 @@
     <string name="dialog_title">Rate the App!</string>
     <string name="dialog_edit_text_hint">Leave your feedback</string>
     <string name="dialog_ok">Rate</string>
-    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_cancel">Cancelar</string>
 
 
 </resources>

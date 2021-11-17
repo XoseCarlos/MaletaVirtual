@@ -95,7 +95,7 @@ class AutenticacionActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
 
     private fun logInByEmail(email: String, password: String) {
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
-            if (task.isSuccessful) {toast("Que pasa")
+            if (task.isSuccessful) {
                 if (mAuth.currentUser!!.isEmailVerified) {
 
                     goToActivity<MainActivity> {
