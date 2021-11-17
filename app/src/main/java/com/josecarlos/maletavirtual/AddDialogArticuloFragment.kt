@@ -94,7 +94,7 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
             binding?.let {
                 val builder = AlertDialog.Builder(activity)
                     .setTitle(getString(R.string.agregar_articulo)) // a $maletaIdentificador")
-                    .setPositiveButton(getString(R.string.agregar), null)
+                    .setPositiveButton(getString(R.string.aceptar), null)
                     .setNegativeButton(getString(R.string.cancelar),null)
                     .setView(it.root)
                 val dialog = builder.create()
@@ -167,7 +167,7 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
             positiveButton?.setOnClickListener{
 
                 if (binding!!.etNombre.text.isNullOrEmpty() || binding!!.etCantidad.text.isNullOrEmpty()){
-                    Toast.makeText(this.requireContext(), "Debe instroducir todos los datos para poder continuar...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this.requireContext(), getString(R.string.introducir_todos_datos), Toast.LENGTH_SHORT).show()
                 }else {
 
                     binding?.let {

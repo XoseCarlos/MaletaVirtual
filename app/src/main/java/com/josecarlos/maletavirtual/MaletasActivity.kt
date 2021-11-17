@@ -273,9 +273,9 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
                             it.items.forEach{
                                 it.delete()
                             }
-                            Toast.makeText(this, "Borrado en el Storage", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, getString(R.string.borrado_storage), Toast.LENGTH_SHORT).show()
                         }.addOnFailureListener {
-                            Toast.makeText(this, "Error al borrar en Storage", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, getString(R.string.borrado_storage_error), Toast.LENGTH_SHORT).show()
                         }
 
 

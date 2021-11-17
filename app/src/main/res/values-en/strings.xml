@@ -67,7 +67,7 @@
     <string name="maleta_eliminar_advertencia">The suitcase will be permanently removed</string>
     <string name="activas">ACTIVE</string>
     <string name="cerradas">CLOSED</string>
-    <string name="agregar">Add</string>
+    <string name="aceptar">Acept</string>
     <string name="cancelar">Cancel</string>
     <string name="agregar_articulo">Add Article</string>
     <string name="articulo_actualizar">Update Article</string>
@@ -109,4 +109,7 @@
     <string name="dialog_edit_text_hint">Leave your feedback</string>
     <string name="dialog_ok">Rate</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="introducir_todos_datos">You must enter all the data to continue ...</string>
+    <string name="borrado_storage">Deleted in Storage</string>
+    <string name="borrado_storage_error">Error deleting in Storage</string>
 </resources>

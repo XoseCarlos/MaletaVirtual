@@ -14,7 +14,6 @@ Revisión: 1.0
 package com.josecarlos.maletavirtual
 
 import android.content.Intent
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -30,14 +29,10 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.josecarlos.maletavirtual.Utils.Companion.toast
 import com.josecarlos.maletavirtual.databinding.ActivityMainBinding
 import com.josecarlos.maletavirtual.models.Usuario
-import com.squareup.picasso.Picasso
 
 class MainActivity : AppCompatActivity() {
 
@@ -85,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         binding.actionSignOut.setOnClickListener{
             AuthUI.getInstance().signOut(this)
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Sesión terminada.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.sesion_terminada), Toast.LENGTH_SHORT).show()
                 }
         }
         binding.mainBotonCuenta.setOnClickListener{

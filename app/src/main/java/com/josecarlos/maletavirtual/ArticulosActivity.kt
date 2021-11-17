@@ -304,7 +304,7 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
                         articulosMaleta.get().addOnSuccessListener {documentos->
                                 for (documento in documentos){
                                     val articulos = documento.toObject(Articulos::class.java)
-                                    Toast.makeText(this, articulos.nombre, Toast.LENGTH_SHORT).show()
+                                    //Toast.makeText(this, articulos.nombre, Toast.LENGTH_SHORT).show()
                                     articulos?.apply {
                                         id = articulos.id
                                         nombre = articulos.nombre

@@ -80,7 +80,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
             binding?.let {
                 val builder = AlertDialog.Builder(activity)
                     .setTitle(getString(R.string.maleta_agregar))
-                    .setPositiveButton(getString(R.string.agregar), null)
+                    .setPositiveButton(getString(R.string.aceptar), null)
                     .setNegativeButton(getString(R.string.cancelar),null)
                     .setView(it.root)
                 val dialog = builder.create()
@@ -157,7 +157,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                                         save(maleta, eventPost.documentId!!)
 
                                     } else {
-                                        Toast.makeText(this.requireContext(), "Entra aquí", Toast.LENGTH_SHORT).show()
+                                        //Toast.makeText(this.requireContext(), "Entra aquí", Toast.LENGTH_SHORT).show()
                                         maleta?.apply {
                                             nombre = it.etNombre.text.toString().trim()
                                             fechaViaje = it.etFechaViaje.text.toString().trim()

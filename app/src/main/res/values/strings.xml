@@ -66,7 +66,7 @@
     <string name="maleta_eliminar_advertencia">La maleta se eliminará permanentemente</string>
     <string name="activas">ACTIVAS</string>
     <string name="cerradas">CERRADAS</string>
-    <string name="agregar">Agregar</string>
+    <string name="aceptar">Aceptar</string>
     <string name="cancelar">Cancelar</string>
     <string name="agregar_articulo">Agregar Artículo</string>
     <string name="articulo_actualizar">Actualizar Artículo</string>
@@ -115,6 +115,10 @@
     <string name="dialog_edit_text_hint">Leave your feedback</string>
     <string name="dialog_ok">Rate</string>
     <string name="dialog_cancel">Cancelar</string>
+    <string name="introducir_todos_datos">Debe introducir todos los datos para poder continuar...</string>
+    <string name="sesion_terminada">Sesión terminada.</string>
+    <string name="borrado_storage">Borrado en el Storage</string>
+    <string name="borrado_storage_error">Error al borrar en Storage</string>
 
 
 </resources>

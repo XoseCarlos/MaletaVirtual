@@ -40,7 +40,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.josecarlos.maletavirtual.Utils.Companion.hideKeyboard
-import com.josecarlos.maletavirtual.Utils.Companion.toast
 import com.josecarlos.maletavirtual.databinding.ActivityCuentaPersonalBinding
 import com.josecarlos.maletavirtual.models.Usuario
 import java.io.ByteArrayOutputStream
