@@ -39,6 +39,8 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
+import com.josecarlos.maletavirtual.Utils.Companion.hideKeyboard
+import com.josecarlos.maletavirtual.Utils.Companion.toast
 import com.josecarlos.maletavirtual.databinding.ActivityCuentaPersonalBinding
 import com.josecarlos.maletavirtual.models.Usuario
 import java.io.ByteArrayOutputStream
@@ -53,7 +55,6 @@ class CuentaPersonalActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
     private lateinit var binding : ActivityCuentaPersonalBinding
     private var photoSelectedUri : Uri? = null
-
     private var rutaImagen : String ?=null
 
     private var imagenUsuarioCambiada = false
@@ -81,6 +82,12 @@ class CuentaPersonalActivity : AppCompatActivity() {
             cambioContrasena()
         }
 
+        binding.etFullName.setOnFocusChangeListener { v, hasFocus ->
+            hideKeyboard(v)
+        }
+        binding.telefono.setOnFocusChangeListener { v, hasFocus ->
+            hideKeyboard(v)
+        }
 
         getUser()
         configurarBotones()
@@ -122,7 +129,7 @@ class CuentaPersonalActivity : AppCompatActivity() {
                 .centerCrop()
                 .circleCrop()
                 .placeholder(R.drawable.ic_time_access)
-                .error(R.drawable.ic_broken_image)
+                .error(R.drawable.maletas3_little)
                 .into(binding.ibProfile)
         }
         //val user = Utils.getFireStore().collection("usuarios").document(FirebaseAuth.getInstance().currentUser!!.uid)
@@ -149,7 +156,15 @@ class CuentaPersonalActivity : AppCompatActivity() {
                 binding.etFullName.clearFocus()
                 FirebaseAuth.getInstance().currentUser?.let {user->
                     if (photoSelectedUri==null){
-                        updateDatosUsuario(user, user.photoUrl!!)
+
+                        FirebaseStorage.getInstance().getReference().child("maletas3_little.png").downloadUrl.addOnSuccessListener{ uriFotoDefecto->
+                            if (user.photoUrl==null) {   //toString().contains("maletas3", true)){
+                                updateDatosUsuario(user,uriFotoDefecto)
+                            }else {
+                                updateDatosUsuario(user, user.photoUrl!!)
+                            }
+                        }
+
                     }else{
                         //Toast.makeText(this, photoSelectedUri.toString(), Toast.LENGTH_SHORT).show()
                         uploadRecucedImage(user)

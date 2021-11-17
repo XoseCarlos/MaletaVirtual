@@ -14,6 +14,7 @@ Revisión: 1.0
 package com.josecarlos.maletavirtual
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -32,6 +33,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.josecarlos.maletavirtual.Utils.Companion.toast
 import com.josecarlos.maletavirtual.databinding.ActivityMainBinding
 import com.josecarlos.maletavirtual.models.Usuario
 import com.squareup.picasso.Picasso
@@ -44,7 +47,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var authStateListener: FirebaseAuth.AuthStateListener
-
     private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,7 +98,6 @@ class MainActivity : AppCompatActivity() {
     private fun usuarioRegistrado(uid: String): Boolean {
         var registrado : Boolean = false
         val db = FirebaseFirestore.getInstance().collection("usuarios")
-
         db.get().addOnSuccessListener { result ->
             for (document in result) {
                 if ((document.id).equals(uid)) {
@@ -106,14 +107,22 @@ class MainActivity : AppCompatActivity() {
         }
             .addOnCompleteListener(){
                 if (!registrado){
-                    val usuario = Usuario(
-                        id = firebaseAuth.currentUser!!.uid,
-                        nombre = firebaseAuth.currentUser?.displayName,
-                        emailUsuario = firebaseAuth.currentUser?.email
-                    )
-                    save(usuario)
-                    registrado = true
-                    //Toast.makeText(this, getString(R.string.usuario_guardado), Toast.LENGTH_SHORT).show()
+                    val telefono = if(firebaseAuth.currentUser?.phoneNumber.isNullOrEmpty()) "0" else firebaseAuth.currentUser?.phoneNumber.toString()
+
+                    FirebaseStorage.getInstance().getReference()
+                        .child("maletas3_little.png").downloadUrl.addOnSuccessListener {uriFotoDefecto->
+                            var imagenDefectoMaleta = uriFotoDefecto
+                            val usuario = Usuario(
+                                id = firebaseAuth.currentUser!!.uid,
+                                nombre = firebaseAuth.currentUser?.displayName,
+                                emailUsuario = firebaseAuth.currentUser?.email,
+                                telefono = Integer.parseInt(telefono),
+                                imgURL = imagenDefectoMaleta.toString()
+                            )
+                            save(usuario)
+                            registrado = true
+                            //Toast.makeText(this, getString(R.string.usuario_guardado), Toast.LENGTH_SHORT).show()
+                        }
                 }
             }
 
@@ -190,6 +199,7 @@ class MainActivity : AppCompatActivity() {
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
                         .setIsSmartLockEnabled(false)
+                        .setTosAndPrivacyPolicyUrls("https://policies.google.com/terms?hl=es","https://firebase.google.com/support/privacy?hl=es-419" )
                         .setLogo(R.drawable.maletas3_little)
                         //.setAuthMethodPickerLayout(loginView)
                         .build())

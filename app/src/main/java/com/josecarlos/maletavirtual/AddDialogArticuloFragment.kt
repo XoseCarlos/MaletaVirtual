@@ -36,6 +36,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.josecarlos.maletavirtual.Utils.Companion.hideKeyboard
 import com.josecarlos.maletavirtual.databinding.FragmentDialogAddArticuloBinding
 import com.josecarlos.maletavirtual.interfaces.ArticulosAux
 import com.josecarlos.maletavirtual.models.Articulos
@@ -80,6 +81,13 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
+        binding?.etNombre?.setOnFocusChangeListener { v, hasFocus ->
+            hideKeyboard()
+        }
+        binding?.etCantidad?.setOnFocusChangeListener { v, hasFocus ->
+            hideKeyboard()
+        }
 
         activity.let {activity->
             binding = FragmentDialogAddArticuloBinding.inflate(LayoutInflater.from(context))

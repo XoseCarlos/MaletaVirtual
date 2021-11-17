@@ -34,6 +34,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.josecarlos.maletavirtual.Utils.Companion.hideKeyboard
 import com.josecarlos.maletavirtual.databinding.FragmentDialogAddBinding
 import com.josecarlos.maletavirtual.interfaces.MaletasAux
 import com.josecarlos.maletavirtual.models.Maletas
@@ -68,6 +69,11 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
+        binding?.etNombre?.setOnFocusChangeListener { v, hasFocus ->
+            hideKeyboard()
+        }
+
         //var String = if (maletaCargada) getString(R.string.agregar) else getString(R.string.actualizar)
         activity.let {activity->
             binding = FragmentDialogAddBinding.inflate(LayoutInflater.from(context))
@@ -122,11 +128,11 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                 }else {
 
                     if (maletaCargada){
-                        Toast.makeText(this.requireContext(), "Maleta Cargada", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this.requireContext(), "Maleta Cargada", Toast.LENGTH_SHORT).show()
                     }else if (photoSelectedUri.toString().equals("null", true)){
-                        Toast.makeText(this.requireContext(), "Maleta Null", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this.requireContext(), "Maleta Null", Toast.LENGTH_SHORT).show()
                     }else{
-                        Toast.makeText(this.requireContext(), "Maleta Con cambio de foto", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this.requireContext(), "Maleta Con cambio de foto", Toast.LENGTH_SHORT).show()
                     }
 
                     binding?.let {

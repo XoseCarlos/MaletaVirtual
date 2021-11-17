@@ -52,9 +52,7 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.storage.FileDownloadTask
 
 import com.google.android.gms.tasks.OnSuccessListener
-
-
-
+import com.josecarlos.maletavirtual.Utils.Companion.hideKeyboard
 
 
 class AddDialogDuplicarMaletaFragment (maletaID: String) : DialogFragment(), DialogInterface.OnShowListener {
@@ -87,6 +85,10 @@ class AddDialogDuplicarMaletaFragment (maletaID: String) : DialogFragment(), Dia
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
+        binding?.etNombre?.setOnFocusChangeListener { v, hasFocus ->
+            hideKeyboard()
+        }
 
         activity.let {activity->
             binding = FragmentDialogDuplicarMaletaBinding.inflate(LayoutInflater.from(context))
