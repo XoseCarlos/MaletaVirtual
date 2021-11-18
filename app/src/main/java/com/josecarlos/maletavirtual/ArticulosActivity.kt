@@ -17,6 +17,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.CheckBox
 import android.widget.Toast
@@ -28,12 +29,16 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.FirebaseStorage
+import com.josecarlos.maletavirtual.utils.Utils.Companion.goToActivity
 import com.josecarlos.maletavirtual.adapters.ArticulosAdapter
 import com.josecarlos.maletavirtual.databinding.ActivityArticulosBinding
+import com.josecarlos.maletavirtual.fragments.AddDialogArticuloFragment
+import com.josecarlos.maletavirtual.fragments.AddDialogDuplicarMaletaFragment
 import com.josecarlos.maletavirtual.interfaces.ArticulosAux
 import com.josecarlos.maletavirtual.interfaces.OnArticuloListener
 import com.josecarlos.maletavirtual.models.Articulos
 import com.josecarlos.maletavirtual.models.Maletas
+import com.josecarlos.maletavirtual.utils.Utils
 import com.squareup.picasso.Picasso
 
 class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux{
@@ -131,8 +136,18 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
+        menuInflater.inflate(R.menu.menu_articulos, menu)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    //Funcionalidad del boton del toolbar
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.title){
+            getString(R.string.ventana_principal)      -> goToActivity<MainActivity>()
+            getString(R.string.configuracion_personal) -> goToActivity<CuentaPersonalActivity>()
+            //getString(R.string.cerrar_sesion) -> { AuthUI.getInstance().signOut(this) ; finish() }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onLongClick(articulo: Articulos) {
@@ -269,7 +284,8 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
             articuloSeleccionado=null
             var args = Bundle()
             args.putString("maletaID", extras?.getString("MaletaID")!!)
-            AddDialogArticuloFragment(extras?.getString("MaletaID")!!).show(supportFragmentManager,AddDialogArticuloFragment::class.java.simpleName, )
+            AddDialogArticuloFragment(extras?.getString("MaletaID")!!).show(supportFragmentManager,
+                AddDialogArticuloFragment::class.java.simpleName, )
         }
     }
 
@@ -335,7 +351,8 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
             var args = Bundle()
             args.putString("maletaID", extras?.getString("MaletaID")!!)
             Toast.makeText(this, getString(R.string.maleta_duplicar_pendiente), Toast.LENGTH_SHORT).show()
-            AddDialogDuplicarMaletaFragment(extras?.getString("MaletaID")!!).show(supportFragmentManager,AddDialogDuplicarMaletaFragment::class.java.simpleName, )
+            AddDialogDuplicarMaletaFragment(extras?.getString("MaletaID")!!).show(supportFragmentManager,
+                AddDialogDuplicarMaletaFragment::class.java.simpleName, )
         }
     }
 }

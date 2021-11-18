@@ -24,22 +24,20 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.auth.AuthUI
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.FirebaseStorage
-import com.josecarlos.maletavirtual.Utils.Companion.getAuth
-import com.josecarlos.maletavirtual.Utils.Companion.goToActivity
-import com.josecarlos.maletavirtual.Utils.Companion.toast
+import com.josecarlos.maletavirtual.utils.Utils.Companion.goToActivity
 import com.josecarlos.maletavirtual.adapters.MaletaAdapter
 import com.josecarlos.maletavirtual.adapters.RecyclerViewAdapter
 import com.josecarlos.maletavirtual.databinding.ActivityMaletasBinding
+import com.josecarlos.maletavirtual.fragments.AddDialogFragment
 import com.josecarlos.maletavirtual.interfaces.MaletasAux
 import com.josecarlos.maletavirtual.interfaces.OnMaletaListener
-import com.josecarlos.maletavirtual.login.SignUpActivity
 import com.josecarlos.maletavirtual.models.Maletas
+import com.josecarlos.maletavirtual.utils.Utils
 
 class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
 
@@ -101,7 +99,7 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
     private fun botonAnadirMaleta(){
         binding.anadirMaletaButton.setOnClickListener{
             maletaSeleccionada=null
-            AddDialogFragment().show(supportFragmentManager,AddDialogFragment::class.java.simpleName)
+            AddDialogFragment().show(supportFragmentManager, AddDialogFragment::class.java.simpleName)
         }
     }
 

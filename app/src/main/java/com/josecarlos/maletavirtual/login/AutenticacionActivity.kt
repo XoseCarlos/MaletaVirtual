@@ -12,11 +12,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.josecarlos.maletavirtual.MainActivity
 import com.josecarlos.maletavirtual.R
-import com.josecarlos.maletavirtual.Utils.Companion.goToActivity
-import com.josecarlos.maletavirtual.Utils.Companion.isValidEmail
-import com.josecarlos.maletavirtual.Utils.Companion.isValidPassword
-import com.josecarlos.maletavirtual.Utils.Companion.toast
-import com.josecarlos.maletavirtual.Utils.Companion.validate
+import com.josecarlos.maletavirtual.utils.Utils.Companion.goToActivity
+import com.josecarlos.maletavirtual.utils.Utils.Companion.isValidEmail
+import com.josecarlos.maletavirtual.utils.Utils.Companion.isValidPassword
+import com.josecarlos.maletavirtual.utils.Utils.Companion.toast
+import com.josecarlos.maletavirtual.utils.Utils.Companion.validate
 import com.josecarlos.maletavirtual.databinding.ActivityLoginBinding
 
 class AutenticacionActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {

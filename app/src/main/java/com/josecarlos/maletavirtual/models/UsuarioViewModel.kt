@@ -14,7 +14,7 @@ Revisión: 1.0
 package com.josecarlos.maletavirtual.models
 
 import androidx.lifecycle.ViewModel
-import com.josecarlos.maletavirtual.Utils
+import com.josecarlos.maletavirtual.utils.Utils
 
 class UsuarioViewModel: ViewModel() {
     val auth = Utils.getAuth()

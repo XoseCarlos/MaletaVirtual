@@ -25,6 +25,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,9 +41,12 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
-import com.josecarlos.maletavirtual.Utils.Companion.hideKeyboard
+import com.josecarlos.maletavirtual.utils.Utils.Companion.hideKeyboard
 import com.josecarlos.maletavirtual.databinding.ActivityCuentaPersonalBinding
+import com.josecarlos.maletavirtual.fragments.CambioContrasenaFragment
 import com.josecarlos.maletavirtual.models.Usuario
+import com.josecarlos.maletavirtual.utils.Utils
+import com.josecarlos.maletavirtual.utils.Utils.Companion.goToActivity
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -93,11 +98,23 @@ class CuentaPersonalActivity : AppCompatActivity() {
         configFirestoreRealTime()
     }
 
-
-    private fun cambioContrasena(){
-        CambioContrasenaFragment().show(supportFragmentManager,CambioContrasenaFragment::class.java.simpleName)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_configuracion_peresonal, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+    //Funcionalidad del boton del toolbar
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.title){
+            getString(R.string.ventana_principal) -> goToActivity<MainActivity>()
+            getString(R.string.maletas) -> goToActivity<MaletasActivity>(true)
+            //getString(R.string.cerrar_sesion) -> { AuthUI.getInstance().signOut(this) ; finish() }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
+    private fun cambioContrasena(){
+        CambioContrasenaFragment().show(supportFragmentManager, CambioContrasenaFragment::class.java.simpleName)
+    }
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
@@ -243,7 +260,8 @@ class CuentaPersonalActivity : AppCompatActivity() {
 
     private fun uploadRecucedImage(user : FirebaseUser) {
 
-        val profileRef = FirebaseStorage.getInstance().reference.child(Utils.getAuth().currentUser!!.uid).child(Utils.getAuth().currentUser!!.uid)
+        val profileRef = FirebaseStorage.getInstance().reference.child(Utils.getAuth().currentUser!!.uid).child(
+            Utils.getAuth().currentUser!!.uid)
 
         photoSelectedUri?.let { uri->
             binding?.let {binding->
@@ -367,7 +385,7 @@ class CuentaPersonalActivity : AppCompatActivity() {
                     //Nada
                 }
                 try{
-                    val fos : FileOutputStream = openFileOutput(crarImagenJpg(), Context.MODE_PRIVATE)
+                    val fos : FileOutputStream = openFileOutput(Utils.crearImagenJpg(), Context.MODE_PRIVATE)
                     imageBitmap!!.compress(Bitmap.CompressFormat.JPEG,90, fos)
                     fos.close()
                 }catch (ex : IOException){
@@ -377,22 +395,4 @@ class CuentaPersonalActivity : AppCompatActivity() {
         }
     }
 
-    private fun crarImagenJpg() : String {
-        val fecha = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date()) + ".jpg"
-        val nombre = System.currentTimeMillis().toString()
-        return nombre
-    }
-
-    private fun crearImagen () : File {
-        val nombreImagen = "foto_" + Utils.getAuth().currentUser!!.uid.toString()
-        val directorio = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        //try {
-        val imagen = File.createTempFile(nombreImagen, ".jpg", directorio)
-        rutaImagen = imagen.absolutePath
-        //return imagen
-        //}catch (ex : Exception){
-        //Toast.makeText(this, rutaImagen.toString(), Toast.LENGTH_SHORT).show()
-        //}
-        return imagen
-    }
 }

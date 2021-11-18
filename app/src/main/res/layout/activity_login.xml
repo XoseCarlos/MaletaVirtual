@@ -4,7 +4,6 @@
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimaryDark"
             android:fillViewport="true"
             tools:context=".login.AutenticacionActivity">
 
@@ -15,6 +14,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="50dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/maletas3_little_2" />
+
         <EditText
             android:id="@+id/editTextEmail"
             android:layout_width="match_parent"
@@ -22,7 +31,6 @@
             android:layout_marginBottom="24dp"
             android:layout_marginEnd="32dp"
             android:layout_marginStart="32dp"
-            android:background="@drawable/edittext_rounded"
             android:hint="@string/login_email"
             android:inputType="textEmailAddress"
             android:paddingLeft="@dimen/login_edit_text_space"
@@ -40,7 +48,6 @@
             android:layout_marginBottom="24dp"
             android:layout_marginEnd="32dp"
             android:layout_marginStart="32dp"
-            android:background="@drawable/edittext_rounded"
             android:hint="@string/login_password"
             android:inputType="textPassword"
             android:paddingLeft="@dimen/login_edit_text_space"
@@ -74,7 +81,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:text="@string/login_forgot_password"
-            android:textColor="@color/colorSecondaryText"
+            android:textColor="@color/colorGooglePlus"
             app:layout_constraintBottom_toTopOf="@+id/buttonLogInGoogle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
@@ -99,7 +106,7 @@
             android:layout_height="@dimen/login_button_xl_height"
             android:background="@drawable/button_ripple"
             android:text="@string/login_create_account"
-            android:textColor="@color/colorSecondaryText"
+            android:textColor="@color/colorGooglePlus"
             android:textSize="@dimen/login_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

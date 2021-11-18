@@ -11,12 +11,13 @@ Revisión: 1.0
 **********************************************
 */
 
-package com.josecarlos.maletavirtual
+package com.josecarlos.maletavirtual.utils
 
 import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
@@ -33,8 +34,10 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.josecarlos.maletavirtual.Utils.Companion.isValidPassword
-import java.util.regex.Pattern
+import java.io.File
+import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
 
 class Utils : Application() {
 
@@ -60,7 +63,9 @@ class Utils : Application() {
         }
 
         fun getRaizFBUsuarioLogeado() : DocumentReference{
-            return FirebaseFirestore.getInstance().collection("usuarios").document(getIdUsuarioLogeado())
+            return FirebaseFirestore.getInstance().collection("usuarios").document(
+                getIdUsuarioLogeado()
+            )
         }
 
         fun getCarpetaFBUsuarioLogueado(maleta : String, articulo : String){
@@ -79,6 +84,13 @@ class Utils : Application() {
 
         inline fun <reified T : Activity> Activity.goToActivity(noinline init: Intent.() -> Unit = {}) {
             val intent = Intent(this, T::class.java)
+            intent.init()
+            startActivity(intent)
+        }
+
+        inline fun <reified T : Activity> Activity.goToActivity(activas : Boolean, noinline init: Intent.() -> Unit = {}) {
+            val intent = Intent(this, T::class.java)
+            intent.putExtra("Activas", activas)
             intent.init()
             startActivity(intent)
         }
@@ -126,5 +138,45 @@ class Utils : Application() {
             val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
         }
+
+
+        //Función que comprueba si el texto introducido por parámetro
+        //es un número, simplemente utilizando un try - catch
+        fun esNumero(texto : String) : Boolean{
+            try{
+                var valor = Integer.parseInt(texto)
+                return true
+            }catch (e: Exception){
+                return false
+            }
+        }
+
+        //Creo un nombre de imagen que se corresponde con la fecha actual en milisegundos (irrepetible, espero)
+        //En este caso porque solo un usuario puede añadir artículos, pero si fueran varios los que trabajaran
+        //contra la misma base de datos esto no valdría. Tendría que añadir antes el id del usiario y ya lo haría único
+        fun crearImagenJpg() : String {
+            val fecha = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date()) + ".jpg"
+            val archivo = getAuth().currentUser!!.uid +"-"+ System.currentTimeMillis().toString()
+            return archivo
+        }
+
+        /*fun crarImagenJpg() : String {
+            val fecha = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date()) + ".jpg"
+            val nombre = System.currentTimeMillis().toString()
+            return nombre
+        }*/
+
+        /*fun crearImagen () : File {
+            val nombreImagen = "foto_" + Utils.getAuth().currentUser!!.uid.toString()
+            val directorio = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            //try {
+            val imagen = File.createTempFile(nombreImagen, ".jpg", directorio)
+            rutaImagen = imagen.absolutePath
+            //return imagen
+            //}catch (ex : Exception){
+            //Toast.makeText(this, rutaImagen.toString(), Toast.LENGTH_SHORT).show()
+            //}
+            return imagen
+        }*/
     }
 }

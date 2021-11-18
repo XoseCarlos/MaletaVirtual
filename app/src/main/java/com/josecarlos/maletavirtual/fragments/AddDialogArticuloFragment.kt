@@ -11,7 +11,7 @@ Revisión: 1.0
 **********************************************
 */
 
-package com.josecarlos.maletavirtual
+package com.josecarlos.maletavirtual.fragments
 
 import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
@@ -36,7 +36,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.josecarlos.maletavirtual.Utils.Companion.hideKeyboard
+import com.josecarlos.maletavirtual.utils.EvenPost
+import com.josecarlos.maletavirtual.R
+import com.josecarlos.maletavirtual.utils.Utils
+import com.josecarlos.maletavirtual.utils.Utils.Companion.hideKeyboard
 import com.josecarlos.maletavirtual.databinding.FragmentDialogAddArticuloBinding
 import com.josecarlos.maletavirtual.interfaces.ArticulosAux
 import com.josecarlos.maletavirtual.models.Articulos
@@ -44,6 +47,7 @@ import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.io.*
+import java.lang.Exception
 
 
 class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInterface.OnShowListener {
@@ -166,9 +170,13 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
             val usuario = firebase.currentUser
             positiveButton?.setOnClickListener{
 
+                var esNumeroCantidad : Boolean = Utils.esNumero(binding!!.etCantidad.text.toString())
+
                 if (binding!!.etNombre.text.isNullOrEmpty() || binding!!.etCantidad.text.isNullOrEmpty()){
                     Toast.makeText(this.requireContext(), getString(R.string.introducir_todos_datos), Toast.LENGTH_SHORT).show()
-                }else {
+                }else if (!esNumeroCantidad) {
+                    Toast.makeText(this.requireContext(), getString(R.string.valor_no_numero), Toast.LENGTH_SHORT).show()
+                }else{
 
                     binding?.let {
                         enableUI(false)
@@ -218,7 +226,7 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
                                     imgURL = photoSelectedUri.toString()
                                 )
                                 //save(articulo, Utils.getAuth().currentUser!!.uid)
-                                save(articulo, crearImagenJpg())
+                                save(articulo, Utils.crearImagenJpg())
 
                             } else {
 
@@ -254,7 +262,8 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
     private fun uploadRecucedImage(articuloID : String?, callback : (EvenPost)->Unit) {
 
         val eventPost = EvenPost()
-        eventPost.documentId = articuloID ?: FirebaseFirestore.getInstance().collection("usuarios").document(Utils.getAuth().currentUser!!.uid)
+        eventPost.documentId = articuloID ?: FirebaseFirestore.getInstance().collection("usuarios").document(
+            Utils.getAuth().currentUser!!.uid)
             .collection("maletas").document(maletaIdentificador)
             .collection("articulos").document().id
 
@@ -531,14 +540,5 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
                 }
             }
         }
-    }
-
-    //Creo un nombre de imagen que se corresponde con la fecha actual en milisegundos (irrepetible, espero)
-    //En este caso porque solo un usuario puede añadir artículos, pero si fueran varios los que trabajaran
-    //contra la misma base de datos esto no valdría. Tendría que añadir antes el id del usiario y ya lo haría único
-    private fun crearImagenJpg() : String {
-        val fecha = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date()) + ".jpg"
-        val archivo = Utils.getAuth().currentUser!!.uid +"-"+ System.currentTimeMillis().toString()
-        return archivo
     }
 }

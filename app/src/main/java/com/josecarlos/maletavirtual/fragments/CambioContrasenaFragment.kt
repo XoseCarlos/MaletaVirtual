@@ -11,7 +11,7 @@ Revisión: 1.0
 **********************************************
 */
 
-package com.josecarlos.maletavirtual
+package com.josecarlos.maletavirtual.fragments
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -22,6 +22,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.auth.FirebaseAuth
+import com.josecarlos.maletavirtual.R
 import com.josecarlos.maletavirtual.databinding.FragmentCambioContrasenaBinding
 
 class CambioContrasenaFragment: DialogFragment(), DialogInterface.OnShowListener {

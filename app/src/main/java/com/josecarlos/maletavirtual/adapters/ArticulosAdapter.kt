@@ -14,17 +14,14 @@ Revisión: 1.0
 package com.josecarlos.maletavirtual.adapters
 
 import android.content.Context
-import android.text.BoringLayout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.josecarlos.maletavirtual.R
-import com.josecarlos.maletavirtual.Utils
 import com.josecarlos.maletavirtual.databinding.ItemArticulosRecyclerviewBinding
 import com.josecarlos.maletavirtual.interfaces.OnArticuloListener
 import com.josecarlos.maletavirtual.models.Articulos

@@ -11,7 +11,7 @@ Revisión: 1.0
 **********************************************
 */
 
-package com.josecarlos.maletavirtual
+package com.josecarlos.maletavirtual.utils
 
 //Para comprobar que las imágenes se suben correctamente a Firebase Storage
 

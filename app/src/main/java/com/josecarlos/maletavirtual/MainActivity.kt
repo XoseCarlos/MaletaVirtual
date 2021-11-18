@@ -33,6 +33,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.josecarlos.maletavirtual.databinding.ActivityMainBinding
 import com.josecarlos.maletavirtual.models.Usuario
+import com.josecarlos.maletavirtual.utils.Utils
 
 class MainActivity : AppCompatActivity() {
 

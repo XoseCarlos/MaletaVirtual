@@ -4,12 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.josecarlos.maletavirtual.Utils.Companion.goToActivity
-import com.josecarlos.maletavirtual.Utils.Companion.isValidConfirmPassword
-import com.josecarlos.maletavirtual.Utils.Companion.isValidEmail
-import com.josecarlos.maletavirtual.Utils.Companion.isValidPassword
-import com.josecarlos.maletavirtual.Utils.Companion.toast
-import com.josecarlos.maletavirtual.Utils.Companion.validate
+import com.josecarlos.maletavirtual.utils.Utils.Companion.goToActivity
+import com.josecarlos.maletavirtual.utils.Utils.Companion.isValidConfirmPassword
+import com.josecarlos.maletavirtual.utils.Utils.Companion.isValidEmail
+import com.josecarlos.maletavirtual.utils.Utils.Companion.isValidPassword
+import com.josecarlos.maletavirtual.utils.Utils.Companion.toast
+import com.josecarlos.maletavirtual.utils.Utils.Companion.validate
 import com.josecarlos.maletavirtual.databinding.ActivitySignUpBinding
 
 class SignUpActivity : AppCompatActivity() {

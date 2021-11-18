@@ -88,37 +88,27 @@
     <string name="actualizar">Actualizar</string>
     <string name="mi_nombre">José Carlos Vázquez Míguez</string>
     <string name="ventana_principal">Ventana Principal</string>
+    <string name="maletas">Maletas</string>
 
 
     <string name="login_email">Email</string>
     <string name="login_password">Contraseña</string>
-    <string name="login_confirm_password">Confirm Password</string>
-    <string name="login_sign_in">Sign In</string>
-    <string name="login_sign_up">Sign Up</string>
-    <string name="login_reset_password">Reset my password</string>
-    <string name="login_sign_in_google">Sign In with Google</string>
-    <string name="login_forgot_password">I have forgotten my password</string>
-    <string name="login_create_account">Create a new account</string>
-    <string name="login_go_login">Go back to Login</string>
+    <string name="login_confirm_password">Confirma Contraseña</string>
+    <string name="login_sign_in">Iniciar Sesión</string>
+    <string name="login_sign_up">Autenticación</string>
+    <string name="login_reset_password">Reestablecer mi contraseña</string>
+    <string name="login_sign_in_google">Inicia sesión con Google</string>
+    <string name="login_forgot_password">Olvidé mi contraseña</string>
+    <string name="login_create_account">Crea una cuenta nueva</string>
+    <string name="login_go_login">Volver a Iniciar Sesión</string>
+    <string name="navigation_bottom_info">Información</string>
+    <string name="options_menu_log_out">Cerrar Sesión</string>
 
-    <string name="navigation_bottom_info">Info</string>
-    <string name="navigation_bottom_rates">Rates</string>
-    <string name="navigation_bottom_chat">Chat</string>
-
-    <string name="chat_edittext_message_hint">Type here a message...</string>
-
-    <string name="info_label_messages">Total messages</string>
-    <string name="info_no_name">Name is not available</string>
-
-    <string name="options_menu_log_out">Log out</string>
-
-    <string name="dialog_title">Rate the App!</string>
-    <string name="dialog_edit_text_hint">Leave your feedback</string>
-    <string name="dialog_ok">Rate</string>
     <string name="dialog_cancel">Cancelar</string>
     <string name="introducir_todos_datos">Debe introducir todos los datos para poder continuar...</string>
     <string name="borrado_storage">Borrado en el Storage</string>
     <string name="borrado_storage_error">Error al borrar en Storage</string>
+    <string name="valor_no_numero">El valor introducido en cantidad no es numérico!!!</string>
 
 
 </resources>

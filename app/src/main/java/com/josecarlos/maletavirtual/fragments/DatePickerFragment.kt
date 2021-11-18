@@ -11,7 +11,7 @@ Revisión: 1.0
 **********************************************
 */
 
-package com.josecarlos.maletavirtual
+package com.josecarlos.maletavirtual.fragments
 
 import android.app.DatePickerDialog
 import android.app.Dialog

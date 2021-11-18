@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_volver_principal"
+        android:icon="@drawable/maletas3_little_2"
+        android:title="@string/ventana_principal"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_maletas"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="@string/maletas"
+        app:showAsAction="never"/>
+
+</menu>
