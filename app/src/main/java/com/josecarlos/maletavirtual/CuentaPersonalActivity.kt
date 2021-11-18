@@ -105,8 +105,14 @@ class CuentaPersonalActivity : AppCompatActivity() {
     //Funcionalidad del boton del toolbar
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.title){
-            getString(R.string.ventana_principal) -> goToActivity<MainActivity>()
-            getString(R.string.maletas) -> goToActivity<MaletasActivity>(true)
+            getString(R.string.ventana_principal) -> {
+                goToActivity<MainActivity>()
+                finish()
+            }
+            getString(R.string.maletas) -> {
+                goToActivity<MaletasActivity>(true)
+                finish()
+            }
             //getString(R.string.cerrar_sesion) -> { AuthUI.getInstance().signOut(this) ; finish() }
         }
         return super.onOptionsItemSelected(item)
@@ -394,5 +400,4 @@ class CuentaPersonalActivity : AppCompatActivity() {
             }
         }
     }
-
 }

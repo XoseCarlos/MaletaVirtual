@@ -18,7 +18,6 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import android.view.WindowManager
-import com.josecarlos.maletavirtual.login.AutenticacionActivity
 
 @Suppress("DEPRECATION")
 class SplashScreenActivity : AppCompatActivity() {

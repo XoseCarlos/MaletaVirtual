@@ -143,8 +143,18 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
     //Funcionalidad del boton del toolbar
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.title){
-            getString(R.string.ventana_principal)      -> goToActivity<MainActivity>()
-            getString(R.string.configuracion_personal) -> goToActivity<CuentaPersonalActivity>()
+            getString(R.string.ventana_principal)      -> {
+                goToActivity<MainActivity>()
+                finish()
+            }
+            getString(R.string.configuracion_personal) -> {
+                goToActivity<CuentaPersonalActivity>()
+                finish()
+            }
+            getString(R.string.maletas_activas) -> {
+                goToActivity<MaletasActivity>(true)
+                finish()
+            }
             //getString(R.string.cerrar_sesion) -> { AuthUI.getInstance().signOut(this) ; finish() }
         }
         return super.onOptionsItemSelected(item)
@@ -335,8 +345,7 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
                                 }
                             }
                     }
-                    val intent = Intent(this,MainActivity::class.java)
-                    startActivity(intent)
+                    goToActivity<MaletasActivity>(false)
                     finish()
                 }
                 .setNegativeButton(getString(R.string.cancelar),null)

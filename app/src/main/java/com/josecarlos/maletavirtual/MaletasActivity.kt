@@ -24,6 +24,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.auth.AuthUI
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
@@ -38,6 +39,7 @@ import com.josecarlos.maletavirtual.interfaces.MaletasAux
 import com.josecarlos.maletavirtual.interfaces.OnMaletaListener
 import com.josecarlos.maletavirtual.models.Maletas
 import com.josecarlos.maletavirtual.utils.Utils
+import com.josecarlos.maletavirtual.utils.Utils.Companion.toast
 
 class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
 
@@ -62,9 +64,12 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
         val extras = intent.extras
         if (extras!!.getBoolean("Activas")) {
             toolbar.setSubtitle(getString(R.string.activas))
+            //toolbar.menu.findItem(R.id.action_maletas).setTitle(getString(R.string.maletas_cerradas))
+            //toolbar.menu.getItem(0).setTitle(getString(R.string.maletas_cerradas))
         }else {
             toolbar.setSubtitle(getString(R.string.cerradas))
             binding.anadirMaletaButton.visibility= View.INVISIBLE
+            //toolbar.menu.setTitle(R.string.maletas_activas)
         }
 
 
@@ -83,10 +88,26 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
 
     //Funcionalidad del boton del toolbar
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.title){
-            getString(R.string.ventana_principal) -> goToActivity<MainActivity>()
-            getString(R.string.configuracion_personal) -> goToActivity<CuentaPersonalActivity>()
-            //getString(R.string.cerrar_sesion) -> { AuthUI.getInstance().signOut(this) ; finish() }
+        when (item.itemId){
+            R.id.action_volver_principal       -> {
+                goToActivity<MainActivity>()
+                finish()
+            }
+            R.id.action_configuracion_personal -> {
+                goToActivity<CuentaPersonalActivity>()
+                finish()
+            }
+            R.id.action_maletas                -> {
+                val extras = intent.extras
+                if (extras!!.getBoolean("Activas")) {
+                    goToActivity<MaletasActivity>(false)
+                    finish()
+                }
+                else {
+                    goToActivity<MaletasActivity>(true)
+                    finish()
+                }
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -134,7 +155,6 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
                 GridLayoutManager.VERTICAL, false)
             adapter = this@MaletasActivity.adapter
         }
-
 
         val db = Utils.getFirestore()
         val maletaRef = db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas")

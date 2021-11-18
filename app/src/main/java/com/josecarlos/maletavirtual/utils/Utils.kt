@@ -76,6 +76,8 @@ class Utils : Application() {
             }
         }
 
+        //Extensións:
+
         fun Activity.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) = Toast.makeText(this, message, duration).show()
 
         fun Activity.toast(resourceId: Int, duration: Int = Toast.LENGTH_SHORT) = Toast.makeText(this, resourceId, duration).show()
@@ -139,6 +141,8 @@ class Utils : Application() {
             inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
         }
 
+
+        //FUNCIÓNES QUE SE INVOCAN MÁS DE UNA VEZ
 
         //Función que comprueba si el texto introducido por parámetro
         //es un número, simplemente utilizando un try - catch

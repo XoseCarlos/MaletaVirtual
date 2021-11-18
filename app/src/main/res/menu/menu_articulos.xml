@@ -12,4 +12,10 @@
         android:title="@string/configuracion_personal"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/action_maletas_activas"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="@string/maletas_activas"
+        app:showAsAction="never"/>
+
 </menu>

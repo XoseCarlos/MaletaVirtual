@@ -52,6 +52,7 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.storage.FileDownloadTask
 
 import com.google.android.gms.tasks.OnSuccessListener
+import com.josecarlos.maletavirtual.MaletasActivity
 import com.josecarlos.maletavirtual.utils.EvenPost
 import com.josecarlos.maletavirtual.R
 import com.josecarlos.maletavirtual.utils.Utils
