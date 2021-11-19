@@ -74,11 +74,16 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         binding?.etNombre?.setOnFocusChangeListener { v, hasFocus ->
-            hideKeyboard()
+            if (!hasFocus)  hideKeyboard()
         }
-
         binding?.tilNombre?.setOnFocusChangeListener { v, hasFocus ->
-            hideKeyboard()
+            if (!hasFocus)  hideKeyboard()
+        }
+        binding?.ibMaleta?.setOnFocusChangeListener{v, hashFocus ->
+            if (hashFocus) hideKeyboard()
+        }
+        binding?.etFechaViaje?.setOnFocusChangeListener{v, hashFocus ->
+            if (hashFocus) hideKeyboard()
         }
 
         //var String = if (maletaCargada) getString(R.string.agregar) else getString(R.string.actualizar)
@@ -154,11 +159,11 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                                     if (maleta == null) {
 
                                         val maleta = Maletas(
-                                                nombre = it.etNombre.text.toString().trim(),
-                                                fechaViaje = it.etFechaViaje.text.toString().trim(),
-                                                emailUsuario = usuario?.email.toString(),
-                                                emailCreador = usuario?.email.toString(),
-                                                imgURL = eventPost.photoURL
+                                            nombre = it.etNombre.text.toString().trim(),
+                                            fechaViaje = it.etFechaViaje.text.toString().trim(),
+                                            emailUsuario = usuario?.email.toString(),
+                                            emailCreador = usuario?.email.toString(),
+                                            imgURL = eventPost.photoURL
                                         )
                                         //save(maleta, Utils.getAuth().currentUser!!.uid)
                                         save(maleta, eventPost.documentId!!)

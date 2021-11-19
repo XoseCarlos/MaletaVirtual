@@ -23,7 +23,6 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
@@ -48,10 +47,8 @@ import com.josecarlos.maletavirtual.models.Usuario
 import com.josecarlos.maletavirtual.utils.Utils
 import com.josecarlos.maletavirtual.utils.Utils.Companion.goToActivity
 import java.io.ByteArrayOutputStream
-import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 
 class CuentaPersonalActivity : AppCompatActivity() {
@@ -87,10 +84,10 @@ class CuentaPersonalActivity : AppCompatActivity() {
         }
 
         binding.etFullName.setOnFocusChangeListener { v, hasFocus ->
-            hideKeyboard(v)
+            if (!hasFocus) hideKeyboard(v)
         }
         binding.telefono.setOnFocusChangeListener { v, hasFocus ->
-            hideKeyboard(v)
+            if (!hasFocus) hideKeyboard(v)
         }
 
         getUser()
@@ -99,7 +96,7 @@ class CuentaPersonalActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_configuracion_peresonal, menu)
+        menuInflater.inflate(R.menu.menu_configuracion_personal, menu)
         return super.onCreateOptionsMenu(menu)
     }
     //Funcionalidad del boton del toolbar
@@ -109,8 +106,12 @@ class CuentaPersonalActivity : AppCompatActivity() {
                 goToActivity<MainActivity>()
                 finish()
             }
-            getString(R.string.maletas) -> {
+            getString(R.string.maletas_activas) -> {
                 goToActivity<MaletasActivity>(true)
+                finish()
+            }
+            getString(R.string.maletas_cerradas) -> {
+                goToActivity<MaletasActivity>(false)
                 finish()
             }
             //getString(R.string.cerrar_sesion) -> { AuthUI.getInstance().signOut(this) ; finish() }

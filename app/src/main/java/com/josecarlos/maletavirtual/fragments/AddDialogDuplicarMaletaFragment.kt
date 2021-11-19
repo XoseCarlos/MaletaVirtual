@@ -91,7 +91,13 @@ class AddDialogDuplicarMaletaFragment (maletaID: String) : DialogFragment(), Dia
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         binding?.etNombre?.setOnFocusChangeListener { v, hasFocus ->
-            hideKeyboard()
+            if (!hasFocus)  hideKeyboard()
+        }
+        binding?.ibMaleta?.setOnFocusChangeListener{v, hashFocus ->
+            if (hashFocus) hideKeyboard()
+        }
+        binding?.etFechaViaje?.setOnFocusChangeListener{v, hashFocus ->
+            if (hashFocus) hideKeyboard()
         }
 
         activity.let {activity->
@@ -376,12 +382,12 @@ class AddDialogDuplicarMaletaFragment (maletaID: String) : DialogFragment(), Dia
                                         }
                                 }).addOnFailureListener(OnFailureListener {
 
-                                    })
+                                })
 
                         }
                     }
 
-               Toast.makeText(activity, getString(R.string.maleta_duplicada_ok), Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, getString(R.string.maleta_duplicada_ok), Toast.LENGTH_SHORT).show()
             }.addOnFailureListener{
                 Toast.makeText(activity, getString(R.string.duplicar_maleta_error), Toast.LENGTH_SHORT).show()
             }.addOnCompleteListener{

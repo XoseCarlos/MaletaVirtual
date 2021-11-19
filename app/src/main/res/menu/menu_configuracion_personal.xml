@@ -7,14 +7,14 @@
         android:title="@string/ventana_principal"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_configuracion_personal"
+        android:id="@+id/action_maletas_activas"
         android:icon="@drawable/ic_baseline_person_24"
-        android:title="@string/configuracion_personal"
+        android:title="@string/maletas_activas"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_maletas"
+        android:id="@+id/action_maletas_cerradas"
         android:icon="@drawable/ic_baseline_person_24"
-        android:title="@string/maletas"
+        android:title="@string/maletas_cerradas"
         app:showAsAction="never"/>
 
 </menu>

@@ -82,7 +82,12 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_maletas, menu)
+        val extras = intent.extras
+        if (extras!!.getBoolean("Activas")) {
+            menuInflater.inflate(R.menu.menu_maletas_activas, menu)
+        }else{
+            menuInflater.inflate(R.menu.menu_maletas_cerradas, menu)
+        }
         return super.onCreateOptionsMenu(menu)
     }
 

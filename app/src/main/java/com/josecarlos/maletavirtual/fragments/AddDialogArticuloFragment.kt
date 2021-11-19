@@ -87,10 +87,13 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         binding?.etNombre?.setOnFocusChangeListener { v, hasFocus ->
-            hideKeyboard()
+            if (!hasFocus)  hideKeyboard()
         }
         binding?.etCantidad?.setOnFocusChangeListener { v, hasFocus ->
-            hideKeyboard()
+            if (!hasFocus)  hideKeyboard()
+        }
+        binding?.ibArticulo?.setOnFocusChangeListener{v, hasFocus ->
+            if (hasFocus) hideKeyboard()
         }
 
         activity.let {activity->
@@ -146,9 +149,9 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
                     .centerCrop()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding!!.imageProductPreview)
-                }.addOnFailureListener{
-                    Toast.makeText(this.requireContext(), getString(R.string.fallo_subir_foto), Toast.LENGTH_SHORT).show()
-                }
+            }.addOnFailureListener{
+                Toast.makeText(this.requireContext(), getString(R.string.fallo_subir_foto), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -239,13 +242,13 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
                                     } else {
                                         FirebaseStorage.getInstance().getReference()
                                             .child("maletas3_little_light.png").downloadUrl.addOnSuccessListener { uriFotoDefecto ->
-                                            nombre = it.etNombre.text.toString().trim()
-                                            cantidad = Integer.parseInt(
-                                                it.etCantidad.text.toString().trim()
-                                            )
-                                            imgURL = uriFotoDefecto.toString()
-                                            update(this)
-                                        }
+                                                nombre = it.etNombre.text.toString().trim()
+                                                cantidad = Integer.parseInt(
+                                                    it.etCantidad.text.toString().trim()
+                                                )
+                                                imgURL = uriFotoDefecto.toString()
+                                                update(this)
+                                            }
                                     }
                                 }
                             }
@@ -369,8 +372,8 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
                     FirebaseStorage.getInstance().getReference(Utils.getAuth().currentUser!!.uid)
                         .child(maletaIdentificador)
                         .child(articulo.id.toString()).downloadUrl.addOnSuccessListener { ur ->
-                        photoSelectedUri = ur
-                    }
+                            photoSelectedUri = ur
+                        }
 
                     it.etNombre.setText(articulo.nombre.toString())
                     it.etCantidad.setText(articulo.cantidad.toString())
