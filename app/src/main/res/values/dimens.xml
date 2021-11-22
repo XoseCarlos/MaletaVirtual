@@ -22,5 +22,6 @@
     <dimen name="login_button_xl_height">60dp</dimen>
     <dimen name="login_text_xl_size">18sp</dimen>
     <dimen name="login_text_size">15sp</dimen>
+    <dimen name="nested_scroll_bottom">10dp</dimen>
 
 </resources>
