@@ -117,9 +117,19 @@ class Utils : Application() {
             return pattern.matcher(email).matches()
         }
 
+        fun Fragment.esContrasenaValida(password: String): Boolean {
+            // Necesita Contener -->    1 Num / 1 Minuscula / 1 Mayuscula / 1 Special / Min Caracteres 4
+            // ya que incluye a los 4 casos. Puedo limitar el largo de la clave en el TextInputEditText
+            val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*?[#?!@\$%^&*-])(?=\\S+$).{4,}$"
+            val pattern = Pattern.compile(passwordPattern)
+            //return password.length>5
+            return pattern.matcher(password).matches()
+        }
+
         fun Activity.isValidPassword(password: String): Boolean {
-            // Necesita Contener -->    1 Num / 1 Minuscula / 1 Mayuscula / 1 Special / Min Caracteres 6
-            val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{6,}$"
+            // Necesita Contener -->    1 Num / 1 Minuscula / 1 Mayuscula / 1 Special / Min Caracteres 4
+            // ya que incluye a los 4 casos. Puedo limitar el largo de la clave en el TextInputEditText
+            val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*?[#?!@\$%^&*-])(?=\\S+$).{4,}$"
             val pattern = Pattern.compile(passwordPattern)
             //return password.length>5
             return pattern.matcher(password).matches()

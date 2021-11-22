@@ -44,9 +44,9 @@ import com.josecarlos.maletavirtual.utils.Utils.Companion.hideKeyboard
 import com.josecarlos.maletavirtual.databinding.FragmentDialogAddCompartidaBinding
 import com.josecarlos.maletavirtual.interfaces.MaletasAux
 import com.josecarlos.maletavirtual.models.Maletas
+import com.josecarlos.maletavirtual.utils.Utils.Companion.esContrasenaValida
 import com.josecarlos.maletavirtual.utils.Utils.Companion.getIdUsuarioLogeado
 import java.io.ByteArrayOutputStream
-import java.util.regex.Pattern
 
 class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowListener {
 
@@ -148,9 +148,9 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
                 override fun onTextChanged(s: CharSequence, start: Int,
                                            before: Int, count: Int) {
 
-                    binding?.etNombre?.setText("Clave : "+s.length)
+                    //binding?.etNombre?.setText("Clave : "+s.length)
 
-                    if(!contrasenaValida(s.toString())) {
+                    if(!esContrasenaValida(s.toString())) {
                         binding?.tilClave?.error = getString(R.string.contenido_clave)
                     }
 
@@ -481,7 +481,7 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
         super.onDestroyView()
         binding = null
     }
-
+/*
     fun contrasenaValida(password: String): Boolean {
         // Necesita Contener -->    1 Num / 1 Minuscula / 1 Mayuscula / 1 caracter especial
         // Min Caracteres 4 para que cumpla con lo anterior.
@@ -491,4 +491,6 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
         //return password.length>5
         return pattern.matcher(password).matches()
     }
+*/
+
 }
