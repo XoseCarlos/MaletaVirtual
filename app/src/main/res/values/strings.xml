@@ -117,6 +117,8 @@
     <string name="maleta_compartida_ya">Maleta ya compartida!</string>
     <string name="borrar_articulo_no_permiso">No tiene permisos para borrar este artículo!</string>
         <string name="borrar_maleta_creador">Solo puede cerrar una maleta su creador !</string>
+    <string name="maleta_compartida_cerrada">Maleta cerrada. No se puede compartir</string>
+    <string name="maleta_compartida_nueva">NUEVA MALETA COMPARTIDA</string>
 
 
 </resources>

@@ -76,6 +76,7 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
         }else{
             toolbar.setSubtitle("COMPARTIDAS")
             binding.anadirMaletaButton.visibility= View.VISIBLE
+            binding.anadirMaletaButton.setText(getString(R.string.maleta_compartida_nueva))
         }
 
 

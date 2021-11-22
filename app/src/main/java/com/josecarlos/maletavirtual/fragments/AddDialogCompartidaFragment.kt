@@ -136,6 +136,7 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
         dialog?.let {dialogo->
 
             var encontrada = false
+            var maletaCerrada = false
             var maletaCompartida : Maletas ?= null
             
             binding?.etClave?.addTextChangedListener(object : TextWatcher {
@@ -177,7 +178,11 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
                                             }
                                         }
 
-                                        if (!maletaYaCompartida) {
+                                        if (!maletaCompartida?.activa!!){
+                                            binding?.tilClave?.error = getString(R.string.maleta_compartida_cerrada)
+                                        }
+
+                                        if (!maletaYaCompartida && maletaCompartida?.activa!!) {
                                             binding?.etClave?.isEnabled = false
                                             binding?.etNombre?.setText(maletaCompartida!!.nombre.toString())
                                             binding?.etFechaViaje?.setText(maletaCompartida!!.fechaViaje.toString())

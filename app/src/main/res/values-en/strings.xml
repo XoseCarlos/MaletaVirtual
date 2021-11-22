@@ -115,4 +115,6 @@
     <string name="maleta_compartida_ya">Suitcase already shared!</string>
     <string name="borrar_articulo_no_permiso">You do not have permission to delete this item</string>
     <string name="borrar_maleta_creador">Only its creator can close a suitcase!</string>
+    <string name="maleta_compartida_cerrada">Closed suitcase. Can\'t be shared</string>
+    <string name="maleta_compartida_nueva">NEW SHARED SUITCASE</string>
 </resources>
