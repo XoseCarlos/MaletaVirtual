@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -34,10 +35,12 @@ import com.josecarlos.maletavirtual.utils.Utils.Companion.goToActivity
 import com.josecarlos.maletavirtual.adapters.MaletaAdapter
 import com.josecarlos.maletavirtual.adapters.RecyclerViewAdapter
 import com.josecarlos.maletavirtual.databinding.ActivityMaletasBinding
+import com.josecarlos.maletavirtual.fragments.AddDialogCompartidaFragment
 import com.josecarlos.maletavirtual.fragments.AddDialogFragment
 import com.josecarlos.maletavirtual.interfaces.MaletasAux
 import com.josecarlos.maletavirtual.interfaces.OnMaletaListener
 import com.josecarlos.maletavirtual.models.Maletas
+import com.josecarlos.maletavirtual.models.Usuario
 import com.josecarlos.maletavirtual.utils.Utils
 import com.josecarlos.maletavirtual.utils.Utils.Companion.toast
 
@@ -62,14 +65,17 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
 
 
         val extras = intent.extras
-        if (extras!!.getBoolean("Activas")) {
+        if (extras!!.getString("TIPO").equals("activa")) {
             toolbar.setSubtitle(getString(R.string.activas))
             //toolbar.menu.findItem(R.id.action_maletas).setTitle(getString(R.string.maletas_cerradas))
             //toolbar.menu.getItem(0).setTitle(getString(R.string.maletas_cerradas))
-        }else {
+        }else if (extras!!.getString("TIPO").equals("cerrada")) {
             toolbar.setSubtitle(getString(R.string.cerradas))
             binding.anadirMaletaButton.visibility= View.INVISIBLE
             //toolbar.menu.setTitle(R.string.maletas_activas)
+        }else{
+            toolbar.setSubtitle("COMPARTIDAS")
+            binding.anadirMaletaButton.visibility= View.VISIBLE
         }
 
 
@@ -83,11 +89,14 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val extras = intent.extras
-        if (extras!!.getBoolean("Activas")) {
+        if (extras!!.getString("TIPO").equals("activa")) {
             menuInflater.inflate(R.menu.menu_maletas_activas, menu)
-        }else{
+        }else if (extras!!.getString("TIPO").equals("cerrada")){
             menuInflater.inflate(R.menu.menu_maletas_cerradas, menu)
+        }else{
+            menuInflater.inflate(R.menu.menu_maletas_compartidas, menu)
         }
+
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -102,16 +111,17 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
                 goToActivity<CuentaPersonalActivity>()
                 finish()
             }
-            R.id.action_maletas                -> {
-                val extras = intent.extras
-                if (extras!!.getBoolean("Activas")) {
-                    goToActivity<MaletasActivity>(false)
-                    finish()
-                }
-                else {
-                    goToActivity<MaletasActivity>(true)
-                    finish()
-                }
+            R.id.action_maletas_activas  ->  {
+                goToActivity<MaletasActivity>("activa")
+                finish()
+            }
+            R.id.action_maletas_cerradas  ->  {
+                goToActivity<MaletasActivity>("cerrada")
+                finish()
+            }
+            R.id.action_maletas_compartidas  ->  {
+                goToActivity<MaletasActivity>("compartida")
+                finish()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -123,9 +133,23 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
     }
 
     private fun botonAnadirMaleta(){
-        binding.anadirMaletaButton.setOnClickListener{
-            maletaSeleccionada=null
-            AddDialogFragment().show(supportFragmentManager, AddDialogFragment::class.java.simpleName)
+        if (intent.extras!!.getString("TIPO").equals("activa")) {
+            binding.anadirMaletaButton.setOnClickListener {
+                maletaSeleccionada = null
+                AddDialogFragment().show(
+                    supportFragmentManager,
+                    AddDialogFragment::class.java.simpleName
+                )
+            }
+        }
+        if (intent.extras!!.getString("TIPO").equals("compartida")) {
+            binding.anadirMaletaButton.setOnClickListener {
+                maletaSeleccionada = null
+                AddDialogCompartidaFragment().show(
+                    supportFragmentManager,
+                    AddDialogCompartidaFragment::class.java.simpleName
+                )
+            }
         }
     }
 
@@ -152,6 +176,7 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
     }
 
     //Para carga de articulos en tiempo real
+
     private fun configFireStoreRealTime(){
         val extras = intent.extras
         adapter = MaletaAdapter(mutableListOf(), this)
@@ -170,7 +195,7 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
             }
             for (maletas in snapshots!!.documentChanges){
                 val maleta = maletas.document.toObject(Maletas::class.java)
-                if (extras!!.getBoolean("Activas") && maleta.activa==true){
+                if (extras!!.getString("TIPO").equals("activa") && maleta.activa==true){
                     maleta.id = maletas.document.id
                     when(maletas.type){
                         DocumentChange.Type.ADDED -> adapter.add(maleta)
@@ -178,7 +203,8 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
                         DocumentChange.Type.REMOVED -> adapter.delete(maleta)
                     }
                 }
-                if (!extras!!.getBoolean("Activas") && maleta.activa==false){
+                if (extras!!.getString("TIPO").equals("cerrada") && maleta.activa==false){
+                //if (maleta.activa==false){
                     maleta.id = maletas.document.id
                     when(maletas.type){
                         DocumentChange.Type.ADDED -> adapter.add(maleta)
@@ -189,6 +215,35 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
             }
         }
 
+        val maletasComp = db.collection("compartidas")
+        firestorelistener = maletasComp.addSnapshotListener { snapshots, error ->
+            if (error != null) {
+                Toast.makeText(this, getString(R.string.consulta_datos_error), Toast.LENGTH_SHORT)
+                    .show()
+                return@addSnapshotListener
+            }
+            for (maletas in snapshots!!.documentChanges) {
+                val maleta = maletas.document.toObject(Maletas::class.java)
+
+                if (extras!!.getString("TIPO").equals("compartida")) {
+                    //toast(maleta.nombre.toString())
+                    FirebaseFirestore.getInstance().collection("compartidas")
+                        .whereArrayContains("usuariosCompartida", Utils.getIdUsuarioLogeado()).get()
+                        .addOnSuccessListener { resultado ->
+
+                            if (maleta.usuariosCompartida.contains(Utils.getIdUsuarioLogeado())) {
+
+                                maleta.id = maletas.document.id
+                                when (maletas.type) {
+                                    DocumentChange.Type.ADDED -> adapter.add(maleta)
+                                    DocumentChange.Type.MODIFIED -> adapter.update(maleta)
+                                    DocumentChange.Type.REMOVED -> adapter.delete(maleta)
+                                }
+                            }
+                        }
+                }
+            }
+        }
     }
 
     private fun configFireStore() {
@@ -217,38 +272,8 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
             .addOnFailureListener{
                 Toast.makeText(this, getString(R.string.consulta_datos_error), Toast.LENGTH_SHORT).show()
             }
-
-          /*
-        //val db = FirebaseFirestore.getInstance()
-        //val userID = FirebaseAuth.getInstance().currentUser!!.uid
-
-        db.collectionGroup("maletas").whereEqualTo("activa", true).get()
-            .addOnSuccessListener { snapshots->
-                for(document in snapshots){
-
-                }
-            }
-
-        db.collection("usuarios").document(userID).collection("maletas")
-            .get().addOnSuccessListener { snapshots->
-                for(document in snapshots){
-                    val maleta = document.toObject(Maletas::class.java)
-                    maleta.id = document.id
-                    adapter.add(maleta)
-                }
-            }.addOnFailureListener{
-                Toast.makeText(this, "Error al consultar la base de datos", Toast.LENGTH_SHORT).show()
-            }
-        */
     }
-/*
-    private fun configButtons() {
-        binding.anadirMaletaButton.setOnClickListener{
-            maletaSeleccionada = null
-            AddDialogFragment().show(supportFragmentManager, AddDialogFragment::class.java.simpleName)
-        }
-    }
-*/
+
     private fun configRecyclerView(){
         adapter = MaletaAdapter(mutableListOf(), this)
         binding.recyclerView.apply {
@@ -256,11 +281,6 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
                 GridLayoutManager.VERTICAL, false)
             adapter = this@MaletasActivity.adapter
         }
-
-        //(1..20).forEach{
-        //    val maleta = Maletas(it.toString(), "Maleta $it", "xosecarlos", "xosecarlos","01/01/2020",null,true,false)
-        //    adapter.add(maleta)
-        //}
     }
 
 
@@ -286,56 +306,152 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
         MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.maleta_eliminar_pregunta))
             .setMessage(getString(R.string.maleta_eliminar_advertencia))
-            .setPositiveButton(getString(R.string.confirmar)){_,_->
+            .setPositiveButton(getString(R.string.confirmar)) { _, _ ->
 
                 val db = FirebaseFirestore.getInstance()
-                val maletaRef = db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas")
-                maleta.id?.let {id ->
-                    maleta.imgURL?.let {url->
-                        val fotoRef = FirebaseStorage.getInstance().getReferenceFromUrl(url)
 
-                        //Firebase no borra las subcolecciones de un documento. Hay que recorrerlas todas para poder borrar
-                        //https://firebase.google.com/docs/firestore/manage-data/delete-data?hl=es-419#collections
+                if (!maleta.compartida!!) {
 
-                        db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas")
-                            .document(maleta.id.toString()).collection("articulos").get().addOnSuccessListener { snapshots ->
-                                for (articulos in snapshots) {
-                                    maletaRef.document(maleta.id.toString()).collection("articulos").document(articulos.id).delete()
+                    val maletaRef =
+                        db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid)
+                            .collection("maletas")
+                    maleta.id?.let { id ->
+                        maleta.imgURL?.let { url ->
+                            val fotoRef = FirebaseStorage.getInstance().getReferenceFromUrl(url)
+
+                            //Firebase no borra las subcolecciones de un documento. Hay que recorrerlas todas para poder borrar
+                            //https://firebase.google.com/docs/firestore/manage-data/delete-data?hl=es-419#collections
+
+                            db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid)
+                                .collection("maletas")
+                                .document(maleta.id.toString()).collection("articulos").get()
+                                .addOnSuccessListener { snapshots ->
+                                    for (articulos in snapshots) {
+                                        maletaRef.document(maleta.id.toString())
+                                            .collection("articulos").document(articulos.id).delete()
+                                    }
                                 }
-                            }
 
 
+                            //Borro todos los archivos del Storage para no ocupar espacio. El borrado es permanente
+                            //https://firebase.google.com/docs/storage/android/list-files?hl=es
+                            Utils.getStorageUsuario().child(maleta.id.toString()).listAll()
+                                .addOnSuccessListener {
+                                    it.items.forEach {
+                                        it.delete()
+                                    }
+                                    Toast.makeText(
+                                        this,
+                                        getString(R.string.borrado_storage),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }.addOnFailureListener {
+                                    Toast.makeText(
+                                        this,
+                                        getString(R.string.borrado_storage_error),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
 
-                        //Borro todos los archivos del Storage para no ocupar espacio. El borrado es permanente
-                        //https://firebase.google.com/docs/storage/android/list-files?hl=es
-                        Utils.getStorageUsuario().child(maleta.id.toString()).listAll().addOnSuccessListener {
-                            it.items.forEach{
-                                it.delete()
-                            }
-                            Toast.makeText(this, getString(R.string.borrado_storage), Toast.LENGTH_SHORT).show()
-                        }.addOnFailureListener {
-                            Toast.makeText(this, getString(R.string.borrado_storage_error), Toast.LENGTH_SHORT).show()
+
+                            //FirebaseStorage.getInstance().reference.child(Utils.getAuth().currentUser!!.uid + "-imagenes").child(id)
+                            fotoRef
+                                .delete().addOnSuccessListener {
+
+                                    maletaRef.document(id)
+                                        .delete()
+                                        .addOnFailureListener {
+                                            Toast.makeText(
+                                                this,
+                                                getString(R.string.eliminar_error),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(
+                                        this,
+                                        getString(R.string.eliminar_registro_error),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                         }
+                    }
 
 
+                } else {
 
-                        //FirebaseStorage.getInstance().reference.child(Utils.getAuth().currentUser!!.uid + "-imagenes").child(id)
-                        fotoRef
-                            .delete().addOnSuccessListener {
+                    val maletaRef =
+                        db.collection("compartidas")
+                    if (maleta.emailCreador.toString().equals(FirebaseAuth.getInstance().currentUser!!.email.toString())) {
+                        maleta.id?.let { id ->
+                            maleta.imgURL?.let { url ->
+                                val fotoRef = FirebaseStorage.getInstance().getReferenceFromUrl(url)
 
-                                maletaRef.document(id)
-                                    .delete()
-                                    .addOnFailureListener{
-                                        Toast.makeText(this, getString(R.string.eliminar_error), Toast.LENGTH_SHORT).show()
+                                db.collection("usuarios").document(Utils.getIdUsuarioLogeado()).get().addOnSuccessListener {snapshot ->
+                                    val user = snapshot.toObject(Usuario::class.java)
+                                    //toast(maleta.id.toString())
+                                    val borrado = user!!.compartidas.remove(maleta.id.toString())
+                                    db.collection("usuarios").document(Utils.getIdUsuarioLogeado()).set(user)
+                                }
+
+                                //Firebase no borra las subcolecciones de un documento. Hay que recorrerlas todas para poder borrar
+                                //https://firebase.google.com/docs/firestore/manage-data/delete-data?hl=es-419#collections
+                                db.collection("compartidas")
+                                    .document(maleta.id.toString()).collection("articulos").get()
+                                    .addOnSuccessListener { snapshots ->
+                                        for (articulos in snapshots) {
+                                            maletaRef.document(maleta.id.toString())
+                                                .collection("articulos").document(articulos.id)
+                                                .delete()
+                                        }
+                                    }
+
+                                //Borro todos los archivos del Storage para no ocupar espacio. El borrado es permanente
+                                //https://firebase.google.com/docs/storage/android/list-files?hl=es
+                                FirebaseStorage.getInstance().reference.child(maleta.id.toString())
+                                    .listAll()
+                                    .addOnSuccessListener {
+                                        it.items.forEach {
+                                            it.delete()
+                                        }
+                                        Toast.makeText(this, getString(R.string.borrado_storage),Toast.LENGTH_SHORT).show()
+                                    }.addOnFailureListener {
+                                        Toast.makeText(
+                                            this,
+                                            getString(R.string.borrado_storage_error),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+
+                                fotoRef
+                                    .delete().addOnSuccessListener {
+
+                                        maletaRef.document(id)
+                                            .delete()
+                                            .addOnFailureListener {
+                                                Toast.makeText(
+                                                    this,
+                                                    getString(R.string.eliminar_error),
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                    }
+                                    .addOnFailureListener {
+                                        Toast.makeText(
+                                            this,
+                                            getString(R.string.eliminar_registro_error),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                             }
-                            .addOnFailureListener{
-                                Toast.makeText(this, getString(R.string.eliminar_registro_error), Toast.LENGTH_SHORT).show()
-                            }
+                        }
+                    }else{
+                        toast("Solo puede borrar una maleta compartida su dueño !")
                     }
                 }
             }
-            .setNegativeButton("Cancelar",null)
+            .setNegativeButton("Cancelar", null)
             .show()
 }
 
@@ -344,6 +460,7 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
         val intent = Intent(this, ArticulosActivity::class.java)
         intent.putExtra("MaletaID", maleta.id)
         intent.putExtra("MaletaActiva", maleta.activa)
+        intent.putExtra("Compartida", maleta.compartida)
         startActivity(intent)
     }
 

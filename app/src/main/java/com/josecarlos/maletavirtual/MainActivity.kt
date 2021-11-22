@@ -34,6 +34,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.josecarlos.maletavirtual.databinding.ActivityMainBinding
 import com.josecarlos.maletavirtual.models.Usuario
 import com.josecarlos.maletavirtual.utils.Utils
+import com.josecarlos.maletavirtual.utils.Utils.Companion.goToActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -64,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         binding.mainBotonActivas.setOnClickListener{
             //val intent = Intent(this,MaletasActivasActivity::class.java)
             val intent = Intent(this,MaletasActivity::class.java)
-            intent.putExtra("Activas", true)
+            intent.putExtra("TIPO", "activa")
             startActivity(intent)
             //finish()
         }
@@ -73,7 +74,14 @@ class MainActivity : AppCompatActivity() {
             //val intent = Intent(this,MaletasActivasActivity::class.java)
             //val intent = Intent(this,ArticulosActivity::class.java)
             val intent = Intent(this,MaletasActivity::class.java)
-            intent.putExtra("Activas", false)
+            intent.putExtra("TIPO", "cerrada")
+            startActivity(intent)
+            //finish()
+        }
+
+        binding.mainBotonCompartidas.setOnClickListener {
+            val intent = Intent(this, MaletasActivity::class.java)
+            intent.putExtra("TIPO", "compartida")
             startActivity(intent)
             //finish()
         }
@@ -157,6 +165,7 @@ class MainActivity : AppCompatActivity() {
         binding.mainBotonCerradas.visibility = View.GONE
         binding.mainBotonCuenta.visibility = View.GONE
         binding.actionSignOut.visibility = View.GONE
+        binding.mainBotonCompartidas.visibility=View.GONE
     }
 
     private fun configAuth(){
@@ -173,6 +182,7 @@ class MainActivity : AppCompatActivity() {
                 binding.mainBotonCerradas.visibility = View.VISIBLE
                 binding.mainBotonCuenta.visibility = View.VISIBLE
                 binding.actionSignOut.visibility = View.VISIBLE
+                binding.mainBotonCompartidas.visibility=View.VISIBLE
                 //binding.anadirMaletaButton.show()
                 usuarioRegistrado(auth.currentUser!!.uid)
             } else {
@@ -239,7 +249,7 @@ class MainActivity : AppCompatActivity() {
                             binding.mainBotonCerradas.visibility = View.GONE
                             binding.mainBotonCuenta.visibility = View.GONE
                             binding.actionSignOut.visibility = View.GONE
-
+                            binding.mainBotonCompartidas.visibility=View.GONE
                             //binding.anadirMaletaButton.hide()
                         } else {
                             Toast.makeText(this, getString(R.string.sesion_terminar_fallo), Toast.LENGTH_SHORT).show()

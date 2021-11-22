@@ -24,6 +24,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -34,18 +36,21 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.josecarlos.maletavirtual.MaletasActivity
 import com.josecarlos.maletavirtual.utils.EvenPost
 import com.josecarlos.maletavirtual.R
 import com.josecarlos.maletavirtual.utils.Utils
 import com.josecarlos.maletavirtual.utils.Utils.Companion.hideKeyboard
-import com.josecarlos.maletavirtual.databinding.FragmentDialogAddBinding
+import com.josecarlos.maletavirtual.databinding.FragmentDialogAddCompartidaBinding
 import com.josecarlos.maletavirtual.interfaces.MaletasAux
 import com.josecarlos.maletavirtual.models.Maletas
+import com.josecarlos.maletavirtual.utils.Utils.Companion.getIdUsuarioLogeado
 import java.io.ByteArrayOutputStream
+import java.util.regex.Pattern
 
-class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
+class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowListener {
 
-    private var binding : FragmentDialogAddBinding? = null
+    private var binding : FragmentDialogAddCompartidaBinding? = null
 
     private var positiveButton : Button ? = null
     private var negativeButton : Button ? = null
@@ -73,6 +78,9 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
+        binding?.etClave?.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus)  hideKeyboard()
+        }
         binding?.etNombre?.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus)  hideKeyboard()
         }
@@ -88,10 +96,10 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
 
         //var String = if (maletaCargada) getString(R.string.agregar) else getString(R.string.actualizar)
         activity.let {activity->
-            binding = FragmentDialogAddBinding.inflate(LayoutInflater.from(context))
+            binding = FragmentDialogAddCompartidaBinding.inflate(LayoutInflater.from(context))
             binding?.let {
                 val builder = AlertDialog.Builder(activity)
-                    .setTitle(getString(R.string.maleta_agregar))
+                    .setTitle("Agregar Maleta Compartida")
                     .setPositiveButton(getString(R.string.aceptar), null)
                     .setNegativeButton(getString(R.string.cancelar),null)
                     .setView(it.root)
@@ -115,6 +123,10 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
     }
 
     override fun onShow(dialogInterface: DialogInterface?) {
+        binding?.etFechaViaje?.isEnabled = false
+        binding?.etFechaViaje2?.isEnabled = false
+        binding?.etNombre?.isEnabled=false
+        binding?.ibMaleta?.isEnabled=false
 
         ponerMaletaSeleccionada()
         configButtons()
@@ -123,19 +135,125 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
 
         dialog?.let {dialogo->
 
+            var encontrada = false
+            var maletaCompartida : Maletas ?= null
+            
+            binding?.etClave?.addTextChangedListener(object : TextWatcher {
+
+                override fun afterTextChanged(s: Editable) {}
+
+                override fun beforeTextChanged(s: CharSequence, start: Int,
+                                               count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence, start: Int,
+                                           before: Int, count: Int) {
+
+                    binding?.etNombre?.setText("Clave : "+s.length)
+
+                    if(!contrasenaValida(s.toString())) {
+                        binding?.tilClave?.error = getString(R.string.contenido_clave)
+                    }
+
+                    else if (s.length<9)  {
+
+                        binding?.tilClave?.error =""
+                        encontrada=false
+
+                        if (s.length==8){
+                           Utils.getFirestore().collection("compartidas").get().addOnSuccessListener { snapshots ->
+
+                                for (snapshot in snapshots){
+                                    //if (snapshot.id.equals(s.toString()))
+                                    maletaCompartida = snapshot.toObject(Maletas::class.java)
+
+                                    if (maletaCompartida?.id.equals(s.toString())){
+                                        encontrada = true
+                                        var maletaYaCompartida = false
+
+                                        for (idUsuario in maletaCompartida!!.usuariosCompartida){
+                                            if (idUsuario.equals(getIdUsuarioLogeado())){
+                                                maletaYaCompartida=true
+                                                binding?.tilClave?.error = getString(R.string.maleta_compartida_ya)
+                                            }
+                                        }
+
+                                        if (!maletaYaCompartida) {
+                                            binding?.etClave?.isEnabled = false
+                                            binding?.etNombre?.setText(maletaCompartida!!.nombre.toString())
+                                            binding?.etFechaViaje?.setText(maletaCompartida!!.fechaViaje.toString())
+                                            Glide.with(this@AddDialogCompartidaFragment)
+                                                .load(maletaCompartida!!.imgURL)
+                                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                                .centerCrop()
+                                                .into(binding!!.imageProductPreview)
+                                            break
+                                        }
+                                    }
+                                }
+                            }.addOnCompleteListener() {
+                               if (!encontrada) {
+                                   binding?.etNombre?.text?.clear()
+                                   binding?.etNombre?.requestFocus()
+                                   binding?.etClave?.isEnabled = false
+                                   binding?.etFechaViaje?.isEnabled = true
+                                   binding?.etFechaViaje2?.isEnabled = true
+                                   binding?.etNombre?.isEnabled = true
+                                   binding?.ibMaleta?.isEnabled = true
+                               }
+                           }
+                        }
+                    }
+                }
+            })
+
             positiveButton=dialogo.getButton(Dialog.BUTTON_POSITIVE)
             negativeButton=dialogo.getButton(Dialog.BUTTON_NEGATIVE)
+
             binding!!.etFechaViaje.setOnClickListener{showDatePickerDialog()}
 
             val usuario = Utils.getUsuarioLogueado()
 
             if (maletaCargada) dialogo.setTitle(getString(R.string.maleta_actualizar))
-            else dialogo.setTitle(getString(R.string.maleta_agregar))
+            else dialogo.setTitle("Agregar Maleta Compartida")
 
             positiveButton?.setOnClickListener{
 
+                // Si la maleta ya está en compartidas, actualizo los datos y le añado un nuevo compartido
+                if (encontrada){
+                    var yaCompartida = false
+                    for (s in maletaCompartida!!.usuariosCompartida){
+                        if (s.equals(getIdUsuarioLogeado())){
+                            yaCompartida = true
+                            Toast.makeText(activity, getString(R.string.adevertencia_maleta_compartida), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    //Pero antes de aceptar, compruebo que no la tiene compartida este usuario ya
+                    if (!yaCompartida) {
+                        maletaCompartida.apply {
+                            maletaCompartida?.emailUsuario =
+                                Utils.getUsuarioLogueado().email.toString()
+                            maletaCompartida?.compartida = true
+                            maletaCompartida?.usuariosCompartida?.add(Utils.getIdUsuarioLogeado())
+                            Toast.makeText(
+                                activity,
+                                getString(R.string.maleta_compartida_correcto),
+                                Toast.LENGTH_LONG
+                            ).show()
+                            update(maletaCompartida!!)
+
+                            var intent = Intent(activity,MaletasActivity::class.java)
+                            intent.putExtra("TIPO", "compartida")
+                            startActivity(intent)
+                        }
+                    }
+
+                // Compruebo que debe tener una clave de maleta para poder continuar
+                }else if(binding?.etClave?.text.isNullOrEmpty()){
+                    Toast.makeText(this.requireContext(),getString(R.string.clave_maleta_introducir_obligatorio), Toast.LENGTH_LONG).show()
+                }
                 //Compruebo que se hayan metido datos en el campo nombre y una fecha de viaje
-                if (binding!!.etFechaViaje.text.isNullOrEmpty() || binding!!.etNombre.text.isNullOrEmpty()){ // || photoSelectedUri.toString().equals("null", true)) {
+                else if (binding!!.etFechaViaje.text.isNullOrEmpty() || binding!!.etNombre.text.isNullOrEmpty()){ // || photoSelectedUri.toString().equals("null", true)) {
                     Toast.makeText(this.requireContext(), getString(R.string.advertencia_faltan_datos_maleta), Toast.LENGTH_SHORT).show()
                 }else {
 
@@ -151,23 +269,23 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                         enableUI(false)
 
                         if (fotoMaletaActualizada){
-                            //Carga imagen
-                            //uploadImage (maleta?.id){eventPost->
 
                             uploadRecucedImage(maleta?.id) { eventPost ->
                                 if (eventPost.isSuccess) {
                                     if (maleta == null) {
 
                                         val maleta = Maletas(
+                                            id =  it.etClave.text.toString().trim(),
                                             nombre = it.etNombre.text.toString().trim(),
                                             fechaViaje = it.etFechaViaje.text.toString().trim(),
                                             emailUsuario = usuario?.email.toString(),
                                             emailCreador = usuario?.email.toString(),
-                                            compartida = false,
+                                            compartida = true,
                                             imgURL = eventPost.photoURL
                                         )
+                                        maleta.usuariosCompartida.add(usuario.uid)
                                         //save(maleta, Utils.getAuth().currentUser!!.uid)
-                                        save(maleta, eventPost.documentId!!)
+                                        save(maleta, binding?.etClave?.text.toString())
 
                                     } else {
                                         //Toast.makeText(this.requireContext(), "Entra aquí", Toast.LENGTH_SHORT).show()
@@ -175,6 +293,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                                             nombre = it.etNombre.text.toString().trim()
                                             fechaViaje = it.etFechaViaje.text.toString().trim()
                                             imgURL = eventPost.photoURL
+                                            usuariosCompartida.add(usuario.toString())
                                             update(this)
                                         }
                                     }
@@ -190,6 +309,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                                     nombre = it.etNombre.text.toString().trim()
                                     fechaViaje = it.etFechaViaje.text.toString().trim()
                                     //imgURL = eventPost.photoURL
+                                    usuariosCompartida.add(usuario.toString())
                                     update(this)
                                 }
                             }
@@ -200,25 +320,31 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
             negativeButton?.setOnClickListener{
                 dismiss()
             }
+
         }
     }
 
-    private fun uploadImage(maletaID : String?, callback : (EvenPost)->Unit) {
+    private fun uploadRecucedImage(maletaID : String?, callback : (EvenPost)->Unit) {
 
         val eventPost = EvenPost()
-        eventPost.documentId = maletaID ?: FirebaseFirestore.getInstance().collection("usuarios").document(
-            Utils.getAuth().currentUser!!.uid).collection("maletas").document().id
+        eventPost.documentId = maletaID ?: FirebaseFirestore.getInstance().collection("maletas").document().id
 
-        Utils.getAuth().currentUser.let { user ->
-            val imagenRef = FirebaseStorage.getInstance().reference.child(user!!.uid + "-imagenes")
+        val storageRef = FirebaseStorage.getInstance().reference
 
-            val photoRef = imagenRef.child(eventPost.documentId!!)
+        photoSelectedUri?.let { uri->
+            binding?.let {binding->
 
-            photoSelectedUri?.let { uri->
-                binding?.let {binding->
+
+                getBitmapFromUri(uri)?.let{bitmap ->
+
                     binding.progressBar.visibility= View.VISIBLE
+                    val baos = ByteArrayOutputStream()
 
-                    photoRef.putFile(uri)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG,75,baos)
+
+                    val photoRef = storageRef.child(eventPost.documentId!!)
+
+                    photoRef.putBytes(baos.toByteArray()    )
                         .addOnProgressListener {
                             val progress = (100*it.bytesTransferred/it.totalByteCount).toInt()
                             it.run {
@@ -239,166 +365,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                             callback(eventPost)
                         }
                 }
-            }
-        }
-    }
 
-
-    private fun uploadRecucedImage(maletaID : String?, callback : (EvenPost)->Unit) {
-
-        val eventPost = EvenPost()
-
-        if ( maleta==null) {    //!maleta?.compartida!! ||
-            eventPost.documentId =
-                maletaID ?: FirebaseFirestore.getInstance().collection("usuarios").document(
-                    Utils.getAuth().currentUser!!.uid
-                ).collection("maletas").document().id
-
-            val storageRef =
-                FirebaseStorage.getInstance().reference.child(Utils.getAuth().currentUser!!.uid)
-
-            photoSelectedUri?.let { uri ->
-                binding?.let { binding ->
-
-
-                    getBitmapFromUri(uri)?.let { bitmap ->
-
-                        binding.progressBar.visibility = View.VISIBLE
-                        val baos = ByteArrayOutputStream()
-
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 75, baos)
-
-                        val photoRef = storageRef.child(eventPost.documentId!!)
-
-                        photoRef.putBytes(baos.toByteArray())
-                            .addOnProgressListener {
-                                val progress =
-                                    (100 * it.bytesTransferred / it.totalByteCount).toInt()
-                                it.run {
-                                    binding.progressBar.progress = progress
-                                    binding.tvProgress.text = String.format("%s%%", progress)
-                                }
-                            }
-                            .addOnSuccessListener {
-                                it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
-                                    eventPost.isSuccess = true
-                                    eventPost.photoURL = downloadUrl.toString()
-                                    callback(eventPost)
-                                }
-                            }.addOnFailureListener {
-                                eventPost.isSuccess = false
-                                enableUI(true)
-                                Toast.makeText(
-                                    activity,
-                                    getString(R.string.error_subir_imagen),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                callback(eventPost)
-                            }
-                    }
-
-                }
-            }
-        }else if ( !maleta?.compartida!! ) {
-            eventPost.documentId =
-                maletaID ?: FirebaseFirestore.getInstance().collection("usuarios").document(
-                    Utils.getAuth().currentUser!!.uid
-                ).collection("maletas").document().id
-
-            val storageRef =
-                FirebaseStorage.getInstance().reference.child(Utils.getAuth().currentUser!!.uid)
-
-            photoSelectedUri?.let { uri ->
-                binding?.let { binding ->
-
-
-                    getBitmapFromUri(uri)?.let { bitmap ->
-
-                        binding.progressBar.visibility = View.VISIBLE
-                        val baos = ByteArrayOutputStream()
-
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 75, baos)
-
-                        val photoRef = storageRef.child(eventPost.documentId!!)
-
-                        photoRef.putBytes(baos.toByteArray())
-                            .addOnProgressListener {
-                                val progress =
-                                    (100 * it.bytesTransferred / it.totalByteCount).toInt()
-                                it.run {
-                                    binding.progressBar.progress = progress
-                                    binding.tvProgress.text = String.format("%s%%", progress)
-                                }
-                            }
-                            .addOnSuccessListener {
-                                it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
-                                    eventPost.isSuccess = true
-                                    eventPost.photoURL = downloadUrl.toString()
-                                    callback(eventPost)
-                                }
-                            }.addOnFailureListener {
-                                eventPost.isSuccess = false
-                                enableUI(true)
-                                Toast.makeText(
-                                    activity,
-                                    getString(R.string.error_subir_imagen),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                callback(eventPost)
-                            }
-                    }
-
-                }
-            }
-        }
-
-        else {
-            eventPost.documentId =
-                maletaID ?: FirebaseFirestore.getInstance().collection("compartidas").document().id
-
-            val storageRef =
-                FirebaseStorage.getInstance().reference
-
-            photoSelectedUri?.let { uri ->
-                binding?.let { binding ->
-
-
-                    getBitmapFromUri(uri)?.let { bitmap ->
-
-                        binding.progressBar.visibility = View.VISIBLE
-                        val baos = ByteArrayOutputStream()
-
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 75, baos)
-
-                        val photoRef = storageRef.child(eventPost.documentId!!)
-
-                        photoRef.putBytes(baos.toByteArray())
-                            .addOnProgressListener {
-                                val progress =
-                                    (100 * it.bytesTransferred / it.totalByteCount).toInt()
-                                it.run {
-                                    binding.progressBar.progress = progress
-                                    binding.tvProgress.text = String.format("%s%%", progress)
-                                }
-                            }
-                            .addOnSuccessListener {
-                                it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
-                                    eventPost.isSuccess = true
-                                    eventPost.photoURL = downloadUrl.toString()
-                                    callback(eventPost)
-                                }
-                            }.addOnFailureListener {
-                                eventPost.isSuccess = false
-                                enableUI(true)
-                                Toast.makeText(
-                                    activity,
-                                    getString(R.string.error_subir_imagen),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                callback(eventPost)
-                            }
-                    }
-                }
             }
         }
     }
@@ -462,8 +429,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
 
     private fun save(maleta : Maletas, documentId : String){
         val db = FirebaseFirestore.getInstance()
-        db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas")
-            //.add(maleta)
+        db.collection("compartidas")
             .document(documentId)
             .set(maleta)
             .addOnSuccessListener {
@@ -476,51 +442,25 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                 dismiss()
 
             }
+       /* db.collection("usuarios").document(Utils.getIdUsuarioLogeado()).get().addOnSuccessListener {usuario ->
+            val us = usuario.toObject(Usuario::class.java)
+            us?.compartidas?.add(binding?.etClave?.text?.trim().toString())
+            updateUsuario(us!!)
+            //db.collection("usuarios").document(Utils.getIdUsuarioLogeado()).set(us)
+        }*/
     }
 
     private fun update(maleta : Maletas){
         val db = FirebaseFirestore.getInstance()
-
-
-        maleta.id?.let { id ->
-
-            if (!maleta?.compartida!!) {
-                db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid)
-                    .collection("maletas").document(id).set(maleta).addOnSuccessListener {
-                    Toast.makeText(
-                        activity,
-                        getString(R.string.maleta_actualizada_ok),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }.addOnFailureListener {
-                    Toast.makeText(
-                        activity,
-                        getString(R.string.maleta_actualizar_error),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }.addOnCompleteListener {
-                    enableUI(true)
-                    binding?.progressBar?.visibility = View.INVISIBLE
-                    dismiss()
-                }
-            }else{
-                db.collection("compartidas").document(id).set(maleta).addOnSuccessListener {
-                        Toast.makeText(
-                            activity,
-                            getString(R.string.maleta_actualizada_ok),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }.addOnFailureListener {
-                        Toast.makeText(
-                            activity,
-                            getString(R.string.maleta_actualizar_error),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }.addOnCompleteListener {
-                        enableUI(true)
-                        binding?.progressBar?.visibility = View.INVISIBLE
-                        dismiss()
-                    }
+        maleta.id?.let {id->
+            db.collection("compartidas").document(id).set(maleta).addOnSuccessListener {
+                Toast.makeText(activity, getString(R.string.maleta_actualizada_ok), Toast.LENGTH_SHORT).show()
+            }.addOnFailureListener{
+                Toast.makeText(activity, getString(R.string.maleta_actualizar_error), Toast.LENGTH_SHORT).show()
+            }.addOnCompleteListener{
+                enableUI(true)
+                binding?.progressBar?.visibility=View.INVISIBLE
+                dismiss()
             }
         }
 
@@ -540,5 +480,15 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+    }
+
+    fun contrasenaValida(password: String): Boolean {
+        // Necesita Contener -->    1 Num / 1 Minuscula / 1 Mayuscula / 1 caracter especial
+        // Min Caracteres 4 para que cumpla con lo anterior.
+        // Si pidiera caracter especial, pues tendría que pedir 4 caracteres
+        val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*?[#?!@\$%^&*-])(?=\\S+$).{4,}$"
+        val pattern = Pattern.compile(passwordPattern)
+        //return password.length>5
+        return pattern.matcher(password).matches()
     }
 }

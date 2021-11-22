@@ -59,7 +59,7 @@ import com.josecarlos.maletavirtual.utils.Utils
 import com.josecarlos.maletavirtual.utils.Utils.Companion.hideKeyboard
 
 
-class AddDialogDuplicarMaletaFragment (maletaID: String) : DialogFragment(), DialogInterface.OnShowListener {
+class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Boolean) : DialogFragment(), DialogInterface.OnShowListener {
 
     private var binding : FragmentDialogDuplicarMaletaBinding? = null
 
@@ -73,6 +73,7 @@ class AddDialogDuplicarMaletaFragment (maletaID: String) : DialogFragment(), Dia
     private var photoSelectedUri : Uri? = null
 
     private var maletaOriginalID = maletaID
+    private var esMaletaCompartida = maletaCompartida
 
     private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if (it.resultCode==Activity.RESULT_OK){
@@ -151,7 +152,7 @@ class AddDialogDuplicarMaletaFragment (maletaID: String) : DialogFragment(), Dia
                                     imgURL = eventPost.photoURL
                                 )
                                 //save(maleta, Utils.getAuth().currentUser!!.uid)
-                                save(maletaOriginalID, maleta, eventPost.documentId!!)
+                                save(maletaOriginalID, maleta, eventPost.documentId!!, esMaletaCompartida)
                                 this.requireActivity().finish()
                             }
                         }
@@ -321,7 +322,7 @@ class AddDialogDuplicarMaletaFragment (maletaID: String) : DialogFragment(), Dia
         }
     }
 
-    private fun save(maletaOriginalID: String, maleta : Maletas, documentId : String){
+    private fun save(maletaOriginalID: String, maleta : Maletas, documentId : String, maletaCompartida: Boolean){
         val db = FirebaseFirestore.getInstance()
 
         db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas")
@@ -330,64 +331,147 @@ class AddDialogDuplicarMaletaFragment (maletaID: String) : DialogFragment(), Dia
             .set(maleta)
             .addOnSuccessListener {
 
-                db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas")
-                    .document(maletaOriginalID).collection("articulos").get().addOnSuccessListener { snapshots->
-                        for(articulos in snapshots){
+                if (!maletaCompartida) {
 
-                            val articulo = articulos.toObject(Articulos::class.java)
+                    db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid)
+                        .collection("maletas")
+                        .document(maletaOriginalID).collection("articulos").get()
+                        .addOnSuccessListener { snapshots ->
+                            for (articulos in snapshots) {
 
-                            //Creo la referencia al archivo de FireStore a través de su URL guardada
-                            val storage = FirebaseStorage.getInstance()
-                            val httpsReference = storage.getReferenceFromUrl(articulo.imgURL.toString())
+                                val articulo = articulos.toObject(Articulos::class.java)
 
-                            //Creo el archivo temporal local y le doy un nombre
-                            var archivoLocal: File? = null
-                            try {
-                                archivoLocal = File.createTempFile(documentId, "")
-                            } catch (e: IOException) {
-                                e.printStackTrace()
-                            }
+                                //Creo la referencia al archivo de FireStore a través de su URL guardada
+                                val storage = FirebaseStorage.getInstance()
+                                val httpsReference =
+                                    storage.getReferenceFromUrl(articulo.imgURL.toString())
 
-                            //Lo descargo
-                            httpsReference.getFile(archivoLocal!!)
-                                .addOnSuccessListener(OnSuccessListener<FileDownloadTask.TaskSnapshot?> {
-                                    val rutaLocalTemporal = archivoLocal.absolutePath
+                                //Creo el archivo temporal local y le doy un nombre
+                                var archivoLocal: File? = null
+                                try {
+                                    archivoLocal = File.createTempFile(documentId, "")
+                                } catch (e: IOException) {
+                                    e.printStackTrace()
+                                }
 
-                                    var file = File(rutaLocalTemporal)
+                                //Lo descargo
+                                httpsReference.getFile(archivoLocal!!)
+                                    .addOnSuccessListener(OnSuccessListener<FileDownloadTask.TaskSnapshot?> {
+                                        val rutaLocalTemporal = archivoLocal!!.absolutePath
 
-                                    val uri = Uri.fromFile(file)
+                                        var file = File(rutaLocalTemporal)
 
-                                    val imagenStorage = storage.reference.child(Utils.getIdUsuarioLogeado()).child(documentId).child("${uri.lastPathSegment}")
-                                    imagenStorage.putFile(uri)
-                                        .addOnSuccessListener {
-                                            it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
+                                        val uri = Uri.fromFile(file)
 
-                                                val articuloNuevo = Articulos(
-                                                    id = articulo?.id,
-                                                    comprobado = false,
-                                                    nombre = articulo.nombre,
-                                                    cerrado = false,
-                                                    cantidad = articulo.cantidad,
-                                                    emailUsuario = articulo.emailUsuario,
-                                                    emailCreador = articulo.emailCreador,
-                                                    imgURL = downloadUrl.toString()
-                                                )
-                                                db.collection("usuarios")
-                                                    .document(Utils.getAuth().currentUser!!.uid)
-                                                    .collection("maletas")
-                                                    .document(documentId).collection("articulos")
-                                                    .document(articulo.id!!).set(articuloNuevo)
+                                        val imagenStorage =
+                                            storage.reference.child(Utils.getIdUsuarioLogeado())
+                                                .child(documentId).child("${uri.lastPathSegment}")
+                                        imagenStorage.putFile(uri)
+                                            .addOnSuccessListener {
+                                                it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
+
+                                                    val articuloNuevo = Articulos(
+                                                        id = articulo?.id,
+                                                        comprobado = false,
+                                                        nombre = articulo.nombre,
+                                                        cerrado = false,
+                                                        cantidad = articulo.cantidad,
+                                                        emailUsuario = articulo.emailUsuario,
+                                                        emailCreador = articulo.emailCreador,
+                                                        imgURL = downloadUrl.toString()
+                                                    )
+                                                    db.collection("usuarios")
+                                                        .document(Utils.getAuth().currentUser!!.uid)
+                                                        .collection("maletas")
+                                                        .document(documentId)
+                                                        .collection("articulos")
+                                                        .document(articulo.id!!).set(articuloNuevo)
+                                                }
+
                                             }
+                                    }).addOnFailureListener(OnFailureListener {
 
-                                        }
-                                }).addOnFailureListener(OnFailureListener {
+                                    })
 
-                                })
-
+                            }
                         }
-                    }
 
-                Toast.makeText(activity, getString(R.string.maleta_duplicada_ok), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        activity,
+                        getString(R.string.maleta_duplicada_ok),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+
+                //Cuando se trate de duplicar maletas compartidas que se hayan cerrado
+                }else{
+                    db.collection("compartidas")
+                        .document(maletaOriginalID).collection("articulos").get()
+                        .addOnSuccessListener { snapshots ->
+                            for (articulos in snapshots) {
+
+                                val articulo = articulos.toObject(Articulos::class.java)
+
+                                //Creo la referencia al archivo de FireStore a través de su URL guardada
+                                val storage = FirebaseStorage.getInstance()
+                                val httpsReference =
+                                    storage.getReferenceFromUrl(articulo.imgURL.toString())
+
+                                //Creo el archivo temporal local y le doy un nombre
+                                var archivoLocal: File? = null
+                                try {
+                                    archivoLocal = File.createTempFile(documentId, "")
+                                } catch (e: IOException) {
+                                    e.printStackTrace()
+                                }
+
+                                //Lo descargo
+                                httpsReference.getFile(archivoLocal!!)
+                                    .addOnSuccessListener(OnSuccessListener<FileDownloadTask.TaskSnapshot?> {
+                                        val rutaLocalTemporal = archivoLocal!!.absolutePath
+
+                                        var file = File(rutaLocalTemporal)
+
+                                        val uri = Uri.fromFile(file)
+
+                                        val imagenStorage =
+                                            storage.reference.child(Utils.getIdUsuarioLogeado())
+                                                .child(documentId).child("${uri.lastPathSegment}")
+                                        imagenStorage.putFile(uri)
+                                            .addOnSuccessListener {
+                                                it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
+
+                                                    val articuloNuevo = Articulos(
+                                                        id = articulo?.id,
+                                                        comprobado = false,
+                                                        nombre = articulo.nombre,
+                                                        cerrado = false,
+                                                        cantidad = articulo.cantidad,
+                                                        emailUsuario = articulo.emailUsuario,
+                                                        emailCreador = articulo.emailCreador,
+                                                        imgURL = downloadUrl.toString()
+                                                    )
+                                                    db.collection("usuarios")
+                                                        .document(Utils.getAuth().currentUser!!.uid)
+                                                        .collection("maletas")
+                                                        .document(documentId)
+                                                        .collection("articulos")
+                                                        .document(articulo.id!!).set(articuloNuevo)
+                                                }
+
+                                            }
+                                    }).addOnFailureListener(OnFailureListener {
+                                    })
+                            }
+                        }
+
+                    Toast.makeText(
+                        activity,
+                        getString(R.string.maleta_duplicada_ok),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
             }.addOnFailureListener{
                 Toast.makeText(activity, getString(R.string.duplicar_maleta_error), Toast.LENGTH_SHORT).show()
             }.addOnCompleteListener{

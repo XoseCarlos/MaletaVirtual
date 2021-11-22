@@ -89,6 +89,12 @@ class CuentaPersonalActivity : AppCompatActivity() {
         binding.telefono.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) hideKeyboard(v)
         }
+        binding?.btnUpdate.setOnFocusChangeListener{v, hasFocus->
+            if (hasFocus) hideKeyboard(v)
+        }
+        binding?.btnCambioContrasena.setOnFocusChangeListener{v, hasFocus->
+            if (hasFocus) hideKeyboard(v)
+        }
 
         getUser()
         configurarBotones()
@@ -107,11 +113,15 @@ class CuentaPersonalActivity : AppCompatActivity() {
                 finish()
             }
             getString(R.string.maletas_activas) -> {
-                goToActivity<MaletasActivity>(true)
+                goToActivity<MaletasActivity>("activa")
                 finish()
             }
             getString(R.string.maletas_cerradas) -> {
-                goToActivity<MaletasActivity>(false)
+                goToActivity<MaletasActivity>("cerrada")
+                finish()
+            }
+            getString(R.string.maletas_compartidas) -> {
+                goToActivity<MaletasActivity>("compartida")
                 finish()
             }
             //getString(R.string.cerrar_sesion) -> { AuthUI.getInstance().signOut(this) ; finish() }
@@ -220,7 +230,7 @@ class CuentaPersonalActivity : AppCompatActivity() {
     private fun updateDatosUsuario(user : FirebaseUser, uri : Uri){
 
         val db = FirebaseFirestore.getInstance()
-        val usuarioActual = db.collection("usuarios")
+        val telefono = if(binding?.telefono.text.isNullOrEmpty()) 0 else Integer.parseInt(binding.telefono.text.toString())
 
         FirebaseAuth.getInstance().currentUser?.let {
 
@@ -246,7 +256,7 @@ class CuentaPersonalActivity : AppCompatActivity() {
 
             val user = Usuario(
                 nombre = us!!.nombre,
-                telefono = Integer.parseInt(binding.telefono.text.toString()),
+                telefono = telefono,
                 emailUsuario = Utils.getAuth().currentUser!!.email.toString(),
                 imgURL = uri.toString()
             )

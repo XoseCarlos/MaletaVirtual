@@ -16,16 +16,19 @@ package com.josecarlos.maletavirtual.models
 import com.google.firebase.firestore.Exclude
 import java.util.*
 
-data class Usuario(@get:Exclude var id: String? = null,
+data class Usuario(//@get:Exclude var id: String? = null,
+                   var id: String? = null,
                    var nombre:String? = null,
                    var telefono : Int? = null,
                    var emailUsuario:String? = null,
                    var imgURL : String? = null,
+                   //var compartidas : MutableList<String>?,
                    var administrador: Boolean = false) {
 
     var fechaActualizacion : Date? = Date()
+    var compartidas : MutableList<String> = mutableListOf()
 
-    constructor(): this("","",0,"","",false)
+    constructor(): this("","",0,"","")
 
     override fun toString(): String {
         return "Usuario: id ($id), nombre ($nombre), usuario: ($emailUsuario), fecha alta ($fechaActualizacion)"

@@ -50,13 +50,14 @@ import java.io.*
 import java.lang.Exception
 
 
-class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInterface.OnShowListener {
+class AddDialogArticuloFragment (maletaID: String, compartida: Boolean): DialogFragment(), DialogInterface.OnShowListener {
 
     private var fotoArticuloActualizada : Boolean = false
 
     private var binding : FragmentDialogAddArticuloBinding? = null
 
     private var maletaIdentificador = maletaID
+    private val maletaCompartida = compartida
 
     private var positiveButton : Button ? = null
     private var negativeButton : Button ? = null
@@ -207,6 +208,7 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
 
                                         articulo?.apply {
                                             nombre = it.etNombre.text.toString().trim()
+                                            emailUsuario = usuario?.email.toString()
                                             cantidad = Integer.parseInt(
                                                 it.etCantidad.text.toString().trim()
                                             )
@@ -236,6 +238,7 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
                                 articulo?.apply {
                                     if (!articulo!!.imgURL!!.contains("maletas3", true)) {
                                         nombre = it.etNombre.text.toString().trim()
+                                        emailUsuario = usuario?.email.toString()
                                         cantidad =
                                             Integer.parseInt(it.etCantidad.text.toString().trim())
                                         update(this)
@@ -243,6 +246,7 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
                                         FirebaseStorage.getInstance().getReference()
                                             .child("maletas3_little_light.png").downloadUrl.addOnSuccessListener { uriFotoDefecto ->
                                                 nombre = it.etNombre.text.toString().trim()
+                                                emailUsuario = usuario?.email.toString()
                                                 cantidad = Integer.parseInt(
                                                     it.etCantidad.text.toString().trim()
                                                 )
@@ -400,36 +404,105 @@ class AddDialogArticuloFragment (maletaID: String): DialogFragment(), DialogInte
     private fun save(articulo : Articulos, documentId : String){
         val db = FirebaseFirestore.getInstance()
         articulo.id = documentId
-        db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas").document(maletaIdentificador)
-            .collection("articulos")
-            //.add(articulo)
-            .document(documentId)
-            .set(articulo)
-            .addOnSuccessListener {
-                Toast.makeText(activity, getString(R.string.articulo_anadido_correcto), Toast.LENGTH_SHORT).show()
-            }.addOnFailureListener{
-                Toast.makeText(activity, getString(R.string.error_anadir_articulo), Toast.LENGTH_SHORT).show()
-            }.addOnCompleteListener{
-                enableUI(true)
-                binding?.progressBar?.visibility=View.INVISIBLE
-                dismiss()
 
-            }
+        if (!maletaCompartida) {
+            db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid)
+                .collection("maletas").document(maletaIdentificador)
+                .collection("articulos")
+                //.add(articulo)
+                .document(documentId)
+                .set(articulo)
+                .addOnSuccessListener {
+                    Toast.makeText(
+                        activity,
+                        getString(R.string.articulo_anadido_correcto),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }.addOnFailureListener {
+                    Toast.makeText(
+                        activity,
+                        getString(R.string.error_anadir_articulo),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }.addOnCompleteListener {
+                    enableUI(true)
+                    binding?.progressBar?.visibility = View.INVISIBLE
+                    dismiss()
+
+                }
+        }else{
+            db.collection("compartidas").document(maletaIdentificador)
+                .collection("articulos")
+                //.add(articulo)
+                .document(documentId)
+                .set(articulo)
+                .addOnSuccessListener {
+                    Toast.makeText(
+                        activity,
+                        getString(R.string.articulo_anadido_correcto),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }.addOnFailureListener {
+                    Toast.makeText(
+                        activity,
+                        getString(R.string.error_anadir_articulo),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }.addOnCompleteListener {
+                    enableUI(true)
+                    binding?.progressBar?.visibility = View.INVISIBLE
+                    dismiss()
+
+                }
+        }
     }
 
     private fun update(articulo: Articulos){
         val db = FirebaseFirestore.getInstance()
-        articulo.id?.let { id->
-            db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas").document(maletaIdentificador)
-                .collection("articulos").document(id).set(articulo).addOnSuccessListener {
-                    Toast.makeText(activity, getString(R.string.articulo_actualizado), Toast.LENGTH_SHORT).show()
-                }.addOnFailureListener{
-                    Toast.makeText(activity, getString(R.string.error_actualizar_articulo), Toast.LENGTH_SHORT).show()
-                }.addOnCompleteListener{
-                    enableUI(true)
-                    binding?.progressBar?.visibility=View.INVISIBLE
-                    dismiss()
-                }
+        articulo.id?.let { id ->
+
+            if (!maletaCompartida) {
+
+                db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid)
+                    .collection("maletas").document(maletaIdentificador)
+                    .collection("articulos").document(id).set(articulo).addOnSuccessListener {
+                        Toast.makeText(
+                            activity,
+                            getString(R.string.articulo_actualizado),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }.addOnFailureListener {
+                        Toast.makeText(
+                            activity,
+                            getString(R.string.error_actualizar_articulo),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }.addOnCompleteListener {
+                        enableUI(true)
+                        binding?.progressBar?.visibility = View.INVISIBLE
+                        dismiss()
+                    }
+            }else{
+
+                db.collection("compartidas").document(maletaIdentificador)
+                    .collection("articulos").document(id).set(articulo).addOnSuccessListener {
+                        Toast.makeText(
+                            activity,
+                            getString(R.string.articulo_actualizado),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }.addOnFailureListener {
+                        Toast.makeText(
+                            activity,
+                            getString(R.string.error_actualizar_articulo),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }.addOnCompleteListener {
+                        enableUI(true)
+                        binding?.progressBar?.visibility = View.INVISIBLE
+                        dismiss()
+                    }
+            }
         }
     }
 

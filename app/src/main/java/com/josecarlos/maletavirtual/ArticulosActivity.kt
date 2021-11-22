@@ -39,6 +39,7 @@ import com.josecarlos.maletavirtual.interfaces.OnArticuloListener
 import com.josecarlos.maletavirtual.models.Articulos
 import com.josecarlos.maletavirtual.models.Maletas
 import com.josecarlos.maletavirtual.utils.Utils
+import com.josecarlos.maletavirtual.utils.Utils.Companion.toast
 import com.squareup.picasso.Picasso
 
 class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux{
@@ -72,24 +73,47 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
         botonCerrarMaleta()
         btnDuplicarMaleta()
 
-        val maletaActual = Utils.getFirestore().collection("usuarios").document(FirebaseAuth.getInstance().currentUser!!.uid)
-            .collection("maletas").document(extras.getString("MaletaID")!!)
+        if (!extras.getBoolean("Compartida")) {
+            val maletaActual = Utils.getFirestore().collection("usuarios")
+                .document(FirebaseAuth.getInstance().currentUser!!.uid)
+                .collection("maletas").document(extras.getString("MaletaID")!!)
 
-        maletaActual.get().addOnSuccessListener {
-            val us = it.toObject(Maletas::class.java)
-            Picasso.get().load(us?.imgURL).error(R.drawable.maletas3_little).into(binding.imagenMaleta)
-            binding.txtNombreMaleta.setText(us!!.nombre)
-            binding.txtFechaViaje.setText("Viaje: ${us!!.fechaViaje}")
-        }
+            maletaActual.get().addOnSuccessListener {
+                val us = it.toObject(Maletas::class.java)
+                Picasso.get().load(us?.imgURL).error(R.drawable.maletas3_little).into(binding.imagenMaleta)
+                binding.txtNombreMaleta.setText(us!!.nombre)
+                binding.txtFechaViaje.setText("Viaje: ${us.fechaViaje}")
+            }
 
-        if (!extras.getBoolean("MaletaActiva")){
-            binding.btnAAdirArticulo.visibility= View.INVISIBLE
-            binding.btnCerrarMaleta.visibility=View.INVISIBLE
-            binding.btnDuplicarMaleta.visibility=View.VISIBLE
+            if (!extras.getBoolean("MaletaActiva")){
+                binding.btnAAdirArticulo.visibility= View.INVISIBLE
+                binding.btnCerrarMaleta.visibility=View.INVISIBLE
+                binding.btnDuplicarMaleta.visibility=View.VISIBLE
+            }else{
+                binding.btnAAdirArticulo.visibility= View.VISIBLE
+                binding.btnCerrarMaleta.visibility=View.VISIBLE
+                binding.btnDuplicarMaleta.visibility=View.INVISIBLE
+            }
+
         }else{
-            binding.btnAAdirArticulo.visibility= View.VISIBLE
-            binding.btnCerrarMaleta.visibility=View.VISIBLE
-            binding.btnDuplicarMaleta.visibility=View.INVISIBLE
+            val maletaActual = Utils.getFirestore().collection("compartidas")
+                .document(extras.getString("MaletaID")!!)
+
+            maletaActual.get().addOnSuccessListener {
+                val us = it.toObject(Maletas::class.java)
+                Picasso.get().load(us?.imgURL).error(R.drawable.maletas3_little).into(binding.imagenMaleta)
+                binding.txtNombreMaleta.setText(us!!.nombre)
+                binding.txtFechaViaje.setText("Viaje: ${us.fechaViaje}")
+            }
+            if (!extras.getBoolean("MaletaActiva")){
+                binding.btnAAdirArticulo.visibility= View.INVISIBLE
+                binding.btnCerrarMaleta.visibility=View.INVISIBLE
+                binding.btnDuplicarMaleta.visibility=View.VISIBLE
+            }else{
+                binding.btnAAdirArticulo.visibility= View.VISIBLE
+                binding.btnCerrarMaleta.visibility=View.VISIBLE
+                binding.btnDuplicarMaleta.visibility=View.INVISIBLE
+            }
         }
     }
 
@@ -114,23 +138,54 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
         }
 
         val db = Utils.getFirestore()
-        val articuloRef = db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas")
-            .document(extras?.getString("MaletaID")!!).collection("articulos")
 
-        firestorelistener = articuloRef.addSnapshotListener{snapshots, error->
-            if (error!=null){
-                Toast.makeText(this, getString(R.string.error_consultar_datos), Toast.LENGTH_SHORT).show()
-                return@addSnapshotListener
-            }
-            for (articulos in snapshots!!.documentChanges){
-                val articulo = articulos.document.toObject(Articulos::class.java)
-                            articulo.id = articulos.document.id
-                    when(articulos.type){
+        if (!extras!!.getBoolean("Compartida")) {
+            val articuloRef = db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid)
+                .collection("maletas")
+                .document(extras?.getString("MaletaID")!!).collection("articulos")
+
+            firestorelistener = articuloRef.addSnapshotListener { snapshots, error ->
+                if (error != null) {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.error_consultar_datos),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@addSnapshotListener
+                }
+                for (articulos in snapshots!!.documentChanges) {
+                    val articulo = articulos.document.toObject(Articulos::class.java)
+                    articulo.id = articulos.document.id
+                    when (articulos.type) {
                         DocumentChange.Type.ADDED -> adapter.add(articulo)
                         DocumentChange.Type.MODIFIED -> adapter.update(articulo)
                         DocumentChange.Type.REMOVED -> adapter.delete(articulo)
-                   }
+                    }
 
+                }
+            }
+        }else{
+            val articuloRef = db.collection("compartidas")
+                .document(extras?.getString("MaletaID")!!).collection("articulos")
+
+            firestorelistener = articuloRef.addSnapshotListener { snapshots, error ->
+                if (error != null) {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.error_consultar_datos),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@addSnapshotListener
+                }
+                for (articulos in snapshots!!.documentChanges) {
+                    val articulo = articulos.document.toObject(Articulos::class.java)
+                    articulo.id = articulos.document.id
+                    when (articulos.type) {
+                        DocumentChange.Type.ADDED -> adapter.add(articulo)
+                        DocumentChange.Type.MODIFIED -> adapter.update(articulo)
+                        DocumentChange.Type.REMOVED -> adapter.delete(articulo)
+                    }
+                }
             }
         }
     }
@@ -152,7 +207,7 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
                 finish()
             }
             getString(R.string.maletas_activas) -> {
-                goToActivity<MaletasActivity>(true)
+                goToActivity<MaletasActivity>("activa")
                 finish()
             }
             //getString(R.string.cerrar_sesion) -> { AuthUI.getInstance().signOut(this) ; finish() }
@@ -186,46 +241,121 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
             .setMessage(getString(R.string.advertencia_eliminar_articulo))
             .setPositiveButton(getString(R.string.confirmar)){ _, _->
 
-                val db = FirebaseFirestore.getInstance()
-                val articuloRef = db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas")
-                    .document(extras?.getString("MaletaID")!!).collection("articulos")
+                if (!extras!!.getBoolean("Compartida")){
 
-                articulo.id?.let { id ->
+                    val db = FirebaseFirestore.getInstance()
+                    val articuloRef = db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas")
+                        .document(extras?.getString("MaletaID")!!).collection("articulos")
 
-                    articulo.imgURL?.let { url ->
+                    articulo.id?.let { id ->
 
-                        if (url.contains("maletas3")){
-                            articuloRef.document(id)
-                                .delete()
-                                .addOnFailureListener {
-                                    Toast.makeText(
-                                        this, getString(R.string.error_eliminar),Toast.LENGTH_SHORT).show()
+                        articulo.imgURL?.let { url ->
+
+                            if (url.contains("maletas3")){
+                                articuloRef.document(id)
+                                    .delete()
+                                    .addOnFailureListener {
+                                        Toast.makeText(
+                                            this, getString(R.string.error_eliminar),Toast.LENGTH_SHORT).show()
+                                    }
+
+                            }else if (!url.equals("null")) {
+
+                                val fotoRef = FirebaseStorage.getInstance().getReferenceFromUrl(url)
+
+                                //FirebaseStorage.getInstance().reference.child(Utils.getAuth().currentUser!!.uid + "-imagenes").child(id)
+                                fotoRef
+                                    .delete().addOnSuccessListener {
+                                        articuloRef.document(id)
+                                            .delete()
+                                            .addOnFailureListener {
+                                                Toast.makeText(
+                                                    this,getString(R.string.error_eliminar),Toast.LENGTH_SHORT).show()
+                                            }
+                                    }
+                                    .addOnFailureListener {
+                                        Toast.makeText(this,getString(R.string.eliminar_registro_error),Toast.LENGTH_SHORT).show()
+                                    }
+                            }else{
+                                articuloRef.document(id)
+                                    .delete()
+                                    .addOnFailureListener {
+                                        Toast.makeText(
+                                            this, getString(R.string.error_eliminar),Toast.LENGTH_SHORT).show()
+                                    }
+                            }
+                        }
+                    }
+
+                //Si las maletas están compartidas, compruebo si puedo borrar el artículo
+                }else{
+                    val db = FirebaseFirestore.getInstance()
+                    val articuloRef = db.collection("compartidas")
+                        .document(extras?.getString("MaletaID")!!).collection("articulos")
+
+                    db.collection("compartidas").document(extras?.getString("MaletaID")!!).get().addOnSuccessListener{
+                        //toast("entra aquí")
+                        //toast(it.toObject(Maletas::class.java)?.emailCreador.toString())
+                        var maletaProp = it.toObject(Maletas::class.java)
+
+                        articulo.id?.let { id ->
+
+                            if(maletaProp?.emailCreador.toString().equals(Utils.getUsuarioLogueado().email) ||
+                                Utils.getUsuarioLogueado().email.equals(articulo.emailCreador.toString())) {
+
+                                articulo.imgURL?.let { url ->
+
+                                    if (url.contains("maletas3")) {
+                                        articuloRef.document(id)
+                                            .delete()
+                                            .addOnFailureListener {
+                                                Toast.makeText(
+                                                    this,
+                                                    getString(R.string.error_eliminar),
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+
+                                    } else if (!url.equals("null")) {
+
+                                        val fotoRef =
+                                            FirebaseStorage.getInstance().getReferenceFromUrl(url)
+
+                                        //FirebaseStorage.getInstance().reference.child(Utils.getAuth().currentUser!!.uid + "-imagenes").child(id)
+                                        fotoRef
+                                            .delete().addOnSuccessListener {
+                                                articuloRef.document(id)
+                                                    .delete()
+                                                    .addOnFailureListener {
+                                                        Toast.makeText(
+                                                            this,
+                                                            getString(R.string.error_eliminar),
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    }
+                                            }
+                                            .addOnFailureListener {
+                                                Toast.makeText(
+                                                    this,
+                                                    getString(R.string.eliminar_registro_error),
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                    } else {
+                                        articuloRef.document(id)
+                                            .delete()
+                                            .addOnFailureListener {
+                                                Toast.makeText(
+                                                    this,
+                                                    getString(R.string.error_eliminar),
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                    }
                                 }
-
-                        }else if (!url.equals("null")) {
-
-                            val fotoRef = FirebaseStorage.getInstance().getReferenceFromUrl(url)
-
-                            //FirebaseStorage.getInstance().reference.child(Utils.getAuth().currentUser!!.uid + "-imagenes").child(id)
-                            fotoRef
-                                .delete().addOnSuccessListener {
-                                    articuloRef.document(id)
-                                        .delete()
-                                        .addOnFailureListener {
-                                            Toast.makeText(
-                                                this,getString(R.string.error_eliminar),Toast.LENGTH_SHORT).show()
-                                        }
-                                }
-                                .addOnFailureListener {
-                                    Toast.makeText(this,getString(R.string.eliminar_registro_error),Toast.LENGTH_SHORT).show()
-                                }
-                        }else{
-                            articuloRef.document(id)
-                                .delete()
-                                .addOnFailureListener {
-                                    Toast.makeText(
-                                        this, getString(R.string.error_eliminar),Toast.LENGTH_SHORT).show()
-                                }
+                            }else{
+                                toast(getString(R.string.borrar_articulo_no_permiso))
+                            }
                         }
                     }
                 }
@@ -238,15 +368,48 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
     private fun update(articulo: Articulos){
         val extras = intent.extras
         val db = FirebaseFirestore.getInstance()
-        articulo.id?.let { id->
-            db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas").document(extras?.getString("MaletaID")!!)
-                .collection("articulos").document(id).set(articulo).addOnSuccessListener {
-                    Toast.makeText(this, getString(R.string.articulo_actualizado), Toast.LENGTH_SHORT).show()
-                }.addOnFailureListener{
-                    Toast.makeText(this, getString(R.string.error_actualizar_articulo), Toast.LENGTH_SHORT).show()
-                }.addOnCompleteListener{
-                    //No hacer nada
-                }
+
+        if (!extras!!.getBoolean("Compartida")) {
+
+            articulo.id?.let { id ->
+                db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid)
+                    .collection("maletas").document(extras?.getString("MaletaID")!!)
+                    .collection("articulos").document(id).set(articulo).addOnSuccessListener {
+                        Toast.makeText(
+                            this,
+                            getString(R.string.articulo_actualizado),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }.addOnFailureListener {
+                        Toast.makeText(
+                            this,
+                            getString(R.string.error_actualizar_articulo),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }.addOnCompleteListener {
+                        //No hacer nada
+                    }
+            }
+        }else{
+
+            articulo.id?.let { id ->
+                db.collection("compartidas").document(extras?.getString("MaletaID")!!)
+                    .collection("articulos").document(id).set(articulo).addOnSuccessListener {
+                        Toast.makeText(
+                            this,
+                            getString(R.string.articulo_actualizado),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }.addOnFailureListener {
+                        Toast.makeText(
+                            this,
+                            getString(R.string.error_actualizar_articulo),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }.addOnCompleteListener {
+                        //No hacer nada
+                    }
+            }
         }
 
     }
@@ -261,7 +424,7 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
     override fun onImageClick(articulo: Articulos) {
         val extras = intent.extras
         articuloSeleccionado = articulo
-        AddDialogArticuloFragment(extras?.getString("MaletaID")!!).show(supportFragmentManager, AddDialogArticuloFragment::class.java.simpleName)
+        AddDialogArticuloFragment(extras?.getString("MaletaID")!!, extras?.getBoolean("Compartida")).show(supportFragmentManager, AddDialogArticuloFragment::class.java.simpleName)
     }
 
     override fun onClick(articulo: Articulos) {
@@ -270,13 +433,13 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
     }
 
     override fun onComprobadoClick(articulo: Articulos) {
-        val extras = intent.extras
+        //val extras = intent.extras
         var comprobadoCheck = findViewById<CheckBox>(R.id.checkBoxComprobado)
-        var mensaje = comprobadoCheck.isChecked.toString()
+        //var mensaje = comprobadoCheck.isChecked.toString()
         //articulo.comprobado=comprobadoCheck.isChecked
         //Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show()
 
-        articulo?.apply {
+        articulo.apply {
             nombre = this.nombre
             cantidad = this.cantidad
             imgURL = this.imgURL
@@ -294,7 +457,7 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
             articuloSeleccionado=null
             var args = Bundle()
             args.putString("maletaID", extras?.getString("MaletaID")!!)
-            AddDialogArticuloFragment(extras?.getString("MaletaID")!!).show(supportFragmentManager,
+            AddDialogArticuloFragment(extras.getString("MaletaID")!!, extras.getBoolean("Compartida")).show(supportFragmentManager,
                 AddDialogArticuloFragment::class.java.simpleName, )
         }
     }
@@ -305,33 +468,42 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
             MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.cerrar_maleta_pregunta))
                 .setMessage(getString(R.string.maleta_cerrar_advertencia))
-                .setPositiveButton(getString(R.string.confirmar)){_,_->
+                .setPositiveButton(getString(R.string.confirmar)) { _, _ ->
 
-                    val maletaActual = Utils.getFirestore().collection("usuarios").document(FirebaseAuth.getInstance().currentUser!!.uid)
-                        .collection("maletas").document(extras?.getString("MaletaID")!!)
+                    if (!extras!!.getBoolean("Compartida")) {
 
-                    maletaActual.get().addOnSuccessListener {
-                        val us = it.toObject(Maletas::class.java)
-                        us?.apply {
-                            id = us.id
-                            nombre = us.nombre
-                            emailCreador = us.emailCreador
-                            emailUsuario = us.emailUsuario
-                            fechaViaje = us.fechaViaje
-                            imgURL = us.imgURL
-                            comprobado= us.comprobado
-                            activa = false
-                            maletaActual.set(this)
-                            Toast.makeText(this@ArticulosActivity, getString(R.string.maleta_cerrar_correcto), Toast.LENGTH_SHORT).show()
-                        }
+                        val maletaActual = Utils.getFirestore().collection("usuarios")
+                            .document(FirebaseAuth.getInstance().currentUser!!.uid)
+                            .collection("maletas").document(extras?.getString("MaletaID")!!)
 
-                        val articulosMaleta = Utils.getFirestore().collection("usuarios").document(FirebaseAuth.getInstance().currentUser!!.uid)
-                            .collection("maletas").document(extras?.getString("MaletaID")!!).collection("articulos")
-                        articulosMaleta.get().addOnSuccessListener {documentos->
-                                for (documento in documentos){
+                        maletaActual.get().addOnSuccessListener {
+                            val us = it.toObject(Maletas::class.java)
+                            us?.apply {
+                                id = us.id
+                                nombre = us.nombre
+                                emailCreador = us.emailCreador
+                                emailUsuario = us.emailUsuario
+                                fechaViaje = us.fechaViaje
+                                imgURL = us.imgURL
+                                comprobado = us.comprobado
+                                activa = false
+                                maletaActual.set(this)
+                                Toast.makeText(
+                                    this@ArticulosActivity,
+                                    getString(R.string.maleta_cerrar_correcto),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+
+                            val articulosMaleta = Utils.getFirestore().collection("usuarios")
+                                .document(FirebaseAuth.getInstance().currentUser!!.uid)
+                                .collection("maletas").document(extras.getString("MaletaID")!!)
+                                .collection("articulos")
+                            articulosMaleta.get().addOnSuccessListener { documentos ->
+                                for (documento in documentos) {
                                     val articulos = documento.toObject(Articulos::class.java)
                                     //Toast.makeText(this, articulos.nombre, Toast.LENGTH_SHORT).show()
-                                    articulos?.apply {
+                                    articulos.apply {
                                         id = articulos.id
                                         nombre = articulos.nombre
                                         emailCreador = articulos.emailCreador
@@ -344,9 +516,63 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
                                     }
                                 }
                             }
+                        }
+                        goToActivity<MaletasActivity>("cerrada")
+                        finish()
+                    }else {
+
+                        val maletaActual = Utils.getFirestore().collection("compartidas")
+                            .document(extras?.getString("MaletaID")!!)
+
+                        maletaActual.get().addOnSuccessListener {
+                            val us = it.toObject(Maletas::class.java)
+                            if (Utils.getUsuarioLogueado().email.toString()
+                                    .equals(us?.emailCreador.toString())
+                            ) {
+                                us?.apply {
+                                    id = us.id
+                                    nombre = us.nombre
+                                    emailCreador = us.emailCreador
+                                    emailUsuario = us.emailUsuario
+                                    fechaViaje = us.fechaViaje
+                                    imgURL = us.imgURL
+                                    comprobado = us.comprobado
+                                    activa = false
+                                    maletaActual.set(this)
+                                    Toast.makeText(
+                                        this@ArticulosActivity,
+                                        getString(R.string.maleta_cerrar_correcto),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+
+                                val articulosMaleta = Utils.getFirestore().collection("compartidas")
+                                    .document(extras.getString("MaletaID")!!)
+                                    .collection("articulos")
+                                articulosMaleta.get().addOnSuccessListener { documentos ->
+                                    for (documento in documentos) {
+                                        val articulos = documento.toObject(Articulos::class.java)
+                                        //Toast.makeText(this, articulos.nombre, Toast.LENGTH_SHORT).show()
+                                        articulos.apply {
+                                            id = articulos.id
+                                            nombre = articulos.nombre
+                                            emailCreador = articulos.emailCreador
+                                            emailUsuario = articulos.emailUsuario
+                                            cantidad = articulos.cantidad
+                                            imgURL = articulos.imgURL
+                                            cerrado = true
+                                            comprobado = articulos.comprobado
+                                            articulosMaleta.document(documento.id).set(articulos)
+                                        }
+                                    }
+                                }
+                            }else{
+                                toast(getString(R.string.borrar_maleta_creador))
+                            }
+                        }
+                        goToActivity<MaletasActivity>("compartida")
+                        finish()
                     }
-                    goToActivity<MaletasActivity>(false)
-                    finish()
                 }
                 .setNegativeButton(getString(R.string.cancelar),null)
                 .show()
@@ -360,7 +586,7 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
             var args = Bundle()
             args.putString("maletaID", extras?.getString("MaletaID")!!)
             Toast.makeText(this, getString(R.string.maleta_duplicar_pendiente), Toast.LENGTH_SHORT).show()
-            AddDialogDuplicarMaletaFragment(extras?.getString("MaletaID")!!).show(supportFragmentManager,
+            AddDialogDuplicarMaletaFragment(extras.getString("MaletaID")!!, extras.getBoolean("Compartida")).show(supportFragmentManager,
                 AddDialogDuplicarMaletaFragment::class.java.simpleName, )
         }
     }

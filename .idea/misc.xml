@@ -39,6 +39,7 @@
         <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/layout/fragment_cambio_contrasena.xml" value="0.19739583333333333" />
         <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/layout/fragment_dialog_add.xml" value="0.19739583333333333" />
         <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/layout/fragment_dialog_add_articulo.xml" value="0.19739583333333333" />
+        <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/layout/fragment_dialog_add_compartida.xml" value="0.19114583333333332" />
         <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/layout/fragment_dialog_duplicar_maleta.xml" value="0.21197916666666666" />
         <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/layout/item_articulos_list_view.xml" value="0.5" />
         <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/layout/item_articulos_recyclerview.xml" value="0.33" />
@@ -51,10 +52,12 @@
         <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/layout/vista_pantalla_login.xml" value="0.3546875" />
         <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/menu/menu_articulos.xml" value="0.3546875" />
         <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/menu/menu_configuracion_peresonal.xml" value="0.3546875" />
+        <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/menu/menu_configuracion_personal.xml" value="0.32407407407407407" />
         <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/menu/menu_main.xml" value="0.19739583333333333" />
         <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/menu/menu_maletas.xml" value="0.19114583333333332" />
         <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/menu/menu_maletas_activas.xml" value="0.3546875" />
         <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/menu/menu_maletas_cerradas.xml" value="0.3546875" />
+        <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/menu/menu_maletas_compartidas.xml" value="0.21197916666666666" />
         <entry key="..\:/Users/Propietario/AndroidStudioProjects/MaletaVirtual/app/src/main/res/mipmap-anydpi-v26/ic_maletas.xml" value="0.21354166666666666" />
       </map>
     </option>

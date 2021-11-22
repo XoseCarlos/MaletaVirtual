@@ -109,6 +109,14 @@
     <string name="borrado_storage">Borrado en el Storage</string>
     <string name="borrado_storage_error">Error al borrar en Storage</string>
     <string name="valor_no_numero">El valor introducido en cantidad no es numérico!!!</string>
+    <string name="maletas_compartidas">Maletas Compartidas</string>
+    <string name="contenido_clave">Debe contener al menos 1 numero, 1 minúscula, 1 mayúscula y 1 carácter especial</string>
+    <string name="adevertencia_maleta_compartida">Ya tienes esta maleta compartida</string>
+    <string name="maleta_compartida_correcto">Maleta compartida correctamente !</string>
+    <string name="clave_maleta_introducir_obligatorio">Debe introducir una clave de maleta</string>
+    <string name="maleta_compartida_ya">Maleta ya compartida!</string>
+    <string name="borrar_articulo_no_permiso">No tiene permisos para borrar este artículo!</string>
+    <string name="borrar_maleta_creador">Solo puede cerrar una maleta su creador !</string>
 
 
 </resources>

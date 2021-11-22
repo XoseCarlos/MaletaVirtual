@@ -138,16 +138,34 @@
         app:strokeWidth="2dp" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/main_boton_cuenta"
+        android:id="@+id/main_boton_compartidas"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:paddingLeft="30dp"
+        android:text="Maletas Compartidas"
+        android:textColor="@color/purple_200"
+        app:cornerRadius="15dp"
+        app:icon="@drawable/ic_group_24"
+        app:iconTint="@color/purple_200"
+        app:layout_constraintTop_toBottomOf="@id/main_boton_cerradas"
+        app:layout_constraintEnd_toStartOf="@id/registro_guide_ver_90"
+        app:layout_constraintStart_toEndOf="@id/registro_guide_ver_10"
+        app:strokeColor="@color/colorOnPrimary"
+        app:strokeWidth="2dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/main_boton_cuenta"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:paddingLeft="30dp"
         android:text="@string/cuenta_personal"
         app:cornerRadius="15dp"
         app:icon="@drawable/ic_baseline_person_24"
-        app:layout_constraintTop_toBottomOf="@id/main_boton_cerradas"
+        app:layout_constraintTop_toBottomOf="@id/main_boton_compartidas"
         app:layout_constraintEnd_toStartOf="@id/registro_guide_ver_90"
         app:layout_constraintStart_toEndOf="@id/registro_guide_ver_10"
         app:strokeColor="@color/colorOnPrimary"
@@ -177,9 +195,11 @@
         android:orientation="vertical"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <ProgressBar
             android:layout_width="wrap_content"

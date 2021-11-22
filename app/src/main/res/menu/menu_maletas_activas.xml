@@ -12,9 +12,14 @@
         android:title="@string/configuracion_personal"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_maletas"
+        android:id="@+id/action_maletas_cerradas"
         android:icon="@drawable/ic_baseline_person_24"
         android:title="@string/maletas_cerradas"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_maletas_compartidas"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="@string/maletas_compartidas"
         app:showAsAction="never"/>
 
 </menu>

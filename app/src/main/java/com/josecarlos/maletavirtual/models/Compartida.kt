@@ -16,18 +16,11 @@ package com.josecarlos.maletavirtual.models
 import com.google.firebase.firestore.Exclude
 import java.util.*
 
-data class Maletas(var id: String? = null,         //@get:Exclude var id: String? = null,
+data class Compartida(var clave: String? = null,
                    var nombre:String? = null,
-                   var emailUsuario:String? = null,
-                   var emailCreador: String? = null,
-                   var fechaViaje: String? = null,
-                   var imgURL : String? = null,
-                   var activa : Boolean? = true,
-                   var compartida : Boolean = false,
-                   var comprobado: Boolean? = false) {
+                   var emailCreador:String? = null,
+                   var fechaCreacion : Date? = Date() ) {
 
-    var fechaCreacion : Date? = Date()
-    var usuariosCompartida : MutableList<String> = mutableListOf()
     /*
         constructor(id:Long, nombre:String, cantidad: Int, comprobado: Boolean, emailUsucario: String, fotografia: File, emailCreador: String, fechaCreacion: Date) : this(nombre, cantidad, emailUsucario, fotografia, emailCreador) {
             this.id = id;
@@ -36,21 +29,25 @@ data class Maletas(var id: String? = null,         //@get:Exclude var id: String
     }*/
 
     override fun toString(): String {
-        return "Maleta: id ($id), nombre ($nombre), controlada ($comprobado), usuario: ($emailUsuario), creador: ($emailCreador), fecha fotografía ($fechaCreacion)"
+        return "Maleta: id ($clave), nombre ($nombre), creador: ($emailCreador), fecha fotografía ($fechaCreacion)"
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as Maletas
+        other as Compartida
 
-        if (id != other.id) return false
+        if (clave != other.clave) return false
+        if (nombre != other.nombre) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return id?.hashCode() ?: 0
+        var result = clave?.hashCode() ?: 0
+        result = 31 * result + (nombre?.hashCode() ?: 0)
+        return result
     }
+
 }

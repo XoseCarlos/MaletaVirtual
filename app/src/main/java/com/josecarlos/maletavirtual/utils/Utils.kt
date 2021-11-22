@@ -38,6 +38,7 @@ import java.io.File
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Pattern
 
 class Utils : Application() {
 
@@ -90,9 +91,9 @@ class Utils : Application() {
             startActivity(intent)
         }
 
-        inline fun <reified T : Activity> Activity.goToActivity(activas : Boolean, noinline init: Intent.() -> Unit = {}) {
+        inline fun <reified T : Activity> Activity.goToActivity(tipo : String, noinline init: Intent.() -> Unit = {}) {
             val intent = Intent(this, T::class.java)
-            intent.putExtra("Activas", activas)
+            intent.putExtra("TIPO", tipo)
             intent.init()
             startActivity(intent)
         }
@@ -117,11 +118,11 @@ class Utils : Application() {
         }
 
         fun Activity.isValidPassword(password: String): Boolean {
-            // Necesita Contener -->    1 Num / 1 Minuscula / 1 Mayuscula / 1 Special / Min Caracteres 4
-            //val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{4,}$"
-            //val pattern = Pattern.compile(passwordPattern)
-            return password.length>5
-            //return pattern.matcher(password).matches()
+            // Necesita Contener -->    1 Num / 1 Minuscula / 1 Mayuscula / 1 Special / Min Caracteres 6
+            val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{6,}$"
+            val pattern = Pattern.compile(passwordPattern)
+            //return password.length>5
+            return pattern.matcher(password).matches()
         }
 
         fun Activity.isValidConfirmPassword(password: String, confirmPassword: String): Boolean {
