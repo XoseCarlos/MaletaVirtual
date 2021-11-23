@@ -25,9 +25,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingRight="6dp"
+            android:textStyle="bold"
             android:textColor="@color/colorAccent"
             app:layout_constraintBottom_toBottomOf="@id/imgProduct"
             app:layout_constraintEnd_toEndOf="@id/imgProduct"
+            app:layout_constraintStart_toStartOf="parent"
             tools:text="@string/fecha_de_viaje" />
 
 

@@ -23,7 +23,7 @@ class OlvidoContrasenaActivity : AppCompatActivity() {
 
 
         binding.editTextEmail.validate {
-            binding.editTextEmail.error = if (isValidEmail(it)) null else "Email is not valid"
+            binding.editTextEmail.error = if (isValidEmail(it)) null else "Correo electrónico no válido"
         }
 
         binding.buttonGoLogIn.setOnClickListener {
@@ -37,14 +37,14 @@ class OlvidoContrasenaActivity : AppCompatActivity() {
             val email = binding.editTextEmail.text.toString()
             if (isValidEmail(email)) {
                 mAuth.sendPasswordResetEmail(email).addOnCompleteListener(this) {
-                    toast("Email has been sent to reset your password.")
+                    toast("Enviado correo electrónco para reestablecer contraseña.")
                     goToActivity<AutenticacionActivity> {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     }
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                 }
             } else {
-                toast("Please make sure the email address is correct.")
+                toast("Asegúrate de que el correo electrónco es correcto !")
             }
         }
     }

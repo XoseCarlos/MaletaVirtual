@@ -38,20 +38,20 @@ class SignUpActivity : AppCompatActivity() {
             if (isValidEmail(email) && isValidConfirmPassword(password, confirmPassword)) {
                 signUpByEmail(email, password)
             } else {
-                toast("Please make sure all the data is correct.")
+                toast("Comprueba que los datos son correctos.")
             }
         }
 
         binding.editTextEmail.validate {
-            binding.editTextEmail.error = if (isValidEmail(it)) null else "Email is not valid"
+            binding.editTextEmail.error = if (isValidEmail(it)) null else "Correo electrónico no válido"
         }
 
         binding.editTextPassword.validate {
-            binding.editTextPassword.error = if (isValidPassword(it)) null else "Password should contain 1 lowercase, 1 uppercase, 1 number, 1 special character and 4 characters length at least."
+            binding.editTextPassword.error = if (isValidPassword(it)) null else "La contraseña debe contener 1 minúscula, 1 mayúscula, 1 número, 1 carácter especial y al menos 8 caracteres de longitud"
         }
 
         binding.editTextConfirmPassword.validate {
-            binding.editTextConfirmPassword.error = if (isValidConfirmPassword(binding.editTextPassword.text.toString(), it)) null else "Confirm Password does not match with Password"
+            binding.editTextConfirmPassword.error = if (isValidConfirmPassword(binding.editTextPassword.text.toString(), it)) null else "No concuerdan los datos del correo confirmado"
         }
 
     }
@@ -60,7 +60,7 @@ class SignUpActivity : AppCompatActivity() {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 mAuth.currentUser!!.sendEmailVerification().addOnCompleteListener(this) {
-                    toast("An email has been sent to you. Please, confirm before sign in.")
+                    toast("Se le envió un correo electrónico. Confirme antes de autenticarse.")
 
                     goToActivity<AutenticacionActivity> {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -68,7 +68,7 @@ class SignUpActivity : AppCompatActivity() {
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                 }
             } else {
-                toast("An unexpected error occurred, please try again.")
+                toast("Error inesperado. Vuelva a intentarlo!")
             }
         }
     }

@@ -59,11 +59,11 @@ class AutenticacionActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
         }
 
         binding.editTextEmail.validate {
-            binding.editTextEmail.error = if (isValidEmail(it)) null else "Email is not valid"
+            binding.editTextEmail.error = if (isValidEmail(it)) null else "Correo Electrónico no válido"
         }
 
         binding.editTextPassword.validate {
-            binding.editTextPassword.error = if (isValidPassword(it)) null else "Password should contain 1 lowercase, 1 uppercase, 1 number, 1 special character and 4 characters length at least."
+            binding.editTextPassword.error = if (isValidPassword(it)) null else getString(R.string.contenido_clave)
         }
 
     }
@@ -101,10 +101,10 @@ class AutenticacionActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     }
                 } else {
-                    toast("User must confirm email first")
+                    toast("Confirmar el correo electrónico e primer lugar")
                 }
             } else {
-                toast("An unexpected error occurred, please try again.")
+                toast("Error inesperado, intente otra vez!")
             }
         }
     }
@@ -121,6 +121,6 @@ class AutenticacionActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
     }
 
     override fun onConnectionFailed(p0: ConnectionResult) {
-        toast("Connection Failed!!")
+        toast("Fallo de conexión!")
     }
 }
