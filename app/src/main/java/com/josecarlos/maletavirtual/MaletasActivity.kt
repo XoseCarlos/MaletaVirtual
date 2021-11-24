@@ -462,6 +462,7 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
         intent.putExtra("MaletaID", maleta.id)
         intent.putExtra("MaletaActiva", maleta.activa)
         intent.putExtra("Compartida", maleta.compartida)
+        intent.putExtra("CreadorMaleta", maleta.emailCreador)
         startActivity(intent)
     }
 

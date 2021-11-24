@@ -39,7 +39,7 @@ class AutenticacionActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
             if (isValidEmail(email) && isValidPassword(password)) {
                 logInByEmail(email, password)
             } else {
-                //toast("Please make sure all the data is correct.")
+                //toast("Comprueba que los datos son correctos.")
             }
         }
 

@@ -50,7 +50,7 @@ import java.io.*
 import java.lang.Exception
 
 
-class AddDialogArticuloFragment (maletaID: String, compartida: Boolean): DialogFragment(), DialogInterface.OnShowListener {
+class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorMaleta: String): DialogFragment(), DialogInterface.OnShowListener {
 
     private var fotoArticuloActualizada : Boolean = false
 
@@ -58,6 +58,7 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean): DialogF
 
     private var maletaIdentificador = maletaID
     private val maletaCompartida = compartida
+    private val duenoMaleta = creadorMaleta
 
     private var positiveButton : Button ? = null
     private var negativeButton : Button ? = null
@@ -169,6 +170,16 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean): DialogF
 
             if (articuloCargado) dialog.setTitle(getString(R.string.articulo_actualizar))
             else dialog.setTitle(R.string.agregar_articulo)
+
+            //Un usuario no puede cambiar el nombre del artículo ni su cantidad si no es su propietario
+            if(maletaCompartida && articulo!=null && !(Utils.getUsuarioLogueado().email.toString().equals(articulo?.emailCreador))){
+                binding?.etNombre?.isEnabled=false
+                binding?.etCantidad?.isEnabled=false
+                if (Utils.getUsuarioLogueado().email.toString().equals(duenoMaleta)){
+                    binding?.etNombre?.isEnabled=true
+                    binding?.etCantidad?.isEnabled=true
+                }
+            }
 
             val firebase = FirebaseAuth.getInstance()
             val usuario = firebase.currentUser

@@ -424,7 +424,7 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
     override fun onImageClick(articulo: Articulos) {
         val extras = intent.extras
         articuloSeleccionado = articulo
-        AddDialogArticuloFragment(extras?.getString("MaletaID")!!, extras?.getBoolean("Compartida")).show(supportFragmentManager, AddDialogArticuloFragment::class.java.simpleName)
+        AddDialogArticuloFragment(extras?.getString("MaletaID")!!, extras?.getBoolean("Compartida"), extras.getString("CreadorMaleta")!!).show(supportFragmentManager, AddDialogArticuloFragment::class.java.simpleName)
     }
 
     override fun onClick(articulo: Articulos) {
@@ -457,7 +457,7 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
             articuloSeleccionado=null
             var args = Bundle()
             args.putString("maletaID", extras?.getString("MaletaID")!!)
-            AddDialogArticuloFragment(extras.getString("MaletaID")!!, extras.getBoolean("Compartida")).show(supportFragmentManager,
+            AddDialogArticuloFragment(extras.getString("MaletaID")!!, extras.getBoolean("Compartida"), extras.getString("CreadorMaleta")!!).show(supportFragmentManager,
                 AddDialogArticuloFragment::class.java.simpleName, )
         }
     }
