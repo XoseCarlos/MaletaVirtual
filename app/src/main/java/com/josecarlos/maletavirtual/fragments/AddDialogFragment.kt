@@ -438,6 +438,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
 
     /**
      * Método que pone los datos de la maleta seleccionada en los campos del fragmento
+     * Si es una maleta compartida y el que lo abre no es su creador, se inhabilita el cambio de nombre de la maleta y fecha del viaje
      */
 
     private fun ponerMaletaSeleccionada() {
@@ -452,6 +453,10 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .centerCrop()
                     .into(it.imageProductPreview)
+                if (maleta.compartida && !maleta.emailCreador.toString().equals(Utils.getAuth().currentUser!!.email.toString())){
+                    it.etNombre.isEnabled=false
+                    it.etFechaViaje.isEnabled=false
+                }
             }
         }
     }

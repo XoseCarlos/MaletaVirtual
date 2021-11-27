@@ -132,6 +132,10 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
         return false
     }
 
+    /**
+     * Método que establece la lógica y el proceso de añadir una maleta activa
+     */
+
     private fun botonAnadirMaleta(){
         if (intent.extras!!.getString("TIPO").equals("activa")) {
             binding.anadirMaletaButton.setOnClickListener {
@@ -226,10 +230,25 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
         }
     }
 
+    /**
+     * Abre el dialogo para cambiar datos de la maleta.
+     * Se podría meter aquí impedir que si la maleta está compartida y el usuario actual no es su creador
+     * se impidiera el cambio, pero esta opción se habilita en el diálogo: Fragment "AddDialogFragment"
+     */
+
     override fun onClick(maleta: Maletas) {
         maletaSeleccionada = maleta
-        AddDialogFragment().show(supportFragmentManager, AddDialogFragment::class.java.simpleName)
+
+        //if (maleta.emailCreador.toString().equals(FirebaseAuth.getInstance().currentUser!!.email.toString())){
+            AddDialogFragment().show(supportFragmentManager, AddDialogFragment::class.java.simpleName)
+        //}else{
+        //    toast(getString(R.string.maleta_compartida_cambio_datos))
+        //}
     }
+
+    /**
+     * Método que se creó en un primer momento para borrar la maleta cuando se presionaba durante cierto tiempo en la imagen de la maleta
+     */
 
     override fun onLongClick(maleta: Maletas) {
         val db = FirebaseFirestore.getInstance()
@@ -242,6 +261,10 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
                 }
         }
     }
+
+    /**
+     * Meotodo que elimina la maleta cuando se presiona el botón con la imagen de la papelera
+     */
 
     override fun onBorrarClick(maleta: Maletas) {
 
@@ -333,8 +356,8 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
                                 db.collection("usuarios").document(Utils.getIdUsuarioLogeado()).get().addOnSuccessListener {snapshot ->
                                     val user = snapshot.toObject(Usuario::class.java)
                                     //toast(maleta.id.toString())
-                                    user!!.compartidas.remove(maleta.id.toString())
-                                    db.collection("usuarios").document(Utils.getIdUsuarioLogeado()).set(user)
+                                    //user!!.compartidas.remove(maleta.id.toString())
+                                    db.collection("usuarios").document(Utils.getIdUsuarioLogeado()).set(user!!)
                                 }
 
                                 //Firebase no borra las subcolecciones de un documento. Hay que recorrerlas todas para poder borrar
@@ -389,13 +412,18 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
                             }
                         }
                     }else{
-                        toast("Solo puede borrar una maleta compartida su dueño !")
+                        toast(getString(R.string.maleta_compartida_borrar_maleta))
                     }
                 }
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.cancelar), null)
             .show()
 }
+
+    /**
+     * Método que implementa la lógica de abrir la pantalla que muestra el contenido de la maleta
+     * y le pasa determinados parámetros necesarios para realizar comprobaciones
+     */
 
     override fun onImagenClick(maleta: Maletas) {
         //Toast.makeText(this, maleta.id, Toast.LENGTH_SHORT).show()
@@ -417,6 +445,10 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
         super.onPause()
         firestorelistener.remove()
     }
+
+    /**
+     * Método que devuelve la maleta seleccionada
+     */
 
     override fun getMaletaSeleccionada(): Maletas? = maletaSeleccionada
 

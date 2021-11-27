@@ -117,4 +117,6 @@
     <string name="borrar_maleta_creador">Only its creator can close a suitcase!</string>
     <string name="maleta_compartida_cerrada">Closed suitcase. Can\'t be shared</string>
     <string name="maleta_compartida_nueva">NEW SHARED SUITCASE</string>
+    <string name="maleta_compartida_cambio_datos">Only its owner can modify data of a shared suitcase!</string>
+    <string name="maleta_compartida_borrar_maleta">Only its owner can delete a shared suitcase!</string>
 </resources>

@@ -29,7 +29,7 @@ data class Usuario(//@get:Exclude var id: String? = null,
                    var administrador: Boolean = false) {
 
     var fechaActualizacion : Date? = Date()
-    var compartidas : MutableList<String> = mutableListOf()
+    //var compartidas : MutableList<String> = mutableListOf()
 
     constructor(): this("","",0,"","")
 

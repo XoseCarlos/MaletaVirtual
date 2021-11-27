@@ -119,6 +119,8 @@
         <string name="borrar_maleta_creador">Solo puede cerrar una maleta su creador !</string>
     <string name="maleta_compartida_cerrada">Maleta cerrada. No se puede compartir</string>
     <string name="maleta_compartida_nueva">NUEVA MALETA COMPARTIDA</string>
+    <string name="maleta_compartida_cambio_datos">Solo puede modificar datos de una maleta compartida su dueño !</string>
+    <string name="maleta_compartida_borrar_maleta">Solo puede borrar una maleta compartida su dueño !</string>
 
 
 </resources>
