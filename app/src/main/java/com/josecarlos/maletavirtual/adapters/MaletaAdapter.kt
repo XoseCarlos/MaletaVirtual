@@ -25,9 +25,10 @@ import com.josecarlos.maletavirtual.models.Maletas
 import com.josecarlos.maletavirtual.interfaces.OnMaletaListener
 import com.josecarlos.maletavirtual.R
 import com.josecarlos.maletavirtual.databinding.ItemMaletaBinding
-import java.time.LocalDate
-import java.util.*
 
+/**
+ * Clase que gestiona el cambio de datos de las maletas y su comunicación
+ */
 
 open class MaletaAdapter(private val maletaList: MutableList<Maletas>,
                     private val listener: OnMaletaListener)
@@ -109,7 +110,7 @@ open class MaletaAdapter(private val maletaList: MutableList<Maletas>,
             }
 
             binding.imgProduct.setOnClickListener() {
-                listener.onImageClick(maleta)
+                listener.onImagenClick(maleta)
             }
         }
     }

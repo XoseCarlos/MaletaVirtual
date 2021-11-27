@@ -19,17 +19,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.josecarlos.maletavirtual.databinding.ItemArticulosRecyclerviewBinding
 import com.josecarlos.maletavirtual.models.Maletas
 
+/**
+ * Clase sin uso. Se mantiene por si hiciera falta
+ */
+
 class RecyclerViewAdapter(val maletas : List<Maletas>) : RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
-
-    //var maletas = mutableListOf<Maletas>()
-
-   /* fun recyclerViewAdapter(maletas: List<Maletas>){
-        this.maletas = maletas as MutableList<Maletas>
-    }
-*/
-    fun deteleMaleta (maleta: Maletas){
-        //Eliminamos
-    }
 
     class ViewHolder private constructor(val binding: ItemArticulosRecyclerviewBinding) : RecyclerView.ViewHolder(binding.root){
 

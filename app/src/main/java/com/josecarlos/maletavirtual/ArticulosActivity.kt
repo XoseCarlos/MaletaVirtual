@@ -41,7 +41,7 @@ import com.josecarlos.maletavirtual.utils.Utils
 import com.josecarlos.maletavirtual.utils.Utils.Companion.toast
 import com.squareup.picasso.Picasso
 
-/*
+/**
     Clase que maneja toda la pantalla de Artículos
  */
 
@@ -424,7 +424,7 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
 
     override fun getArticuloSelect(): Articulos? = articuloSeleccionado
 
-    override fun onImageClick(articulo: Articulos) {
+    override fun onImagenClick(articulo: Articulos) {
         val extras = intent.extras
         articuloSeleccionado = articulo
         AddDialogArticuloFragment(extras?.getString("MaletaID")!!, extras?.getBoolean("Compartida"), extras.getString("CreadorMaleta")!!).show(supportFragmentManager, AddDialogArticuloFragment::class.java.simpleName)

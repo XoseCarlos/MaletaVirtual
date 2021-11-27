@@ -46,6 +46,9 @@ import com.josecarlos.maletavirtual.models.Articulos
 import java.lang.NullPointerException
 import java.io.*
 
+/**
+ * Clase que gestiona el diálogo de añadir artículo en la pantalla de maletas activas
+ */
 
 class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorMaleta: String): DialogFragment(), DialogInterface.OnShowListener {
 
@@ -111,6 +114,10 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
         return super.onCreateDialog(savedInstanceState)
     }
 
+    /**
+     * Método que se encarga de gestionar las imágenes asociadas al artículo
+     */
+
     private fun configPhotoProfile(){
         try{
             articulo!!.id
@@ -154,6 +161,10 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
         }
     }
 
+    /**
+     * Método onShow se carga cuando se abre el fragmento de añadir artículo
+     */
+
     override fun onShow(dialogInterface: DialogInterface?) {
 
         initArticulo()
@@ -191,11 +202,11 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
                 }else{
 
                     binding?.let {
-                        enableUI(false)
+                        habilitarCampos(false)
 
                         if (fotoArticuloActualizada) {
 
-                            uploadRecucedImage(articulo?.id) { eventPost ->
+                            subirImagenComprimida(articulo?.id) { eventPost ->
                                 if (eventPost.isSuccess) {
 
                                     if (articulo == null) {
@@ -274,7 +285,11 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
         }
     }
 
-    private fun uploadRecucedImage(articuloID : String?, callback : (EvenPost)->Unit) {
+    /**
+     * Método que se encarga de subir a Storage de firebase la imagen tomada, pero reduciendo su tamaño para ahorrar espacio
+     */
+
+    private fun subirImagenComprimida(articuloID : String?, callback : (EvenPost)->Unit) {
 
         val eventPost = EvenPost()
         eventPost.documentId = articuloID ?: FirebaseFirestore.getInstance().collection("usuarios").document(
@@ -315,7 +330,7 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
                                 }
                             }.addOnFailureListener {
                                 eventPost.isSuccess = false
-                                enableUI(true)
+                                habilitarCampos(true)
                                 Toast.makeText(activity, getString(R.string.error_subir_imagen), Toast.LENGTH_SHORT).show()
                                 callback(eventPost)
                             }
@@ -324,6 +339,10 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
             }
         }
     }
+
+    /**
+     * Método que se encarga de gestionar las imágenes asociadas al artículo
+     */
 
     private fun getBitmapFromUri(uri : Uri) : Bitmap? {
         activity?.let{
@@ -357,7 +376,7 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
     private fun configButtons() {
         binding?.let {
             it.ibArticulo.setOnClickListener{
-                openGallery()
+                abrirGaleria()
             }
             it.btnCamara.setOnClickListener{
                 if (binding?.etCantidad==null || binding?.etNombre==null ||  binding?.etCantidad!!.equals("") || binding?.etNombre!!.equals("")){
@@ -369,11 +388,19 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
         }
     }
 
-    private fun openGallery() {
+    /**
+     * Método que abre la galería de imágenes del dispositivo
+     */
+
+    private fun abrirGaleria() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent,101)
         //resultLauncher.launch(intent)
     }
+
+    /**
+     * Método que inicia el artículo seleccionado
+     */
 
     private fun initArticulo() {
         articulo = (activity as ArticulosAux)?.getArticuloSelect()
@@ -409,6 +436,10 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
         }
     }
 
+    /**
+     * Método que se llama para guardar los datos del artículo, tanto en FireStore
+     */
+
     private fun save(articulo : Articulos, documentId : String){
         val db = FirebaseFirestore.getInstance()
         articulo.id = documentId
@@ -433,7 +464,7 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
                         Toast.LENGTH_SHORT
                     ).show()
                 }.addOnCompleteListener {
-                    enableUI(true)
+                    habilitarCampos(true)
                     binding?.progressBar?.visibility = View.INVISIBLE
                     dismiss()
 
@@ -457,13 +488,17 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
                         Toast.LENGTH_SHORT
                     ).show()
                 }.addOnCompleteListener {
-                    enableUI(true)
+                    habilitarCampos(true)
                     binding?.progressBar?.visibility = View.INVISIBLE
                     dismiss()
 
                 }
         }
     }
+
+    /**
+     * Método que se llama cuando lo que se pretende es actualizar datos de artículo ya generado
+     */
 
     private fun update(articulo: Articulos){
         val db = FirebaseFirestore.getInstance()
@@ -486,7 +521,7 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
                             Toast.LENGTH_SHORT
                         ).show()
                     }.addOnCompleteListener {
-                        enableUI(true)
+                        habilitarCampos(true)
                         binding?.progressBar?.visibility = View.INVISIBLE
                         dismiss()
                     }
@@ -506,7 +541,7 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
                             Toast.LENGTH_SHORT
                         ).show()
                     }.addOnCompleteListener {
-                        enableUI(true)
+                        habilitarCampos(true)
                         binding?.progressBar?.visibility = View.INVISIBLE
                         dismiss()
                     }
@@ -514,7 +549,11 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
         }
     }
 
-    private fun enableUI(enabled : Boolean){
+    /**
+     * Método para habilitar o inhabilitar botones y campos del fragmen para evitar presionar o cambiar durante procesos
+     */
+
+    private fun habilitarCampos(enabled : Boolean){
         positiveButton?.isEnabled = enabled
         negativeButton?.isEnabled = enabled
         binding?.let {
@@ -532,13 +571,17 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
         binding = null
     }
 
+    /**
+     * Méotodo que gestiona la captura de imágenes con la cámara del dispositivo
+     */
+
     private fun tomarFoto() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             // Ensure that there's a camera activity to handle the intent
             takePictureIntent.resolveActivity(activity?.packageManager!!)?.also {
                 // Create the File where the photo should go
                 val photoFile: File? = try {
-                    createImageFile()
+                    crearArchivoImagen()
                 } catch (ex: IOException) {
                     // Error occurred while creating the File
                     null
@@ -557,8 +600,12 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
         }
     }
 
+    /**
+     * Método de apoyo a la captuar de imágenes con la cámara del dispotivio
+     */
+
     @Throws(IOException::class)
-    private fun createImageFile(): File {
+    private fun crearArchivoImagen(): File {
         // Create an image file name
         val timeStamp: String = System.currentTimeMillis().toString()
         val storageDir = context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -572,7 +619,7 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
         }
     }
 
-    private fun galleryAddPic() {
+    private fun tomarImagnenGaleria() {
         Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).also { mediaScanIntent ->
             val f = File(mCurrentPhotoPath!!)
             mediaScanIntent.data = Uri.fromFile(f)
@@ -609,7 +656,7 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
 
                     val imageBitmap = bundle.get("data") as Bitmap?
                     binding!!.ibArticulo.setImageBitmap(imageBitmap)
-                    photoSelectedUri = galleryAddPic() as Uri
+                    photoSelectedUri = tomarImagnenGaleria() as Uri
                 }
             }else{
                 //No hace nada

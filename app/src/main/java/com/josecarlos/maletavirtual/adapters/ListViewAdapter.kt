@@ -23,6 +23,10 @@ import android.widget.ArrayAdapter
 import com.josecarlos.maletavirtual.databinding.ItemArticulosListViewBinding
 import com.josecarlos.maletavirtual.models.Maletas
 
+/**
+ * Clase sin uso. Se mantiene por si hiciera falta
+ */
+
 class ListViewAdapter(context: Context, val vista: Int, val maletas: List<Maletas>) : ArrayAdapter<Maletas>(context, vista ,maletas) {
 
     //Tantas veces como elementos en la lista

@@ -68,7 +68,7 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
             toolbar.setSubtitle(getString(R.string.activas))
             //toolbar.menu.findItem(R.id.action_maletas).setTitle(getString(R.string.maletas_cerradas))
             //toolbar.menu.getItem(0).setTitle(getString(R.string.maletas_cerradas))
-        }else if (extras!!.getString("TIPO").equals("cerrada")) {
+        }else if (extras.getString("TIPO").equals("cerrada")) {
             toolbar.setSubtitle(getString(R.string.cerradas))
             binding.anadirMaletaButton.visibility= View.INVISIBLE
             //toolbar.menu.setTitle(R.string.maletas_activas)
@@ -91,7 +91,7 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
         val extras = intent.extras
         if (extras!!.getString("TIPO").equals("activa")) {
             menuInflater.inflate(R.menu.menu_maletas_activas, menu)
-        }else if (extras!!.getString("TIPO").equals("cerrada")){
+        }else if (extras.getString("TIPO").equals("cerrada")){
             menuInflater.inflate(R.menu.menu_maletas_cerradas, menu)
         }else{
             menuInflater.inflate(R.menu.menu_maletas_compartidas, menu)
@@ -153,29 +153,9 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
         }
     }
 
-    private fun createRecyclerView(){
-        val mAdapter = RecyclerViewAdapter(cargarMaletas())
-        //adapter.recyclerViewAdapter(cargarMaletas())
-        val recyclerView = binding!!.recyclerView
-        recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@MaletasActivity, RecyclerView.VERTICAL,false)
-            adapter = mAdapter
-        }
-    }
-
-    private fun cargarMaletas():List<Maletas>{
-
-        val maletas = mutableListOf<Maletas>() //Lista inmutable
-
-        maletas.add(Maletas("1", "jose carlos", "josecarlos.com", "josecarlos.com", "01/01/2020", "44", true, false))
-        maletas.add(Maletas("1", "jose carlos2", "josecarlos.com", "josecarlos.com", "01/01/2020", "44", true, false))
-        maletas.add(Maletas("1", "jose carlos3", "josecarlos.com", "josecarlos.com", "01/01/2020", "44", true, false))
-        maletas.add(Maletas("1", "jose carlos4", "josecarlos.com", "josecarlos.com", "01/01/2020", "44", true, false))
-
-        return maletas
-    }
-
-    //Para carga de articulos en tiempo real
+    /**
+     * Para carga de articulos en tiempo real
+     */
 
     private fun configFireStoreRealTime(){
         val extras = intent.extras
@@ -203,7 +183,7 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
                         DocumentChange.Type.REMOVED -> adapter.delete(maleta)
                     }
                 }
-                if (extras!!.getString("TIPO").equals("cerrada") && maleta.activa==false){
+                if (extras.getString("TIPO").equals("cerrada") && maleta.activa==false){
                 //if (maleta.activa==false){
                     maleta.id = maletas.document.id
                     when(maletas.type){
@@ -246,44 +226,6 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
         }
     }
 
-    private fun configFireStore() {
-
-        adapter = MaletaAdapter(mutableListOf(), this)
-        binding.recyclerView.apply {
-            layoutManager = GridLayoutManager(this@MaletasActivity, 2,
-                GridLayoutManager.VERTICAL, false)
-            adapter = this@MaletasActivity.adapter
-        }
-
-        Utils.getFirestore().collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas").get()
-            .addOnSuccessListener { snapshots ->
-                for (maletas in snapshots){
-                    val maleta = maletas.toObject(Maletas::class.java)
-
-                    if (maleta.activa==true){
-                        //Para agregar toda la lista de maletas poner la siguiente línea
-                        maleta.id=maletas.id
-                        adapter.add(maleta)
-                    }else{
-                        //No hace nada
-                    }
-                }
-            }
-            .addOnFailureListener{
-                Toast.makeText(this, getString(R.string.consulta_datos_error), Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun configRecyclerView(){
-        adapter = MaletaAdapter(mutableListOf(), this)
-        binding.recyclerView.apply {
-            layoutManager = GridLayoutManager(this@MaletasActivity, 2,
-                GridLayoutManager.VERTICAL, false)
-            adapter = this@MaletasActivity.adapter
-        }
-    }
-
-
     override fun onClick(maleta: Maletas) {
         maletaSeleccionada = maleta
         AddDialogFragment().show(supportFragmentManager, AddDialogFragment::class.java.simpleName)
@@ -310,7 +252,7 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
 
                 val db = FirebaseFirestore.getInstance()
 
-                if (!maleta.compartida!!) {
+                if (!maleta.compartida) {
 
                     val maletaRef =
                         db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid)
@@ -391,7 +333,7 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
                                 db.collection("usuarios").document(Utils.getIdUsuarioLogeado()).get().addOnSuccessListener {snapshot ->
                                     val user = snapshot.toObject(Usuario::class.java)
                                     //toast(maleta.id.toString())
-                                    val borrado = user!!.compartidas.remove(maleta.id.toString())
+                                    user!!.compartidas.remove(maleta.id.toString())
                                     db.collection("usuarios").document(Utils.getIdUsuarioLogeado()).set(user)
                                 }
 
@@ -455,7 +397,7 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
             .show()
 }
 
-    override fun onImageClick(maleta: Maletas) {
+    override fun onImagenClick(maleta: Maletas) {
         //Toast.makeText(this, maleta.id, Toast.LENGTH_SHORT).show()
         val intent = Intent(this, ArticulosActivity::class.java)
         intent.putExtra("MaletaID", maleta.id)
@@ -476,6 +418,6 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
         firestorelistener.remove()
     }
 
-    override fun getMaletaSelect(): Maletas? = maletaSeleccionada
+    override fun getMaletaSeleccionada(): Maletas? = maletaSeleccionada
 
 }

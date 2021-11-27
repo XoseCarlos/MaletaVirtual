@@ -44,6 +44,10 @@ import com.josecarlos.maletavirtual.interfaces.MaletasAux
 import com.josecarlos.maletavirtual.models.Maletas
 import java.io.ByteArrayOutputStream
 
+/**
+ * Clase que gestiona el diálogo de añadir artículo en la pantalla de maletas activas
+ */
+
 class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
 
     private var binding : FragmentDialogAddBinding? = null
@@ -105,15 +109,27 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
         return super.onCreateDialog(savedInstanceState)
     }
 
-    private fun showDatePickerDialog(){
-        val datepicker = DatePickerFragment { dia, mes, ano -> onDateSelected(dia, mes, ano) }
+    /**
+     * Método que muestra el dataPicker cuando se introduce la fecha del viaje
+     */
+
+    private fun mostarDialogoDataPicker(){
+        val datepicker = DatePickerFragment { dia, mes, ano -> onFechaSeleccionada(dia, mes, ano) }
         datepicker.show(childFragmentManager,"datepicker")
     }
 
-    fun onDateSelected(dia:Int, mes: Int, ano: Int){
+    /**
+     * Método auxiliar del anterior para corregir el mes seleccionado y poner la fecha seleccionada en el editText
+     */
+
+    fun onFechaSeleccionada(dia:Int, mes: Int, ano: Int){
         val mesCorregido = mes+1
         binding!!.etFechaViaje.setText("$dia/$mesCorregido/$ano")
     }
+
+    /**
+     * Método que gestiona la carga del fragmento y gestiona el proceso de crear una maleta activa
+     */
 
     override fun onShow(dialogInterface: DialogInterface?) {
 
@@ -126,7 +142,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
 
             positiveButton=dialogo.getButton(Dialog.BUTTON_POSITIVE)
             negativeButton=dialogo.getButton(Dialog.BUTTON_NEGATIVE)
-            binding!!.etFechaViaje.setOnClickListener{showDatePickerDialog()}
+            binding!!.etFechaViaje.setOnClickListener{mostarDialogoDataPicker()}
 
             val usuario = Utils.getUsuarioLogueado()
 
@@ -149,13 +165,13 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                     }
 
                     binding?.let {
-                        enableUI(false)
+                        habilitarInterfaz(false)
 
                         if (fotoMaletaActualizada){
                             //Carga imagen
                             //uploadImage (maleta?.id){eventPost->
 
-                            uploadRecucedImage(maleta?.id) { eventPost ->
+                            subirImagenComprimida(maleta?.id) { eventPost ->
                                 if (eventPost.isSuccess) {
                                     if (maleta == null) {
 
@@ -185,7 +201,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
 
                             if (photoSelectedUri.toString().equals("null", true) && !maletaCargada){
                                 Toast.makeText(this.requireContext(), getString(R.string.advertencia_faltan_datos_maleta), Toast.LENGTH_SHORT).show()
-                                enableUI(true)
+                                habilitarInterfaz(true)
                             }else{
                                 maleta?.apply {
                                     nombre = it.etNombre.text.toString().trim()
@@ -204,48 +220,11 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
         }
     }
 
-    private fun uploadImage(maletaID : String?, callback : (EvenPost)->Unit) {
+    /**
+     * Método que sube al Storage la imagen una vez comprimida
+     */
 
-        val eventPost = EvenPost()
-        eventPost.documentId = maletaID ?: FirebaseFirestore.getInstance().collection("usuarios").document(
-            Utils.getAuth().currentUser!!.uid).collection("maletas").document().id
-
-        Utils.getAuth().currentUser.let { user ->
-            val imagenRef = FirebaseStorage.getInstance().reference.child(user!!.uid + "-imagenes")
-
-            val photoRef = imagenRef.child(eventPost.documentId!!)
-
-            photoSelectedUri?.let { uri->
-                binding?.let {binding->
-                    binding.progressBar.visibility= View.VISIBLE
-
-                    photoRef.putFile(uri)
-                        .addOnProgressListener {
-                            val progress = (100*it.bytesTransferred/it.totalByteCount).toInt()
-                            it.run {
-                                binding.progressBar.progress=progress
-                                binding.tvProgress.text= String.format("%s%%", progress)
-                            }
-                        }
-                        .addOnSuccessListener {
-                            it.storage.downloadUrl.addOnSuccessListener {downloadUrl->
-                                eventPost.isSuccess=true
-                                eventPost.photoURL=downloadUrl.toString()
-                                callback(eventPost)
-                            }
-                        }.addOnFailureListener{
-                            eventPost.isSuccess=false
-                            enableUI(true)
-                            Toast.makeText(activity, getString(R.string.error_subir_imagen), Toast.LENGTH_SHORT).show()
-                            callback(eventPost)
-                        }
-                }
-            }
-        }
-    }
-
-
-    private fun uploadRecucedImage(maletaID : String?, callback : (EvenPost)->Unit) {
+    private fun subirImagenComprimida(maletaID : String?, callback : (EvenPost)->Unit) {
 
         val eventPost = EvenPost()
 
@@ -262,7 +241,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                 binding?.let { binding ->
 
 
-                    getBitmapFromUri(uri)?.let { bitmap ->
+                    cogerImagenDesdeURI(uri)?.let { bitmap ->
 
                         binding.progressBar.visibility = View.VISIBLE
                         val baos = ByteArrayOutputStream()
@@ -288,7 +267,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                                 }
                             }.addOnFailureListener {
                                 eventPost.isSuccess = false
-                                enableUI(true)
+                                habilitarInterfaz(true)
                                 Toast.makeText(
                                     activity,
                                     getString(R.string.error_subir_imagen),
@@ -313,7 +292,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                 binding?.let { binding ->
 
 
-                    getBitmapFromUri(uri)?.let { bitmap ->
+                    cogerImagenDesdeURI(uri)?.let { bitmap ->
 
                         binding.progressBar.visibility = View.VISIBLE
                         val baos = ByteArrayOutputStream()
@@ -339,7 +318,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                                 }
                             }.addOnFailureListener {
                                 eventPost.isSuccess = false
-                                enableUI(true)
+                                habilitarInterfaz(true)
                                 Toast.makeText(
                                     activity,
                                     getString(R.string.error_subir_imagen),
@@ -364,7 +343,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                 binding?.let { binding ->
 
 
-                    getBitmapFromUri(uri)?.let { bitmap ->
+                    cogerImagenDesdeURI(uri)?.let { bitmap ->
 
                         binding.progressBar.visibility = View.VISIBLE
                         val baos = ByteArrayOutputStream()
@@ -390,7 +369,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                                 }
                             }.addOnFailureListener {
                                 eventPost.isSuccess = false
-                                enableUI(true)
+                                habilitarInterfaz(true)
                                 Toast.makeText(
                                     activity,
                                     getString(R.string.error_subir_imagen),
@@ -404,7 +383,11 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
         }
     }
 
-    private fun getBitmapFromUri(uri : Uri) : Bitmap? {
+    /**
+     * Método auxiliar del anterior, que captura la imagen desde un URI y retorna el bitmap
+     */
+
+    private fun cogerImagenDesdeURI(uri : Uri) : Bitmap? {
         activity?.let{
             val bitmap = if( Build.VERSION.SDK_INT>=Build.VERSION_CODES.P){
                 val source = ImageDecoder.createSource(it.contentResolver,uri)
@@ -412,12 +395,16 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
             }else{
                 MediaStore.Images.Media.getBitmap(it.contentResolver,uri)
             }
-            return getResizedImage(bitmap,320)
+            return getImagenRedimensionada(bitmap,320)
         }
         return null
     }
 
-    private fun getResizedImage(image : Bitmap, maxSize: Int) : Bitmap  {
+    /**
+     * Método auxiliar del anterior, que redimensiona la imagen que se el pasa por parámetro
+     */
+
+    private fun getImagenRedimensionada(image : Bitmap, maxSize: Int) : Bitmap  {
         var ancho = image.width
         var alto = image.height
         if (ancho<=maxSize && alto <= maxSize) return image
@@ -440,13 +427,21 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
         }
     }
 
+    /**
+     * Método que abre la galería de imágnes del dispositivo
+     */
+
     private fun abrirGaleria() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         resultLauncher.launch(intent)
     }
 
+    /**
+     * Método que pone los datos de la maleta seleccionada en los campos del fragmento
+     */
+
     private fun ponerMaletaSeleccionada() {
-        maleta = (activity as MaletasAux)?.getMaletaSelect()
+        maleta = (activity as MaletasAux)?.getMaletaSeleccionada()
         maleta?.let { maleta->
             binding?.let {
                 maletaCargada = true
@@ -461,6 +456,10 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
         }
     }
 
+    /**
+     * Método para guardar los datos de la nueva maleta en FireBase
+     */
+
     private fun save(maleta : Maletas, documentId : String){
         val db = FirebaseFirestore.getInstance()
         db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas")
@@ -472,12 +471,16 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
             }.addOnFailureListener{
                 Toast.makeText(activity, getString(R.string.maleta_anadir_error), Toast.LENGTH_SHORT).show()
             }.addOnCompleteListener{
-                enableUI(true)
+                habilitarInterfaz(true)
                 binding?.progressBar?.visibility=View.INVISIBLE
                 dismiss()
 
             }
     }
+
+    /**
+     * Método para actualizar los datos de una maleta seleccionada y de la que se quieren cambiar los datos en Firebase
+     */
 
     private fun update(maleta : Maletas){
         val db = FirebaseFirestore.getInstance()
@@ -500,7 +503,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                         Toast.LENGTH_SHORT
                     ).show()
                 }.addOnCompleteListener {
-                    enableUI(true)
+                    habilitarInterfaz(true)
                     binding?.progressBar?.visibility = View.INVISIBLE
                     dismiss()
                 }
@@ -518,7 +521,7 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
                             Toast.LENGTH_SHORT
                         ).show()
                     }.addOnCompleteListener {
-                        enableUI(true)
+                        habilitarInterfaz(true)
                         binding?.progressBar?.visibility = View.INVISIBLE
                         dismiss()
                     }
@@ -527,7 +530,11 @@ class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
 
     }
 
-    private fun enableUI(enabled : Boolean){
+    /**
+     * Metodo que habilita o inhabilita botones y campos cuando se están ejecutando determinados procesos, para evitar problemas
+     */
+
+    private fun habilitarInterfaz(enabled : Boolean){
         positiveButton?.isEnabled = enabled
         negativeButton?.isEnabled = enabled
         binding?.let {

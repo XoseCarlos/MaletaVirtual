@@ -89,10 +89,10 @@ class CuentaPersonalActivity : AppCompatActivity() {
         binding.telefono.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) ocultarTeclado(v)
         }
-        binding?.btnUpdate.setOnFocusChangeListener{v, hasFocus->
+        binding.btnUpdate.setOnFocusChangeListener{v, hasFocus->
             if (hasFocus) ocultarTeclado(v)
         }
-        binding?.btnCambioContrasena.setOnFocusChangeListener{v, hasFocus->
+        binding.btnCambioContrasena.setOnFocusChangeListener{v, hasFocus->
             if (hasFocus) ocultarTeclado(v)
         }
 
@@ -143,8 +143,6 @@ class CuentaPersonalActivity : AppCompatActivity() {
 
     private fun configFirestoreRealTime(){
         val db = FirebaseFirestore.getInstance()
-        val usuarioActual = db.collection("usuarios")
-
         val usuarioAct = db.collection("usuarios").document(FirebaseAuth.getInstance().currentUser!!.uid)
         usuarioAct.get().addOnSuccessListener {
             val us = it.toObject(Usuario::class.java)
@@ -167,7 +165,7 @@ class CuentaPersonalActivity : AppCompatActivity() {
         }
         //val user = Utils.getFireStore().collection("usuarios").document(FirebaseAuth.getInstance().currentUser!!.uid)
 
-        val user = encontrarUsuario(FirebaseAuth.getInstance().currentUser!!.uid.toString())
+        encontrarUsuario(FirebaseAuth.getInstance().currentUser!!.uid)
         //Toast.makeText(this, user.toString(), Toast.LENGTH_SHORT).show()
 
         //val userID = FirebaseAuth.getInstance().currentUser!!.uid
@@ -200,7 +198,7 @@ class CuentaPersonalActivity : AppCompatActivity() {
 
                     }else{
                         //Toast.makeText(this, photoSelectedUri.toString(), Toast.LENGTH_SHORT).show()
-                        uploadRecucedImage(user)
+                        subirImagenComprimida(user)
                     }
                 }
             }
@@ -217,7 +215,7 @@ class CuentaPersonalActivity : AppCompatActivity() {
             photoSelectedUri = it.data?.data
             imagenUsuarioCambiada=true
             //binding?.imageProductPreview?.setImageURI(photoSelectedUri)
-            binding?.let {
+            binding.let {
                 Glide.with(this)
                     .load(photoSelectedUri)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -230,7 +228,7 @@ class CuentaPersonalActivity : AppCompatActivity() {
     private fun updateDatosUsuario(user : FirebaseUser, uri : Uri){
 
         val db = FirebaseFirestore.getInstance()
-        val telefono = if(binding?.telefono.text.isNullOrEmpty()) 0 else Integer.parseInt(binding.telefono.text.toString())
+        val telefono = if(binding.telefono.text.isNullOrEmpty()) 0 else Integer.parseInt(binding.telefono.text.toString())
 
         FirebaseAuth.getInstance().currentUser?.let {
 
@@ -247,7 +245,7 @@ class CuentaPersonalActivity : AppCompatActivity() {
                     Toast.makeText(this, getString(R.string.usuario_actualizacion_fallo), Toast.LENGTH_SHORT).show()
                 }
 
-            val usuario = Utils.getFirestore().collection("usuarios").document(FirebaseAuth.getInstance().currentUser!!.uid)
+            Utils.getFirestore().collection("usuarios").document(FirebaseAuth.getInstance().currentUser!!.uid)
 
         }
         val usuarioAct = db.collection("usuarios").document(FirebaseAuth.getInstance().currentUser!!.uid)
@@ -275,13 +273,13 @@ class CuentaPersonalActivity : AppCompatActivity() {
         return data
     }
 
-    private fun uploadRecucedImage(user : FirebaseUser) {
+    private fun subirImagenComprimida(user : FirebaseUser) {
 
         val profileRef = FirebaseStorage.getInstance().reference.child(Utils.getAuth().currentUser!!.uid).child(
             Utils.getAuth().currentUser!!.uid)
 
         photoSelectedUri?.let { uri->
-            binding?.let {binding->
+            binding.let {binding->
                 getBitmapFromUri(uri)?.let{bitmap ->
 
                     binding.progressBar.visibility= View.VISIBLE
@@ -316,20 +314,20 @@ class CuentaPersonalActivity : AppCompatActivity() {
     }
 
     private fun getBitmapFromUri(uri : Uri) : Bitmap? {
-        this?.let{
+        this.let{
             val bitmap = if( Build.VERSION.SDK_INT>= Build.VERSION_CODES.P){
                 val source = ImageDecoder.createSource(it.contentResolver,uri)
                 ImageDecoder.decodeBitmap(source)
             }else{
                 MediaStore.Images.Media.getBitmap(it.contentResolver,uri)
             }
-            return getResizedImage(bitmap,320)
+            return getImagenRedimensionada(bitmap,320)
         }
         return null
     }
 
 
-    private fun getResizedImage(image : Bitmap, maxSize: Int) : Bitmap  {
+    private fun getImagenRedimensionada(image : Bitmap, maxSize: Int) : Bitmap  {
         var ancho = image.width
         var alto = image.height
         if (ancho<=maxSize && alto <= maxSize) return image
@@ -377,7 +375,7 @@ class CuentaPersonalActivity : AppCompatActivity() {
                         myUri = it.toString() //binding.textView.text=myUri
 
                         Utils.getFirestore().collection("usuarios").document(Utils.getAuth().uid!!).get().addOnSuccessListener { user->
-                            var usuario = user.toObject(Usuario::class.java)
+                            val usuario = user.toObject(Usuario::class.java)
                             usuario?.imgURL= myUri
                             updateDatosUsuario(FirebaseAuth.getInstance().currentUser!!,it)
 
@@ -393,7 +391,7 @@ class CuentaPersonalActivity : AppCompatActivity() {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
                 val data = baos.toByteArray()
 
-                var uploadTask = imagenRef.putBytes(data)
+                val uploadTask = imagenRef.putBytes(data)
 
                 uploadTask.addOnFailureListener {
                     // Handle unsuccessful uploads

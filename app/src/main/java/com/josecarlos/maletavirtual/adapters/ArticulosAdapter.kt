@@ -26,6 +26,10 @@ import com.josecarlos.maletavirtual.databinding.ItemArticulosRecyclerviewBinding
 import com.josecarlos.maletavirtual.interfaces.OnArticuloListener
 import com.josecarlos.maletavirtual.models.Articulos
 
+/**
+ * Clase que gestiona el cambio de datos de los artículos y su comunicación
+ */
+
 class ArticulosAdapter(private val articulosList: MutableList<Articulos>,
                        private val listener: OnArticuloListener)
     : RecyclerView.Adapter<ArticulosAdapter.ViewHolder>() {
@@ -101,7 +105,7 @@ class ArticulosAdapter(private val articulosList: MutableList<Articulos>,
             }
 
             binding.imageViewInfoAvatar.setOnClickListener() {
-                if (articulo.cerrado==false) listener.onImageClick(articulo)
+                if (articulo.cerrado==false) listener.onImagenClick(articulo)
             }
 
             binding.checkBoxComprobado.setOnClickListener(){

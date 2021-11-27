@@ -11,7 +11,6 @@ Revisión: 4.3
 **********************************************
 */
 
-
 package com.josecarlos.maletavirtual.fragments
 
 import android.app.Activity
@@ -48,6 +47,10 @@ import com.josecarlos.maletavirtual.models.Maletas
 import com.josecarlos.maletavirtual.utils.Utils.Companion.esContrasenaValida
 import com.josecarlos.maletavirtual.utils.Utils.Companion.getIdUsuarioLogeado
 import java.io.ByteArrayOutputStream
+
+/**
+ * Clase que gestiona el diálogo de añadir artículo en la pantalla de maletas compartidas
+ */
 
 class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowListener {
 
@@ -113,15 +116,27 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
         return super.onCreateDialog(savedInstanceState)
     }
 
-    private fun showDatePickerDialog(){
-        val datepicker = DatePickerFragment { dia, mes, ano -> onDateSelected(dia, mes, ano) }
+    /**
+     * Método que muestra el dataPicker cuando se introduce la fecha del viaje
+     */
+
+    private fun mostrarDataPicker(){
+        val datepicker = DatePickerFragment { dia, mes, ano -> fechaSeleccionada(dia, mes, ano) }
         datepicker.show(childFragmentManager,"datepicker")
     }
 
-    fun onDateSelected(dia:Int, mes: Int, ano: Int){
+    /**
+     * Método auxiliar del anterior para corregir el mes seleccionado y poner la fecha seleccionada en el editText
+     */
+
+    fun fechaSeleccionada(dia:Int, mes: Int, ano: Int){
         val mesCorregido = mes+1
         binding!!.etFechaViaje.setText("$dia/$mesCorregido/$ano")
     }
+
+    /**
+     * Método que gestiona la carga del fragmento y gestiona el proceso de crear una maleta compartida
+     */
 
     override fun onShow(dialogInterface: DialogInterface?) {
         binding?.etFechaViaje?.isEnabled = false
@@ -215,7 +230,7 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
             positiveButton=dialogo.getButton(Dialog.BUTTON_POSITIVE)
             negativeButton=dialogo.getButton(Dialog.BUTTON_NEGATIVE)
 
-            binding!!.etFechaViaje.setOnClickListener{showDatePickerDialog()}
+            binding!!.etFechaViaje.setOnClickListener{mostrarDataPicker()}
 
             val usuario = Utils.getUsuarioLogueado()
 
@@ -272,11 +287,11 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
                     }
 
                     binding?.let {
-                        enableUI(false)
+                        habilitarIntefaz(false)
 
                         if (fotoMaletaActualizada){
 
-                            uploadRecucedImage(maleta?.id) { eventPost ->
+                            subirImagenComprimida(maleta?.id) { eventPost ->
                                 if (eventPost.isSuccess) {
                                     if (maleta == null) {
 
@@ -309,7 +324,7 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
 
                             if (photoSelectedUri.toString().equals("null", true) && !maletaCargada){
                                 Toast.makeText(this.requireContext(), getString(R.string.advertencia_faltan_datos_maleta), Toast.LENGTH_SHORT).show()
-                                enableUI(true)
+                                habilitarIntefaz(true)
                             }else{
                                 maleta?.apply {
                                     nombre = it.etNombre.text.toString().trim()
@@ -330,7 +345,11 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
         }
     }
 
-    private fun uploadRecucedImage(maletaID : String?, callback : (EvenPost)->Unit) {
+    /**
+     * Método que sube al Storage la imagen una vez comprimida
+     */
+
+    private fun subirImagenComprimida(maletaID : String?, callback : (EvenPost)->Unit) {
 
         val eventPost = EvenPost()
         eventPost.documentId = maletaID ?: FirebaseFirestore.getInstance().collection("maletas").document().id
@@ -341,7 +360,7 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
             binding?.let {binding->
 
 
-                getBitmapFromUri(uri)?.let{bitmap ->
+                cogerImagenDesdeURI(uri)?.let{ bitmap ->
 
                     binding.progressBar.visibility= View.VISIBLE
                     val baos = ByteArrayOutputStream()
@@ -366,7 +385,7 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
                             }
                         }.addOnFailureListener{
                             eventPost.isSuccess=false
-                            enableUI(true)
+                            habilitarIntefaz(true)
                             Toast.makeText(activity, getString(R.string.error_subir_imagen), Toast.LENGTH_SHORT).show()
                             callback(eventPost)
                         }
@@ -376,7 +395,11 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
         }
     }
 
-    private fun getBitmapFromUri(uri : Uri) : Bitmap? {
+    /**
+     * Método auxiliar del anterior, que captura la imagen desde un URI y retorna el bitmap
+     */
+
+    private fun cogerImagenDesdeURI(uri : Uri) : Bitmap? {
         activity?.let{
             val bitmap = if( Build.VERSION.SDK_INT>=Build.VERSION_CODES.P){
                 val source = ImageDecoder.createSource(it.contentResolver,uri)
@@ -384,12 +407,16 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
             }else{
                 MediaStore.Images.Media.getBitmap(it.contentResolver,uri)
             }
-            return getResizedImage(bitmap,320)
+            return getImagenRedimensioada(bitmap,320)
         }
         return null
     }
 
-    private fun getResizedImage(image : Bitmap, maxSize: Int) : Bitmap  {
+    /**
+     * Método auxiliar del anterior, que redimensiona la imagen que se el pasa por parámetro
+     */
+
+    private fun getImagenRedimensioada(image : Bitmap, maxSize: Int) : Bitmap  {
         var ancho = image.width
         var alto = image.height
         if (ancho<=maxSize && alto <= maxSize) return image
@@ -412,13 +439,21 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
         }
     }
 
+    /**
+     * Método que abre la galería de imágnes del dispositivo
+     */
+
     private fun abrirGaleria() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         resultLauncher.launch(intent)
     }
 
+    /**
+     * Método que pone los datos de la maleta seleccionada en los campos del fragmento
+     */
+
     private fun ponerMaletaSeleccionada() {
-        maleta = (activity as MaletasAux)?.getMaletaSelect()
+        maleta = (activity as MaletasAux)?.getMaletaSeleccionada()
         maleta?.let { maleta->
             binding?.let {
                 maletaCargada = true
@@ -433,6 +468,10 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
         }
     }
 
+    /**
+     * Método para guardar los datos de la nueva maleta en FireBase
+     */
+
     private fun save(maleta : Maletas, documentId : String){
         val db = FirebaseFirestore.getInstance()
         db.collection("compartidas")
@@ -443,7 +482,7 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
             }.addOnFailureListener{
                 Toast.makeText(activity, getString(R.string.maleta_anadir_error), Toast.LENGTH_SHORT).show()
             }.addOnCompleteListener{
-                enableUI(true)
+                habilitarIntefaz(true)
                 binding?.progressBar?.visibility=View.INVISIBLE
                 dismiss()
 
@@ -456,6 +495,10 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
         }*/
     }
 
+    /**
+     * Método para actualizar los datos de una maleta seleccionada y de la que se quieren cambiar los datos en Firebase
+     */
+
     private fun update(maleta : Maletas){
         val db = FirebaseFirestore.getInstance()
         maleta.id?.let {id->
@@ -464,7 +507,7 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
             }.addOnFailureListener{
                 Toast.makeText(activity, getString(R.string.maleta_actualizar_error), Toast.LENGTH_SHORT).show()
             }.addOnCompleteListener{
-                enableUI(true)
+                habilitarIntefaz(true)
                 binding?.progressBar?.visibility=View.INVISIBLE
                 dismiss()
             }
@@ -472,7 +515,11 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
 
     }
 
-    private fun enableUI(enabled : Boolean){
+    /**
+     * Metodo que habilita o inhabilita botones y campos cuando se están ejecutando determinados procesos, para evitar problemas
+     */
+
+    private fun habilitarIntefaz(enabled : Boolean){
         positiveButton?.isEnabled = enabled
         negativeButton?.isEnabled = enabled
         binding?.let {
@@ -487,16 +534,4 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
         super.onDestroyView()
         binding = null
     }
-/*
-    fun contrasenaValida(password: String): Boolean {
-        // Necesita Contener -->    1 Num / 1 Minuscula / 1 Mayuscula / 1 caracter especial
-        // Min Caracteres 4 para que cumpla con lo anterior.
-        // Si pidiera caracter especial, pues tendría que pedir 4 caracteres
-        val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*?[#?!@\$%^&*-])(?=\\S+$).{4,}$"
-        val pattern = Pattern.compile(passwordPattern)
-        //return password.length>5
-        return pattern.matcher(password).matches()
-    }
-*/
-
 }

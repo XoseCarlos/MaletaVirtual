@@ -22,7 +22,7 @@ interface OnMaletaListener {
 
     fun onClick(maleta: Maletas)
     fun onLongClick(maleta: Maletas)
-    fun onImageClick(maleta: Maletas)
+    fun onImagenClick(maleta: Maletas)
     fun onBorrarClick(maleta:Maletas)
 
 }

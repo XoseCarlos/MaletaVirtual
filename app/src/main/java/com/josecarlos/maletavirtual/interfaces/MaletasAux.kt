@@ -18,5 +18,5 @@ import com.josecarlos.maletavirtual.models.Maletas
 //Para comunicar la interfaz de agregar maleta con la activity MaletasActivity
 
 interface MaletasAux {
-    fun getMaletaSelect() : Maletas?
+    fun getMaletaSeleccionada() : Maletas?
 }

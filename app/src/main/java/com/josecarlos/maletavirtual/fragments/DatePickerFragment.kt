@@ -22,6 +22,12 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import java.util.*
 
+/**
+ * Clase que gestiona el DataPicker
+ * Impide que pueda seleccionar una fecha a la actual del sistema
+ * No permite que se pueda seleccionar una fecha superior en dos años a la actual del sistema
+ */
+
 class DatePickerFragment(val listener : (dia : Int, mes: Int, ano: Int) -> Unit) : DialogFragment(),
     DatePickerDialog.OnDateSetListener {
 

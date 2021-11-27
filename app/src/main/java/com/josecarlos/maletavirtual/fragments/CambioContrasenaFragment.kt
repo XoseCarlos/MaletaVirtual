@@ -33,6 +33,10 @@ class CambioContrasenaFragment: DialogFragment(), DialogInterface.OnShowListener
     private var positiveButton : Button? = null
     private var negativeButton : Button? = null
 
+    /**
+     * Método que se ejecuta cuando se abre el diágolo
+     */
+
     override fun onShow(dialogInterface: DialogInterface?) {
 
         val dialog = dialog as? AlertDialog
@@ -41,25 +45,24 @@ class CambioContrasenaFragment: DialogFragment(), DialogInterface.OnShowListener
             positiveButton=dialogo.getButton(Dialog.BUTTON_POSITIVE)
             negativeButton=dialogo.getButton(Dialog.BUTTON_NEGATIVE)
             val firebase = FirebaseAuth.getInstance()
-            val usuario = firebase.currentUser
             positiveButton?.setOnClickListener{
                 binding?.let{
-                    enableUI(false)
+                    habilitarInterfaz(false)
 
                     if (binding!!.etConfirmaContrasena.text.isNullOrEmpty() || binding!!.etNuevaContrasena.text.isNullOrEmpty()){
                         Toast.makeText(this.requireContext(), "Debe introducir una contraseña", Toast.LENGTH_SHORT).show()
-                        enableUI(true)
+                        habilitarInterfaz(true)
                     }else{
                         val contrasenaNueva = binding!!.etNuevaContrasena.text.toString()
                         val contrasenaConfirmada = binding!!.etConfirmaContrasena.text.toString()
 
                         if (contrasenaNueva.length<6){
                             Toast.makeText(this.context, getString(R.string.largo_contrasena), Toast.LENGTH_SHORT).show()
-                            enableUI(true)
+                            habilitarInterfaz(true)
                             return@setOnClickListener
                         }
 
-                        if (contrasenaConfirmada!!.equals(contrasenaNueva)) {
+                        if (contrasenaConfirmada.equals(contrasenaNueva)) {
                              val usuario = firebaseAuth.currentUser
                             if (usuario != null) {
                                 usuario.updatePassword(contrasenaNueva)
@@ -71,12 +74,12 @@ class CambioContrasenaFragment: DialogFragment(), DialogInterface.OnShowListener
                                         Toast.makeText(this.context, getString(R.string.contrasena_actualizada_error), Toast.LENGTH_SHORT).show()
                                     }
                                     .addOnCompleteListener{
-                                        enableUI(true)
+                                        habilitarInterfaz(true)
                                     }
                             }
                         }else{
                             Toast.makeText(this.context, "Las contraseñas no coinciden... Inténtelo otra vez", Toast.LENGTH_SHORT).show()
-                            enableUI(true)
+                            habilitarInterfaz(true)
                         }
                     }
                 }
@@ -86,6 +89,11 @@ class CambioContrasenaFragment: DialogFragment(), DialogInterface.OnShowListener
             }
         }
     }
+
+    /**
+     * Sobreescritura del método onCreate, que crea toda la interfaz del diálogo
+     */
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         activity.let { activity ->
@@ -104,7 +112,11 @@ class CambioContrasenaFragment: DialogFragment(), DialogInterface.OnShowListener
         return super.onCreateDialog(savedInstanceState)
     }
 
-    private fun enableUI(enabled : Boolean){
+    /**
+     * Metodo que habilita o inhabilita botones y campos cuando se están ejecutando determinados procesos, para evitar problemas
+     */
+
+    private fun habilitarInterfaz(enabled : Boolean){
         positiveButton?.isEnabled = enabled
         negativeButton?.isEnabled = enabled
         binding?.let {

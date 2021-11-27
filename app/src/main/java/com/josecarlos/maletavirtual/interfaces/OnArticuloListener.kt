@@ -22,7 +22,7 @@ interface OnArticuloListener {
 
     fun onClick(articulo: Articulos)
     fun onLongClick(articulo: Articulos)
-    fun onImageClick(articulo: Articulos)
+    fun onImagenClick(articulo: Articulos)
     fun onBorrarClick(articulo:Articulos)
     fun onComprobadoClick(articulo: Articulos)
 }

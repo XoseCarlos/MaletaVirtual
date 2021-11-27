@@ -38,7 +38,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.josecarlos.maletavirtual.adapters.ArticulosAdapter
 import com.josecarlos.maletavirtual.databinding.FragmentDialogDuplicarMaletaBinding
-import com.josecarlos.maletavirtual.interfaces.MaletasAux
 import com.josecarlos.maletavirtual.models.Articulos
 import com.josecarlos.maletavirtual.models.Maletas
 import java.io.ByteArrayOutputStream
@@ -57,6 +56,10 @@ import com.josecarlos.maletavirtual.utils.EvenPost
 import com.josecarlos.maletavirtual.R
 import com.josecarlos.maletavirtual.utils.Utils
 import com.josecarlos.maletavirtual.utils.Utils.Companion.ocultarTeclado
+
+/**
+ * Clase que gestiona el diálogo de duplicar maleta en la pantalla de maletas cerradas y compartidas
+ */
 
 
 class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Boolean) : DialogFragment(), DialogInterface.OnShowListener {
@@ -118,6 +121,10 @@ class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Bool
         return super.onCreateDialog(savedInstanceState)
     }
 
+    /**
+     * Método que gestiona la carga del fragmento y gestiona el proceso de duplicar una maleta
+     */
+
     override fun onShow(dialogInterface: DialogInterface?) {
 
         //initMaleta()
@@ -127,7 +134,7 @@ class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Bool
         dialog?.let {dialogo->
             positiveButton=dialogo.getButton(Dialog.BUTTON_POSITIVE)
             negativeButton=dialogo.getButton(Dialog.BUTTON_NEGATIVE)
-            binding!!.etFechaViaje.setOnClickListener{showDatePickerDialog()}
+            binding!!.etFechaViaje.setOnClickListener{mostrarDialogoDataPicker()}
             val firebase = FirebaseAuth.getInstance()
             val usuario = firebase.currentUser
             positiveButton?.setOnClickListener{
@@ -137,10 +144,10 @@ class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Bool
                 }else {
 
                     binding?.let {
-                        enableUI(false)
+                        habilitarInterfaz(false)
                         //Carga imagen
                         //uploadImage (maleta?.id){eventPost->
-                        uploadRecucedImage(maleta?.id) { eventPost ->
+                        subirImagenComprimida(maleta?.id) { eventPost ->
                             if (eventPost.isSuccess) {
                                 dialogo.setTitle(getString(R.string.duplicar_maleta))
                                 val maleta = Maletas(
@@ -165,53 +172,11 @@ class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Bool
         }
     }
 
-    private fun uploadRecucedImageArticulo(articuloID : String?, maletaIdentificador: String, callback : (EvenPost)->Unit) {
+    /**
+     * Método que sube al Storage la imagen una vez comprimida
+     */
 
-        val eventPost = EvenPost()
-        eventPost.documentId = articuloID ?: FirebaseFirestore.getInstance().collection("usuarios").document(
-            Utils.getAuth().currentUser!!.uid)
-            .collection("maletas").document(maletaIdentificador)
-            .collection("articulos").document().id
-
-        val storageRef = FirebaseStorage.getInstance().reference.child(Utils.getAuth().currentUser!!.uid ).child(maletaIdentificador)
-
-        photoSelectedUri?.let { uri->
-            binding?.let {binding->
-                getBitmapFromUri(uri)?.let{bitmap ->
-
-                    //binding.progressBar.visibility= View.VISIBLE
-                    val baos = ByteArrayOutputStream()
-
-                    bitmap.compress(Bitmap.CompressFormat.JPEG,75,baos)
-
-                    val photoRef = storageRef.child(eventPost.documentId!!)
-
-                    photoRef.putBytes(baos.toByteArray()    )
-                        .addOnProgressListener {
-                            //val progress = (100*it.bytesTransferred/it.totalByteCount).toInt()
-                            //it.run {
-                            //    binding.progressBar.progress=progress
-                            //    binding.tvProgress.text= String.format("%s%%", progress)
-                            //}
-                        }
-                        .addOnSuccessListener {
-                            it.storage.downloadUrl.addOnSuccessListener {downloadUrl->
-                                eventPost.isSuccess=true
-                                eventPost.photoURL=downloadUrl.toString()
-                                callback(eventPost)
-                            }
-                        }.addOnFailureListener{
-                            eventPost.isSuccess=false
-                            //enableUI(true)
-                            Toast.makeText(activity, getString(R.string.error_subir_imagen), Toast.LENGTH_SHORT).show()
-                            callback(eventPost)
-                        }
-                }
-            }
-        }
-    }
-
-    private fun uploadRecucedImage(maletaID : String?, callback : (EvenPost)->Unit) {
+    private fun subirImagenComprimida(maletaID : String?, callback : (EvenPost)->Unit) {
 
         val eventPost = EvenPost()
         eventPost.documentId = maletaID ?: FirebaseFirestore.getInstance().collection("usuarios").document(
@@ -221,7 +186,7 @@ class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Bool
 
         photoSelectedUri?.let { uri->
             binding?.let {binding->
-                getBitmapFromUri(uri)?.let{bitmap ->
+                getImagenDeURI(uri)?.let{ bitmap ->
 
                     binding.progressBar.visibility= View.VISIBLE
                     val baos = ByteArrayOutputStream()
@@ -246,7 +211,7 @@ class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Bool
                             }
                         }.addOnFailureListener{
                             eventPost.isSuccess=false
-                            enableUI(true)
+                            habilitarInterfaz(true)
                             Toast.makeText(activity, getString(R.string.error_subir_imagen), Toast.LENGTH_SHORT).show()
                             callback(eventPost)
                         }
@@ -256,7 +221,11 @@ class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Bool
         }
     }
 
-    private fun getBitmapFromUri(uri : Uri) : Bitmap? {
+    /**
+     * Método que devuelve el bitmap de una imagen a partir de una URI de Firebase FireSore
+     */
+
+    private fun getImagenDeURI(uri : Uri) : Bitmap? {
         activity?.let{
             val bitmap = if( Build.VERSION.SDK_INT>=Build.VERSION_CODES.P){
                 val source = ImageDecoder.createSource(it.contentResolver,uri)
@@ -264,12 +233,16 @@ class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Bool
             }else{
                 MediaStore.Images.Media.getBitmap(it.contentResolver,uri)
             }
-            return getResizedImage(bitmap,320)
+            return getImagenRedimensionada(bitmap,320)
         }
         return null
     }
 
-    private fun getResizedImage(image : Bitmap, maxSize: Int) : Bitmap  {
+    /**
+     * Método auxiliar del anterior, que captura la imagen desde un URI y retorna el bitmap
+     */
+
+    private fun getImagenRedimensionada(image : Bitmap, maxSize: Int) : Bitmap  {
         var ancho = image.width
         var alto = image.height
         if (ancho<=maxSize && alto <= maxSize) return image
@@ -287,40 +260,41 @@ class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Bool
     private fun configButtons() {
         binding?.let {
             it.ibMaleta.setOnClickListener{
-                openGallery()
+                abrirGaleria()
             }
         }
     }
 
-    private fun openGallery() {
+    /**
+     * Método que abre la galería de imágnes del dispositivo
+     */
+
+    private fun abrirGaleria() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         resultLauncher.launch(intent)
     }
 
-    private fun showDatePickerDialog(){
-        val datepicker = DatePickerFragment { dia, mes, ano -> onDateSelected(dia, mes, ano) }
+    /**
+     * Método que muestra el DataPicker para seleccionar la fecha del viaje
+     */
+
+    private fun mostrarDialogoDataPicker(){
+        val datepicker = DatePickerFragment { dia, mes, ano -> onFechaSeleccionada(dia, mes, ano) }
         datepicker.show(childFragmentManager,"datepicker")
     }
 
-    fun onDateSelected(dia:Int, mes: Int, ano: Int){
+    /**
+     * Método auxiliar del anterior, para corregir el problema del mes, y poner la fecha seleccionada en el editText
+     */
+
+    fun onFechaSeleccionada(dia:Int, mes: Int, ano: Int){
         val mesCorregido = mes+1
         binding!!.etFechaViaje.setText("$dia/$mesCorregido/$ano")
     }
 
-    private fun initMaleta() {
-        maleta = (activity as MaletasAux)?.getMaletaSelect()
-        maleta?.let { maleta->
-            binding?.let {
-                it.etNombre.setText(maleta.nombre.toString())
-                it.etFechaViaje.setText(maleta.fechaViaje.toString())
-                Glide.with(this)
-                    .load(maleta.imgURL)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .centerCrop()
-                    .into(it.imageProductPreview)
-            }
-        }
-    }
+    /**
+     * Método para guardar los datos de la nueva maleta duplicada en FireBase
+     */
 
     private fun save(maletaOriginalID: String, maleta : Maletas, documentId : String, maletaCompartida: Boolean){
         val db = FirebaseFirestore.getInstance()
@@ -475,48 +449,17 @@ class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Bool
             }.addOnFailureListener{
                 Toast.makeText(activity, getString(R.string.duplicar_maleta_error), Toast.LENGTH_SHORT).show()
             }.addOnCompleteListener{
-                enableUI(true)
+                habilitarInterfaz(true)
                 binding?.progressBar?.visibility=View.INVISIBLE
                 dismiss()
             }
     }
 
-    private fun saveArticulo (articulo : Articulos, documentId : String, documentoMaleta : String){
-        val db = FirebaseFirestore.getInstance()
-        articulo.id = documentId
-        db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas").document(documentoMaleta)
-            .collection("articulos")
-            //.add(articulo)
-            .document(documentId)
-            .set(articulo)
-            .addOnSuccessListener {
-                //Toast.makeText(activity, "Artículo añadido correctamente", Toast.LENGTH_SHORT).show()
-            }.addOnFailureListener{
-                //Toast.makeText(activity, "Error al añadir el artículo", Toast.LENGTH_SHORT).show()
-            }.addOnCompleteListener{
-                //Toast.makeText(activity, "Complete listener", Toast.LENGTH_SHORT).show()
-                dismiss()
+    /**
+     * Metodo que habilita o inhabilita botones y campos cuando se están ejecutando determinados procesos, para evitar problemas
+     */
 
-            }
-    }
-
-    private fun update(maleta : Maletas){
-        val db = FirebaseFirestore.getInstance()
-        maleta.id?.let {id->
-            db.collection("usuarios").document(Utils.getAuth().currentUser!!.uid).collection("maletas").document(id).set(maleta).addOnSuccessListener {
-                Toast.makeText(activity, getString(R.string.maleta_actualizada_ok), Toast.LENGTH_SHORT).show()
-            }.addOnFailureListener{
-                Toast.makeText(activity, getString(R.string.maleta_actualizar_error), Toast.LENGTH_SHORT).show()
-            }.addOnCompleteListener{
-                enableUI(true)
-                binding?.progressBar?.visibility=View.INVISIBLE
-                dismiss()
-            }
-        }
-
-    }
-
-    private fun enableUI(enabled : Boolean){
+    private fun habilitarInterfaz(enabled : Boolean){
         positiveButton?.isEnabled = enabled
         negativeButton?.isEnabled = enabled
         binding?.let {
@@ -530,11 +473,5 @@ class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Bool
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
-    }
-
-    private fun crearImagenJpg() : String {
-        val fecha = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date()) + ".jpg"
-        val archivo = Utils.getAuth().currentUser!!.uid +"-"+ System.currentTimeMillis().toString()
-        return archivo
     }
 }
