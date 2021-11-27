@@ -1,3 +1,16 @@
+/* *******************************************
+Alumno: José Carlos Vázquez Míguez
+Mail: xosecarlos@mundo-r.com
+Centro: ILERNA ONLINE
+Ciclo: DAM
+Curso: 2021-2022 (1º semestre)
+Proyecto: Maleta Virtual
+Tutor: Mario Gago
+Fecha última revisión: 27/11/2021
+Revisión: 4.3
+**********************************************
+*/
+
 package com.josecarlos.maletavirtual.login
 
 import android.content.Intent
@@ -12,11 +25,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.josecarlos.maletavirtual.MainActivity
 import com.josecarlos.maletavirtual.R
-import com.josecarlos.maletavirtual.utils.Utils.Companion.goToActivity
-import com.josecarlos.maletavirtual.utils.Utils.Companion.isValidEmail
-import com.josecarlos.maletavirtual.utils.Utils.Companion.isValidPassword
+import com.josecarlos.maletavirtual.utils.Utils.Companion.abrirActivity
+import com.josecarlos.maletavirtual.utils.Utils.Companion.esCorreoValido
+import com.josecarlos.maletavirtual.utils.Utils.Companion.esContrasenaValida_2
 import com.josecarlos.maletavirtual.utils.Utils.Companion.toast
-import com.josecarlos.maletavirtual.utils.Utils.Companion.validate
+import com.josecarlos.maletavirtual.utils.Utils.Companion.validar
 import com.josecarlos.maletavirtual.databinding.ActivityLoginBinding
 
 class AutenticacionActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
@@ -36,7 +49,7 @@ class AutenticacionActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
             val email = binding.editTextEmail.text.toString()
             val password = binding.editTextPassword.text.toString()
 
-            if (isValidEmail(email) && isValidPassword(password)) {
+            if (esCorreoValido(email) && esContrasenaValida_2(password)) {
                 logInByEmail(email, password)
             } else {
                 //toast("Comprueba que los datos son correctos.")
@@ -44,12 +57,12 @@ class AutenticacionActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
         }
 
         binding.textViewForgotPassword.setOnClickListener {
-            goToActivity<OlvidoContrasenaActivity>()
+            abrirActivity<OlvidoContrasenaActivity>()
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
         }
 
         binding.buttonCreateAccount.setOnClickListener {
-            goToActivity<SignUpActivity>()
+            abrirActivity<SignUpActivity>()
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
         }
 
@@ -58,12 +71,12 @@ class AutenticacionActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
             startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN)
         }
 
-        binding.editTextEmail.validate {
-            binding.editTextEmail.error = if (isValidEmail(it)) null else "Correo Electrónico no válido"
+        binding.editTextEmail.validar {
+            binding.editTextEmail.error = if (esCorreoValido(it)) null else "Correo Electrónico no válido"
         }
 
-        binding.editTextPassword.validate {
-            binding.editTextPassword.error = if (isValidPassword(it)) null else getString(R.string.contenido_clave)
+        binding.editTextPassword.validar {
+            binding.editTextPassword.error = if (esContrasenaValida_2(it)) null else getString(R.string.contenido_clave)
         }
 
     }
@@ -86,7 +99,7 @@ class AutenticacionActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
             if (mGoogleApiClient.isConnected) {
                 Auth.GoogleSignInApi.signOut(mGoogleApiClient)
             }
-            goToActivity<MainActivity> {
+            abrirActivity<MainActivity> {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
         }
@@ -97,7 +110,7 @@ class AutenticacionActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
             if (task.isSuccessful) {
                 if (mAuth.currentUser!!.isEmailVerified) {
 
-                    goToActivity<MainActivity> {
+                    abrirActivity<MainActivity> {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     }
                 } else {

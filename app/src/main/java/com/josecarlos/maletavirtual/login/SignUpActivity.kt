@@ -1,15 +1,28 @@
+/* *******************************************
+Alumno: José Carlos Vázquez Míguez
+Mail: xosecarlos@mundo-r.com
+Centro: ILERNA ONLINE
+Ciclo: DAM
+Curso: 2021-2022 (1º semestre)
+Proyecto: Maleta Virtual
+Tutor: Mario Gago
+Fecha última revisión: 27/11/2021
+Revisión: 4.3
+**********************************************
+*/
+
 package com.josecarlos.maletavirtual.login
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.josecarlos.maletavirtual.utils.Utils.Companion.goToActivity
-import com.josecarlos.maletavirtual.utils.Utils.Companion.isValidConfirmPassword
-import com.josecarlos.maletavirtual.utils.Utils.Companion.isValidEmail
-import com.josecarlos.maletavirtual.utils.Utils.Companion.isValidPassword
+import com.josecarlos.maletavirtual.utils.Utils.Companion.abrirActivity
+import com.josecarlos.maletavirtual.utils.Utils.Companion.esCorrectaConfirmacionContrasena
+import com.josecarlos.maletavirtual.utils.Utils.Companion.esCorreoValido
+import com.josecarlos.maletavirtual.utils.Utils.Companion.esContrasenaValida_2
 import com.josecarlos.maletavirtual.utils.Utils.Companion.toast
-import com.josecarlos.maletavirtual.utils.Utils.Companion.validate
+import com.josecarlos.maletavirtual.utils.Utils.Companion.validar
 import com.josecarlos.maletavirtual.databinding.ActivitySignUpBinding
 
 class SignUpActivity : AppCompatActivity() {
@@ -24,7 +37,7 @@ class SignUpActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.buttonGoLogIn.setOnClickListener {
-            goToActivity<AutenticacionActivity> {
+            abrirActivity<AutenticacionActivity> {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
@@ -35,23 +48,23 @@ class SignUpActivity : AppCompatActivity() {
             val password = binding.editTextPassword.text.toString()
             val confirmPassword = binding.editTextConfirmPassword.text.toString()
             //if (isValidEmail(email) && isValidPassword(password) && isValidConfirmPassword(password, confirmPassword)) {
-            if (isValidEmail(email) && isValidConfirmPassword(password, confirmPassword)) {
+            if (esCorreoValido(email) && esCorrectaConfirmacionContrasena(password, confirmPassword)) {
                 signUpByEmail(email, password)
             } else {
                 toast("Comprueba que los datos son correctos.")
             }
         }
 
-        binding.editTextEmail.validate {
-            binding.editTextEmail.error = if (isValidEmail(it)) null else "Correo electrónico no válido"
+        binding.editTextEmail.validar {
+            binding.editTextEmail.error = if (esCorreoValido(it)) null else "Correo electrónico no válido"
         }
 
-        binding.editTextPassword.validate {
-            binding.editTextPassword.error = if (isValidPassword(it)) null else "La contraseña debe contener 1 minúscula, 1 mayúscula, 1 número, 1 carácter especial y al menos 8 caracteres de longitud"
+        binding.editTextPassword.validar {
+            binding.editTextPassword.error = if (esContrasenaValida_2(it)) null else "La contraseña debe contener 1 minúscula, 1 mayúscula, 1 número, 1 carácter especial y al menos 8 caracteres de longitud"
         }
 
-        binding.editTextConfirmPassword.validate {
-            binding.editTextConfirmPassword.error = if (isValidConfirmPassword(binding.editTextPassword.text.toString(), it)) null else "No concuerdan los datos del correo confirmado"
+        binding.editTextConfirmPassword.validar {
+            binding.editTextConfirmPassword.error = if (esCorrectaConfirmacionContrasena(binding.editTextPassword.text.toString(), it)) null else "No concuerdan los datos del correo confirmado"
         }
 
     }
@@ -62,7 +75,7 @@ class SignUpActivity : AppCompatActivity() {
                 mAuth.currentUser!!.sendEmailVerification().addOnCompleteListener(this) {
                     toast("Se le envió un correo electrónico. Confirme antes de autenticarse.")
 
-                    goToActivity<AutenticacionActivity> {
+                    abrirActivity<AutenticacionActivity> {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     }
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)

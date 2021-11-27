@@ -6,8 +6,8 @@ Ciclo: DAM
 Curso: 2021-2022 (1º semestre)
 Proyecto: Maleta Virtual
 Tutor: Mario Gago
-Fecha última revisión: 15/11/2021
-Revisión: 1.0
+Fecha última revisión: 27/11/2021
+Revisión: 4.3
 **********************************************
 */
 
@@ -39,15 +39,12 @@ import com.google.firebase.storage.FirebaseStorage
 import com.josecarlos.maletavirtual.utils.EvenPost
 import com.josecarlos.maletavirtual.R
 import com.josecarlos.maletavirtual.utils.Utils
-import com.josecarlos.maletavirtual.utils.Utils.Companion.hideKeyboard
+import com.josecarlos.maletavirtual.utils.Utils.Companion.ocultarTeclado
 import com.josecarlos.maletavirtual.databinding.FragmentDialogAddArticuloBinding
 import com.josecarlos.maletavirtual.interfaces.ArticulosAux
 import com.josecarlos.maletavirtual.models.Articulos
 import java.lang.NullPointerException
-import java.text.SimpleDateFormat
-import java.util.*
 import java.io.*
-import java.lang.Exception
 
 
 class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorMaleta: String): DialogFragment(), DialogInterface.OnShowListener {
@@ -89,13 +86,13 @@ class AddDialogArticuloFragment (maletaID: String, compartida: Boolean, creadorM
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         binding?.etNombre?.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus)  hideKeyboard()
+            if (!hasFocus)  ocultarTeclado()
         }
         binding?.etCantidad?.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus)  hideKeyboard()
+            if (!hasFocus)  ocultarTeclado()
         }
         binding?.ibArticulo?.setOnFocusChangeListener{v, hasFocus ->
-            if (hasFocus) hideKeyboard()
+            if (hasFocus) ocultarTeclado()
         }
 
         activity.let {activity->

@@ -6,10 +6,11 @@ Ciclo: DAM
 Curso: 2021-2022 (1º semestre)
 Proyecto: Maleta Virtual
 Tutor: Mario Gago
-Fecha última revisión: 15/11/2021
-Revisión: 1.0
+Fecha última revisión: 27/11/2021
+Revisión: 4.3
 **********************************************
 */
+
 
 package com.josecarlos.maletavirtual.fragments
 
@@ -40,7 +41,7 @@ import com.josecarlos.maletavirtual.MaletasActivity
 import com.josecarlos.maletavirtual.utils.EvenPost
 import com.josecarlos.maletavirtual.R
 import com.josecarlos.maletavirtual.utils.Utils
-import com.josecarlos.maletavirtual.utils.Utils.Companion.hideKeyboard
+import com.josecarlos.maletavirtual.utils.Utils.Companion.ocultarTeclado
 import com.josecarlos.maletavirtual.databinding.FragmentDialogAddCompartidaBinding
 import com.josecarlos.maletavirtual.interfaces.MaletasAux
 import com.josecarlos.maletavirtual.models.Maletas
@@ -79,19 +80,19 @@ class AddDialogCompartidaFragment : DialogFragment(), DialogInterface.OnShowList
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         binding?.etClave?.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus)  hideKeyboard()
+            if (!hasFocus)  ocultarTeclado()
         }
         binding?.etNombre?.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus)  hideKeyboard()
+            if (!hasFocus)  ocultarTeclado()
         }
         binding?.tilNombre?.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus)  hideKeyboard()
+            if (!hasFocus)  ocultarTeclado()
         }
         binding?.ibMaleta?.setOnFocusChangeListener{v, hashFocus ->
-            if (hashFocus) hideKeyboard()
+            if (hashFocus) ocultarTeclado()
         }
         binding?.etFechaViaje?.setOnFocusChangeListener{v, hashFocus ->
-            if (hashFocus) hideKeyboard()
+            if (hashFocus) ocultarTeclado()
         }
 
         //var String = if (maletaCargada) getString(R.string.agregar) else getString(R.string.actualizar)

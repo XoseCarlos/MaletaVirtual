@@ -6,10 +6,11 @@ Ciclo: DAM
 Curso: 2021-2022 (1º semestre)
 Proyecto: Maleta Virtual
 Tutor: Mario Gago
-Fecha última revisión: 15/11/2021
-Revisión: 1.0
+Fecha última revisión: 27/11/2021
+Revisión: 4.3
 **********************************************
 */
+
 
 package com.josecarlos.maletavirtual.fragments
 
@@ -52,11 +53,10 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.storage.FileDownloadTask
 
 import com.google.android.gms.tasks.OnSuccessListener
-import com.josecarlos.maletavirtual.MaletasActivity
 import com.josecarlos.maletavirtual.utils.EvenPost
 import com.josecarlos.maletavirtual.R
 import com.josecarlos.maletavirtual.utils.Utils
-import com.josecarlos.maletavirtual.utils.Utils.Companion.hideKeyboard
+import com.josecarlos.maletavirtual.utils.Utils.Companion.ocultarTeclado
 
 
 class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Boolean) : DialogFragment(), DialogInterface.OnShowListener {
@@ -92,13 +92,13 @@ class AddDialogDuplicarMaletaFragment (maletaID: String, maletaCompartida : Bool
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         binding?.etNombre?.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus)  hideKeyboard()
+            if (!hasFocus)  ocultarTeclado()
         }
         binding?.ibMaleta?.setOnFocusChangeListener{v, hashFocus ->
-            if (hashFocus) hideKeyboard()
+            if (hashFocus) ocultarTeclado()
         }
         binding?.etFechaViaje?.setOnFocusChangeListener{v, hashFocus ->
-            if (hashFocus) hideKeyboard()
+            if (hashFocus) ocultarTeclado()
         }
 
         activity.let {activity->

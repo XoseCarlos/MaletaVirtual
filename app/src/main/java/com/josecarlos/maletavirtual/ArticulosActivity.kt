@@ -6,14 +6,13 @@ Ciclo: DAM
 Curso: 2021-2022 (1º semestre)
 Proyecto: Maleta Virtual
 Tutor: Mario Gago
-Fecha última revisión: 15/11/2021
-Revisión: 1.0
+Fecha última revisión: 27/11/2021
+Revisión: 4.3
 **********************************************
 */
 
 package com.josecarlos.maletavirtual
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -29,7 +28,7 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.FirebaseStorage
-import com.josecarlos.maletavirtual.utils.Utils.Companion.goToActivity
+import com.josecarlos.maletavirtual.utils.Utils.Companion.abrirActivity
 import com.josecarlos.maletavirtual.adapters.ArticulosAdapter
 import com.josecarlos.maletavirtual.databinding.ActivityArticulosBinding
 import com.josecarlos.maletavirtual.fragments.AddDialogArticuloFragment
@@ -41,6 +40,10 @@ import com.josecarlos.maletavirtual.models.Maletas
 import com.josecarlos.maletavirtual.utils.Utils
 import com.josecarlos.maletavirtual.utils.Utils.Companion.toast
 import com.squareup.picasso.Picasso
+
+/*
+    Clase que maneja toda la pantalla de Artículos
+ */
 
 class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux{
 
@@ -199,15 +202,15 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.title){
             getString(R.string.ventana_principal)      -> {
-                goToActivity<MainActivity>()
+                abrirActivity<MainActivity>()
                 finish()
             }
             getString(R.string.configuracion_personal) -> {
-                goToActivity<CuentaPersonalActivity>()
+                abrirActivity<CuentaPersonalActivity>()
                 finish()
             }
             getString(R.string.maletas_activas) -> {
-                goToActivity<MaletasActivity>("activa")
+                abrirActivity<MaletasActivity>("activa")
                 finish()
             }
             //getString(R.string.cerrar_sesion) -> { AuthUI.getInstance().signOut(this) ; finish() }
@@ -517,7 +520,7 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
                                 }
                             }
                         }
-                        goToActivity<MaletasActivity>("cerrada")
+                        abrirActivity<MaletasActivity>("cerrada")
                         finish()
                     }else {
 
@@ -570,7 +573,7 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
                                 toast(getString(R.string.borrar_maleta_creador))
                             }
                         }
-                        goToActivity<MaletasActivity>("compartida")
+                        abrirActivity<MaletasActivity>("compartida")
                         finish()
                     }
                 }

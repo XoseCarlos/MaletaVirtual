@@ -6,8 +6,8 @@ Ciclo: DAM
 Curso: 2021-2022 (1º semestre)
 Proyecto: Maleta Virtual
 Tutor: Mario Gago
-Fecha última revisión: 15/11/2021
-Revisión: 1.0
+Fecha última revisión: 27/11/2021
+Revisión: 4.3
 **********************************************
 */
 
@@ -24,14 +24,13 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.auth.AuthUI
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.FirebaseStorage
-import com.josecarlos.maletavirtual.utils.Utils.Companion.goToActivity
+import com.josecarlos.maletavirtual.utils.Utils.Companion.abrirActivity
 import com.josecarlos.maletavirtual.adapters.MaletaAdapter
 import com.josecarlos.maletavirtual.adapters.RecyclerViewAdapter
 import com.josecarlos.maletavirtual.databinding.ActivityMaletasBinding
@@ -105,23 +104,23 @@ class MaletasActivity : AppCompatActivity() , OnMaletaListener, MaletasAux {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId){
             R.id.action_volver_principal       -> {
-                goToActivity<MainActivity>()
+                abrirActivity<MainActivity>()
                 finish()
             }
             R.id.action_configuracion_personal -> {
-                goToActivity<CuentaPersonalActivity>()
+                abrirActivity<CuentaPersonalActivity>()
                 finish()
             }
             R.id.action_maletas_activas  ->  {
-                goToActivity<MaletasActivity>("activa")
+                abrirActivity<MaletasActivity>("activa")
                 finish()
             }
             R.id.action_maletas_cerradas  ->  {
-                goToActivity<MaletasActivity>("cerrada")
+                abrirActivity<MaletasActivity>("cerrada")
                 finish()
             }
             R.id.action_maletas_compartidas  ->  {
-                goToActivity<MaletasActivity>("compartida")
+                abrirActivity<MaletasActivity>("compartida")
                 finish()
             }
         }

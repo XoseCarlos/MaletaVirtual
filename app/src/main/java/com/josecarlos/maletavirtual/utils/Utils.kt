@@ -6,8 +6,8 @@ Ciclo: DAM
 Curso: 2021-2022 (1º semestre)
 Proyecto: Maleta Virtual
 Tutor: Mario Gago
-Fecha última revisión: 15/11/2021
-Revisión: 1.0
+Fecha última revisión: 27/11/2021
+Revisión: 4.3
 **********************************************
 */
 
@@ -17,7 +17,6 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
@@ -34,15 +33,22 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import java.io.File
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
+/*  Clase con funciones que se aplican en toda la aplicación
+    Se utilizan métodos estáticos (companion object)
+*/
+
 class Utils : Application() {
 
     companion   object{
+
+        //Estos primeros métodos lo que hacen es devolver instancias de Firebase,
+        //Authenticación, Firestore, Storage, muy utilizadas durante todo el código
+
         fun getAuth(): FirebaseAuth{
             return FirebaseAuth.getInstance()
         }
@@ -85,20 +91,20 @@ class Utils : Application() {
 
         fun ViewGroup.inflate(layoutId: Int) = LayoutInflater.from(context).inflate(layoutId, this, false)!!
 
-        inline fun <reified T : Activity> Activity.goToActivity(noinline init: Intent.() -> Unit = {}) {
+        inline fun <reified T : Activity> Activity.abrirActivity(noinline init: Intent.() -> Unit = {}) {
             val intent = Intent(this, T::class.java)
             intent.init()
             startActivity(intent)
         }
 
-        inline fun <reified T : Activity> Activity.goToActivity(tipo : String, noinline init: Intent.() -> Unit = {}) {
+        inline fun <reified T : Activity> Activity.abrirActivity(tipo : String, noinline init: Intent.() -> Unit = {}) {
             val intent = Intent(this, T::class.java)
             intent.putExtra("TIPO", tipo)
             intent.init()
             startActivity(intent)
         }
 
-        fun EditText.validate(validation: (String) -> Unit) {
+        fun EditText.validar(validation: (String) -> Unit) {
             this.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(editable: Editable) {
                     validation(editable.toString())
@@ -112,7 +118,7 @@ class Utils : Application() {
             })
         }
 
-        fun Activity.isValidEmail(email: String): Boolean {
+        fun Activity.esCorreoValido(email: String): Boolean {
             val pattern = Patterns.EMAIL_ADDRESS
             return pattern.matcher(email).matches()
         }
@@ -126,7 +132,7 @@ class Utils : Application() {
             return pattern.matcher(password).matches()
         }
 
-        fun Activity.isValidPassword(password: String): Boolean {
+        fun Activity.esContrasenaValida_2(password: String): Boolean {
             // Necesita Contener -->    1 Num / 1 Minuscula / 1 Mayuscula / 1 Special / Min Caracteres 4
             // ya que incluye a los 4 casos. Puedo limitar el largo de la clave en el TextInputEditText
             val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*?[#?!@\$%^&*-])(?=\\S+$).{4,}$"
@@ -135,19 +141,19 @@ class Utils : Application() {
             return pattern.matcher(password).matches()
         }
 
-        fun Activity.isValidConfirmPassword(password: String, confirmPassword: String): Boolean {
+        fun Activity.esCorrectaConfirmacionContrasena(password: String, confirmPassword: String): Boolean {
             return password == confirmPassword
         }
 
-        fun Fragment.hideKeyboard() {
-            view?.let { activity?.hideKeyboard(it) }
+        fun Fragment.ocultarTeclado() {
+            view?.let { activity?.ocultarTeclado(it) }
         }
 
-        fun Activity.hideKeyboard() {
-            hideKeyboard(currentFocus ?: View(this))
+        fun Activity.ocultarTeclado() {
+            ocultarTeclado(currentFocus ?: View(this))
         }
 
-        fun Context.hideKeyboard(view: View) {
+        fun Context.ocultarTeclado(view: View) {
             val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
         }
@@ -174,24 +180,5 @@ class Utils : Application() {
             val archivo = getAuth().currentUser!!.uid +"-"+ System.currentTimeMillis().toString()
             return archivo
         }
-
-        /*fun crarImagenJpg() : String {
-            val fecha = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date()) + ".jpg"
-            val nombre = System.currentTimeMillis().toString()
-            return nombre
-        }*/
-
-        /*fun crearImagen () : File {
-            val nombreImagen = "foto_" + Utils.getAuth().currentUser!!.uid.toString()
-            val directorio = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-            //try {
-            val imagen = File.createTempFile(nombreImagen, ".jpg", directorio)
-            rutaImagen = imagen.absolutePath
-            //return imagen
-            //}catch (ex : Exception){
-            //Toast.makeText(this, rutaImagen.toString(), Toast.LENGTH_SHORT).show()
-            //}
-            return imagen
-        }*/
     }
 }

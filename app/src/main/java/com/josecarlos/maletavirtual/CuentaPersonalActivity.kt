@@ -6,10 +6,11 @@ Ciclo: DAM
 Curso: 2021-2022 (1º semestre)
 Proyecto: Maleta Virtual
 Tutor: Mario Gago
-Fecha última revisión: 15/11/2021
-Revisión: 1.0
+Fecha última revisión: 27/11/2021
+Revisión: 4.3
 **********************************************
 */
+
 
 package com.josecarlos.maletavirtual
 
@@ -40,16 +41,15 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
-import com.josecarlos.maletavirtual.utils.Utils.Companion.hideKeyboard
+import com.josecarlos.maletavirtual.utils.Utils.Companion.ocultarTeclado
 import com.josecarlos.maletavirtual.databinding.ActivityCuentaPersonalBinding
 import com.josecarlos.maletavirtual.fragments.CambioContrasenaFragment
 import com.josecarlos.maletavirtual.models.Usuario
 import com.josecarlos.maletavirtual.utils.Utils
-import com.josecarlos.maletavirtual.utils.Utils.Companion.goToActivity
+import com.josecarlos.maletavirtual.utils.Utils.Companion.abrirActivity
 import java.io.ByteArrayOutputStream
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.*
 
 class CuentaPersonalActivity : AppCompatActivity() {
 
@@ -84,16 +84,16 @@ class CuentaPersonalActivity : AppCompatActivity() {
         }
 
         binding.etFullName.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) hideKeyboard(v)
+            if (!hasFocus) ocultarTeclado(v)
         }
         binding.telefono.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) hideKeyboard(v)
+            if (!hasFocus) ocultarTeclado(v)
         }
         binding?.btnUpdate.setOnFocusChangeListener{v, hasFocus->
-            if (hasFocus) hideKeyboard(v)
+            if (hasFocus) ocultarTeclado(v)
         }
         binding?.btnCambioContrasena.setOnFocusChangeListener{v, hasFocus->
-            if (hasFocus) hideKeyboard(v)
+            if (hasFocus) ocultarTeclado(v)
         }
 
         getUser()
@@ -109,19 +109,19 @@ class CuentaPersonalActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.title){
             getString(R.string.ventana_principal) -> {
-                goToActivity<MainActivity>()
+                abrirActivity<MainActivity>()
                 finish()
             }
             getString(R.string.maletas_activas) -> {
-                goToActivity<MaletasActivity>("activa")
+                abrirActivity<MaletasActivity>("activa")
                 finish()
             }
             getString(R.string.maletas_cerradas) -> {
-                goToActivity<MaletasActivity>("cerrada")
+                abrirActivity<MaletasActivity>("cerrada")
                 finish()
             }
             getString(R.string.maletas_compartidas) -> {
-                goToActivity<MaletasActivity>("compartida")
+                abrirActivity<MaletasActivity>("compartida")
                 finish()
             }
             //getString(R.string.cerrar_sesion) -> { AuthUI.getInstance().signOut(this) ; finish() }
