@@ -47,7 +47,7 @@ class Utils : Application() {
     companion   object{
 
         //Estos primeros métodos lo que hacen es devolver instancias de Firebase,
-        //Authenticación, Firestore, Storage, muy utilizadas durante todo el código
+        //Authenticación, Firestore, Storage, muy utilizadas durante el código
 
         fun getAuth(): FirebaseAuth{
             return FirebaseAuth.getInstance()
