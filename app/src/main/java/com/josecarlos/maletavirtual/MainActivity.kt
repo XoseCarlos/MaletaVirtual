@@ -218,9 +218,9 @@ class MainActivity : AppCompatActivity() {
             } else {
                 val providers = arrayListOf(
                     AuthUI.IdpConfig.EmailBuilder().build(),
-                    AuthUI.IdpConfig.GoogleBuilder().build(),
-                    AuthUI.IdpConfig.PhoneBuilder().build())
-                //AuthUI.IdpConfig.FacebookBuilder().build())
+                    AuthUI.IdpConfig.GoogleBuilder().build())
+                //  AuthUI.IdpConfig.PhoneBuilder().build())
+                //  AuthUI.IdpConfig.FacebookBuilder().build())
 
                 val loginView = AuthMethodPickerLayout
                     .Builder(R.layout.vista_pantalla_login)
