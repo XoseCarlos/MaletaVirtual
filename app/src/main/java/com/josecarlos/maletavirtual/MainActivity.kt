@@ -144,13 +144,22 @@ class MainActivity : AppCompatActivity() {
                 .document(FirebaseAuth.getInstance().currentUser!!.uid)
             usuarioAct.get().addOnSuccessListener {
                 val us = it.toObject(Usuario::class.java)
-                //Picasso.get().load(us?.imgURL).error(R.drawable.maletas3_little).into(binding.imageViewInfoAvatar)
-                Glide.with(this)
-                    .load(us?.imgURL)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .centerCrop()
-                    .error(R.drawable.maletas3_little)
-                    .into(binding.imageViewInfoAvatar)
+                if (Utils.getUsuarioLogueado().photoUrl!=null) {
+                    //Picasso.get().load(us?.imgURL).error(R.drawable.maletas3_little).into(binding.imageViewInfoAvatar)
+                    Glide.with(this)
+                        .load(us?.imgURL)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .centerCrop()
+                        .error(Utils.getUsuarioLogueado().photoUrl)
+                        .into(binding.imageViewInfoAvatar)
+                }else{
+                    Glide.with(this)
+                        .load(us?.imgURL)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .centerCrop()
+                        .error(R.drawable.maletas3_little)
+                        .into(binding.imageViewInfoAvatar)
+                }
             }
         }
     }
