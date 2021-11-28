@@ -173,6 +173,10 @@ class CuentaPersonalActivity : AppCompatActivity() {
         //    .set((Usuario(Utils.getAuth().uid.toString(),)))
     }
 
+    /**
+     * Configura la lógica de los botones de la activity
+     */
+
     private fun configurarBotones(){
         binding.let {binding->
             binding.ibProfile.setOnClickListener{
@@ -205,10 +209,18 @@ class CuentaPersonalActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Función para abrir la galería de imágenes del dispositivo y así devolver la imagen seleccionada del avatar del usuario
+     */
+
     private fun abrirGaleria(){
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         resultLauncher.launch(intent)
     }
+
+    /**
+     * Función que retorna el resultado de la selección de la imagen de la galería del dispositivo
+    */
 
     private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if (it.resultCode== Activity.RESULT_OK){
@@ -224,6 +236,11 @@ class CuentaPersonalActivity : AppCompatActivity() {
             }
         }
     }
+
+    /**
+     * Función para guardar los cambios en los datos del usuario permitidos en la pantalla de Configuración personal
+     */
+
 
     private fun updateDatosUsuario(user : FirebaseUser, uri : Uri){
 
@@ -264,6 +281,10 @@ class CuentaPersonalActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Función que retorna el objeto usuario
+     */
+
     fun encontrarUsuario (uid : String) : LiveData<Usuario>{
         val data = MutableLiveData<Usuario>()
         FirebaseFirestore.getInstance().collection("usuarios").document(uid).get().addOnSuccessListener{
@@ -272,6 +293,10 @@ class CuentaPersonalActivity : AppCompatActivity() {
         }
         return data
     }
+
+    /**
+     * Función para subir al Storage y a la base de datos la imagen seleccionada para el avatar del usuario
+     */
 
     private fun subirImagenComprimida(user : FirebaseUser) {
 
@@ -313,6 +338,10 @@ class CuentaPersonalActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Función auxiliar de la anteiror, paara coger de la URI la imagen y devolver el bitmap
+     */
+
     private fun getBitmapFromUri(uri : Uri) : Bitmap? {
         this.let{
             val bitmap = if( Build.VERSION.SDK_INT>= Build.VERSION_CODES.P){
@@ -326,6 +355,9 @@ class CuentaPersonalActivity : AppCompatActivity() {
         return null
     }
 
+    /**
+     * Función auxiliar de la anterior que redimensiona la imagen pasada por parámetro y la devuelve procesada
+     */
 
     private fun getImagenRedimensionada(image : Bitmap, maxSize: Int) : Bitmap  {
         var ancho = image.width
@@ -342,6 +374,9 @@ class CuentaPersonalActivity : AppCompatActivity() {
         return Bitmap.createScaledBitmap(image, ancho, alto, true)
     }
 
+    /**
+     * Función que llama a la cámara del dispositivo. No se utiliza en esta activity, de momento. PAra un futuro
+     */
 
     private fun abrirCamara() {
         //val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
