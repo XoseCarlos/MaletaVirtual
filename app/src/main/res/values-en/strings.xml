@@ -100,7 +100,7 @@
     <string name="login_create_account">Create a new account</string>
     <string name="login_go_login">Go back to Login</string>
     <string name="navigation_bottom_info">Info</string>
-      <string name="options_menu_log_out">Log out</string>
+    <string name="options_menu_log_out">Log out</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="introducir_todos_datos">You must enter all the data to continue ...</string>
     <string name="borrado_storage">Deleted in Storage</string>
