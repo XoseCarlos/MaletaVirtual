@@ -99,6 +99,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
+    /**
+     * Método que registra al usuario en la base de datos de Usuarios en Firebase
+     */
+
     private fun usuarioRegistrado(uid: String): Boolean {
         var registrado : Boolean = false
         val db = FirebaseFirestore.getInstance().collection("usuarios")
@@ -133,6 +138,11 @@ class MainActivity : AppCompatActivity() {
         return registrado
     }
 
+
+    /**
+     * Método que establece la lógica del inicio de la aplicación. Muestra el nombre, correo e imagen del usuario autenticado en la pantalla principal
+     */
+
     override fun onStart() {
         super.onStart()
         binding.textViewInfoName.text=firebaseAuth.currentUser?.displayName.toString()
@@ -164,6 +174,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    /**
+     * Este método lo que hace es ocultar los botones e imágenes de la pantalla principal para mostrar el linear layout
+     * de progreso antes de cargar la pantalla principal
+     */
+
     private fun ocultarPantallaPrincipal(){
         binding.llProgress.visibility = View.VISIBLE
         binding.imageViewInfoAvatar.visibility=View.GONE
@@ -175,6 +191,12 @@ class MainActivity : AppCompatActivity() {
         binding.actionSignOut.visibility = View.GONE
         binding.mainBotonCompartidas.visibility=View.GONE
     }
+
+
+    /**
+     * Método para cargar la pantalla de logueo y autenticación, en el caso de que el usuario
+     * no se haya autenticado antes. Si no, salta a la pantalla principal sin más
+     */
 
     private fun configAuth(){
         firebaseAuth= FirebaseAuth.getInstance()
@@ -267,6 +289,10 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    /**
+     * Ugarda al usuario autenticado, el nuevo usuario en la base de datos Usuarios de FireBase FireStpore
+     */
 
     private fun save(usuario : Usuario){
         val userID = firebaseAuth.currentUser!!.uid
