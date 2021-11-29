@@ -218,6 +218,11 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     * Método sobre escrito de la interfax OnArticuloListener, que ejecuta la función de hacer un click largo sobre la imagen
+     * No está habilitado, de momento
+     */
+
     override fun onLongClick(articulo: Articulos) {
         val extras = intent.extras
         MaterialAlertDialogBuilder(this)
@@ -236,6 +241,10 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
                 }
             }
     }
+
+    /**
+     * Método sobre escrito de la interfax OnArticuloListener, que ejecuta la función de borrado de un artículo y de su imagen en el Storage
+     */
 
     override fun onBorrarClick(articulo: Articulos) {
         val extras = intent.extras
@@ -367,6 +376,9 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
             .show()
     }
 
+    /**
+     * Método sobre escrito de la interfax OnArticuloListener, que ejecuta la función de actualizar los datos de un artículo
+     */
 
     private fun update(articulo: Articulos){
         val extras = intent.extras
@@ -422,7 +434,16 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
         firestorelistener.remove()
     }
 
+    /**
+     * Método sobreescrito de la interfaz heredada ArtículosAux para pasar información del articulo seleccionado
+     */
+
     override fun getArticuloSelect(): Articulos? = articuloSeleccionado
+
+    /**
+     * Método sobre escrito de la interfax OnArticuloListener, que ejecuta la función de hacer click en la imagen del artículo
+     * Que básibamente abre el fragmento para modificar sus datos básicos
+     */
 
     override fun onImagenClick(articulo: Articulos) {
         val extras = intent.extras
@@ -430,10 +451,19 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
         AddDialogArticuloFragment(extras?.getString("MaletaID")!!, extras?.getBoolean("Compartida"), extras.getString("CreadorMaleta")!!).show(supportFragmentManager, AddDialogArticuloFragment::class.java.simpleName)
     }
 
+    /**
+     * Método sobre escrito de la interfax OnArticuloListener, que ejecuta la función correspondiente a hacer click... No tiene contenido, de momento
+     */
+
     override fun onClick(articulo: Articulos) {
         //Para probar el id del artículo que estoy seleccionando
         //Toast.makeText(this, articulo.id, Toast.LENGTH_SHORT).show()
     }
+
+    /**
+     * Método sobre escrito de la interfax OnArticuloListener, que ejecuta la función clickar sobre el checkbox de comprobado y actualiza la base de datos del artículo
+     * con el resultado
+     */
 
     override fun onComprobadoClick(articulo: Articulos) {
         //val extras = intent.extras
@@ -454,6 +484,11 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
         }
     }
 
+    /**
+     * Función que establece la lógica de qué sucede cuando se presiona el botón añadir artículo, que básicamente abre el fragment correspondietne para introducir los
+     * datos del nuevo artículo
+     */
+
     private fun botonAñadirArticulo(){
         val extras = intent.extras
         binding.btnAAdirArticulo.setOnClickListener{
@@ -464,6 +499,11 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
                 AddDialogArticuloFragment::class.java.simpleName, )
         }
     }
+
+    /**
+     * Función que establece la lógica de qué sucede cuando se presiona el botón cerrar maleta, que básicamente abre el diálogo para confirmar que se cierra la maleta,
+     * se hace una adverventencia y se actualiza la base de datos de maletas con el nuevo estado de la misma: Cerrada
+     */
 
     private fun botonCerrarMaleta(){
         binding.btnCerrarMaleta.setOnClickListener {
@@ -582,6 +622,11 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
         }
 
     }
+
+    /**
+     * Función que establece la lógica de qué sucede cuando se presiona el botón duplicar maleta, que básicamente abre el fragment correspondietne para introducir los
+     * datos de la nueva maleta. El resto de la lógica del proceso se realiza en la clase asociada al fragment de duplicar maleta
+     */
 
     private fun btnDuplicarMaleta(){
         val extras = intent.extras
