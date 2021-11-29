@@ -193,6 +193,10 @@ class ArticulosActivity : AppCompatActivity() , OnArticuloListener, ArticulosAux
         }
     }
 
+    /**
+     * Función para crear el menú en el toolbar
+     */
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_articulos, menu)
         return super.onCreateOptionsMenu(menu)
