@@ -121,6 +121,7 @@
     <string name="maleta_compartida_nueva">NUEVA MALETA COMPARTIDA</string>
     <string name="maleta_compartida_cambio_datos">Solo puede modificar datos de una maleta compartida su dueño !</string>
     <string name="maleta_compartida_borrar_maleta">Solo puede borrar una maleta compartida su dueño !</string>
+    <string name="clave_de_la_maleta">Clave de la maleta (8 caracteres)</string>
 
 
 </resources>
